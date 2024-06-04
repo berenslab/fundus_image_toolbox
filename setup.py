@@ -32,7 +32,7 @@ setup(
     packages=[],
     install_requires=required + submodules_required,
     package_dir={'': ROOT},
-    python_requires='==3.9.5',
+    python_requires='>=3.9.0, <3.10',
     include_package_data=True,
 )
 

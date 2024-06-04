@@ -22,5 +22,5 @@ setup(
     packages=find_packages(),
     install_requires=required,
     package_dir={'': '.'},
-    python_requires='==3.9.5',
+    python_requires='>=3.9.0, <3.10',
 )

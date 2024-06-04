@@ -23,7 +23,7 @@ submodules_required = [f"{submodule} @ git+{THIS_REPO}#egg={submodule}&subdirect
 setup(
     name="fundus_image_toolbox",
     version="0.0.1",
-    author="Julius Gervelmeyer",
+    author="Julius Gervelmeyer et al.",
     author_email="Julius.Gervelmeyer@uni-tuebingen.de",
     description=long_description.split('\n')[0],
     long_description=long_description,

@@ -13,7 +13,7 @@ with open('requirements.txt') as f:
 setup(
     name=project,
     version="0.0.1",
-    author="Julius Gervelmeyer",
+    author="Julius Gervelmeyer et al.",
     author_email="Julius.Gervelmeyer@uni-tuebingen.de",
     description=long_description.split('\n')[0],
     long_description=long_description,

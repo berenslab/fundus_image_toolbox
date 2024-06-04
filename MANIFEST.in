@@ -1,0 +1,4 @@
+include Readme.md
+include requirements.txt
+include fundus1.jog
+include fundus2.jog

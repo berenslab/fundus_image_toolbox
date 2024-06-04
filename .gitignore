@@ -1,0 +1,40 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific #
+######################
+.vscode/
+
+# Models, nohup outputs
+######################
+*.pth
+*.pt
+*.joblib
+*.out
+
+# Other dirs
+######################
+wandb/
+runs/
+__pycache__/
+.mypy_cache/
+*.egg-info/
+
+# Submodule dependencies (Repos, weights, data)
+######################
+fundus_fovea_od_localization/fundus_fovea_od_localization/models/*
+fundus_quality_prediction/fundus_quality_prediction/models/*
+fundus_quality_prediction/fundus_quality_prediction/data/*
+# fundus_registration/fundus_registration/SuperRetina/*
+fundus_vessel_segmentation/fundus_vessel_segmentation/segmentation/*
+*.egg-info
+*/fundus.jpg
+
+

@@ -1,0 +1,21 @@
+pandas>=1.4.2
+ipykernel>=6.15.2
+ipython>=8.18.1
+jupyter>=1.0.0
+jupyter-black>=0.3.4
+mypy>=0.910
+PyYAML>=6.0
+matplotlib>=3.6.2
+wandb>=0.15.5
+torch>=2.3.0
+torchvision>=0.15.2
+captum>=0.7.0
+openpyxl>=3.1.2
+seaborn>=0.13.2
+scikit-learn>=1.4.2
+torchinfo>=1.8.0
+timm>=0.9.16
+munch>=4.0.0
+bunch>=1.0.1 # bunch prevents a python version >= 3.10
+albumentations # no version to resolve conflict with imaug
+fundus_utilities @ git+https://github.com/juliusge/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities

@@ -14,4 +14,4 @@ scikit-learn>=1.4.2
 tqdm>=4.66.2
 opencv-python-headless>=4.9.0.80
 openpyxl>=3.1.2
-fundus_utilities @ git+https://github.com/juliusge/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities
+fundus_utilities @ git+https://github.com/berenslab/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities

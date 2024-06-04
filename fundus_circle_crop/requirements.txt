@@ -9,4 +9,4 @@ opencv-python-headless>=4.9.0.80
 torch>=2.0.1
 numpy>=1.26.4
 pillow>=10.2.0
-fundus_utilities @ git+https://github.com/juliusge/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities
+fundus_utilities @ git+https://github.com/berenslab/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities

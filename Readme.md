@@ -118,21 +118,21 @@ There are four options to install the toolbox (A-D). <br><small>Use Python versi
 
 **A.** Install the toolbox directly via pip
 ```bash
-pip install git+https://github.com/juliusge/fundus_image_toolbox
+pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```
 <br>
 -or-
 
 **B.** Install parts of it directly via pip by replacing `<subpackage>` with the subfolder name of the desired package (e.g. `fundus_quality_prediction`, `fundus_fovea_od_localization`, `fundus_registration`, `fundus_vessel_segmentation`, `fundus_circle_crop`, `fundus_utilities`):
 ```bash
-pip install 'git+https://github.com/juliusge/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
+pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
 ```
 <br>
 -or-
 
 **C.** Clone the repository and install via pip to be able to edit the code:
 ```bash 
-git clone https://github.com/juliusge/fundus_image_toolbox
+git clone https://github.com/berenslab/fundus_image_toolbox
 cd fundus_image_toolbox
 ```
 Now, `cd` into the desired subdirectory to install a desired package via pip.<br>

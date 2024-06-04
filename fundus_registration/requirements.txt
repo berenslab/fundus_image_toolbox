@@ -16,4 +16,4 @@ tqdm>=4.66.2
 ipykernel>=6.15.2
 ipython>=8.18.1
 gdown
-fundus_utilities @ git+https://github.com/juliusge/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities
+fundus_utilities @ git+https://github.com/berenslab/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities

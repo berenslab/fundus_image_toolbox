@@ -1,7 +1,7 @@
 import os 
 from setuptools import setup, find_packages
 
-THIS_REPO = "https://github.com/juliusge/fundus_image_toolbox"
+THIS_REPO = "https://github.com/berenslab/fundus_image_toolbox"
 ROOT = os.path.join(os.path.dirname(__file__))
 SUBMODULES = [f for f in os.listdir(ROOT) if os.path.isdir(f) and not f.startswith('.') and not f.startswith('__') and not "egg" in f]
 

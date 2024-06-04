@@ -18,4 +18,4 @@ timm>=0.9.16
 munch>=4.0.0
 bunch>=1.0.1 # bunch prevents a python version >= 3.10
 albumentations # no version to resolve conflict with imaug
-fundus_utilities @ git+https://github.com/juliusge/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities
+fundus_utilities @ git+https://github.com/berenslab/fundus_image_toolbox#egg=fundus_utilities&subdirectory=fundus_utilities

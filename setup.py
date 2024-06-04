@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 THIS_REPO = "https://github.com/berenslab/fundus_image_toolbox"
 ROOT = os.path.join(os.path.dirname(__file__))
-SUBMODULES = [f for f in os.listdir(ROOT) if os.path.isdir(f) and not f.startswith('.') and not f.startswith('__') and not "egg" in f]
+SUBMODULES = [f for f in os.listdir(ROOT) if os.path.isdir(f) and not f.startswith('.') and not f.startswith('__') and not "egg" in f and not "test" in f]
 
 with open(os.path.join(ROOT,"Readme.md"), "r", encoding='utf8') as f:
     long_description = f.read()
@@ -12,7 +12,7 @@ with open(os.path.join(ROOT,"requirements.txt")) as f:
     required = f.read().splitlines()
 
 # Add subfolders as dependencies
-submodules_required = [f"{submodule} @ git+{THIS_REPO}#egg={submodule}&subdirectory={submodule}" for submodule in SUBMODULES if 'test' not in submodule]
+submodules_required = [f"{submodule} @ git+{THIS_REPO}#egg={submodule}&subdirectory={submodule}" for submodule in SUBMODULES]
 
 # Include all subpackages. 
 # - as pip dependencies: use install_requires=required+submodules_required, packages=[], package_dir={}

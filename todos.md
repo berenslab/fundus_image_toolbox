@@ -40,7 +40,7 @@
 
 [x] segmentation: Test if fresh install clones and fixes the code
 
-[ ] Add overview figure to top of readme, or symbol or so
+[x] Add overview figure to top of readme, or symbol or so
 
 [x] Unify load_model, load_ensemble, etc functions -> load_registration_model, load_segmentation_ensemble, etc
     [x] in general usage.ipynb 
@@ -58,3 +58,5 @@
 [ ] Once has DOI, add citation to single and main Readmes
 
 [ ] write small paper.md for JOSS
+
+[ ] write more unit tests

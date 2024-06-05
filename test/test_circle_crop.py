@@ -18,7 +18,7 @@ class TestCircleCrop(unittest.TestCase):
         self.assertEqual(cropped_image.shape, shape)
 
     def test_circle_crop_with_tensor(self):
-        tensor_image = torch.from_numpy(self.image)
+        tensor_image = torch.from_numpy(self.image.copy())
         cropped_image = circle_crop(tensor_image, to_numpy=False)
         self.assertIsInstance(cropped_image, torch.Tensor)
 

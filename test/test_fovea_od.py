@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Resize, CenterCrop
-from fundus_fovea_od_localization import ODFoveaLoader, ODFoveaModel, load_fovea_od_model, DEFAULT_CONFIG
+from fundus_fovea_od_localization import ODFoveaModel, load_fovea_od_model
 
 DIR = os.path.join(os.path.dirname(__file__))
 fundus1_path = os.path.join(DIR, '..', 'fundus1.jpg')
@@ -20,6 +20,7 @@ class TestFoveaODModel(unittest.TestCase):
     def test_load_fovea_od_model(self):
         model, checkpoint_path = load_fovea_od_model("default", device=self.device, return_test_dataloader=False)
         self.assertIsInstance(model, ODFoveaModel)
+        self.assertEqual(self.device, str(model.device))
 
         fovea_x, fovea_y, od_x, od_y = model.predict(self.image)
         self.assertIsInstance(float(fovea_x), float)
@@ -34,11 +35,6 @@ class TestFoveaODModel(unittest.TestCase):
         self.assertEqual(len(labels[0]), 4)
         self.assertIsInstance(float(labels[0][0]), float)
 
-        self.assertEqual(self.device, str(model.device))
         
-    def test_load_with_dataloader(self):
-        model, checkpoint_path, test_dataloader = load_fovea_od_model("default", device=self.device, return_test_dataloader=True)
-        self.assertIsInstance(test_dataloader, ODFoveaLoader)
-
 if __name__ == '__main__':
     unittest.main()

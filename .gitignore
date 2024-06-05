@@ -27,6 +27,7 @@ __pycache__/
 .mypy_cache/
 *.egg-info/
 .tox/
+*/build
 
 # Submodule dependencies (Repos, weights, data)
 ######################

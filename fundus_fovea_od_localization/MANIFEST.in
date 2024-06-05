@@ -1,0 +1,3 @@
+include fundus_fovea_od_localization/data/ADAM+IDRID+REFUGE_df.csv
+include Readme.md
+include requirements.txt

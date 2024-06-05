@@ -1,7 +1,7 @@
 import unittest
 import os
 import torch
-from PIL import Image
+import matplotlib.pyplot as plt
 from fundus_circle_crop import circle_crop
 
 DIR = os.path.join(os.path.dirname(__file__))
@@ -9,7 +9,7 @@ DIR = os.path.join(os.path.dirname(__file__))
 class TestCircleCrop(unittest.TestCase):
     def setUp(self):
         self.image_path = os.path.join(DIR, '..', 'fundus1.jpg')
-        self.image = Image.open(self.image_path)
+        self.image = plt.imread(self.image_path)
 
     def test_circle_crop_with_size(self):
         size = (100, 100)

@@ -22,11 +22,12 @@ from .default import DEFAULT_MODEL, MODELS_DIR
 class ODFoveaModel():
     def __init__(self, config:SimpleNamespace):
         self.config = config
-        self.model = self._get_model(config.model_type).to(config.device)
+        self.device = config.device
+        self.model = self._get_model(config.model_type).to(self.device)
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M.%S")
         self.checkpoint_path = os.path.join(MODELS_DIR, f'{self.timestamp}/multi_{self.config.model_type}_best.pt')
 
-        print(f'Initializing {self.config.model_type} on {self.config.device}')
+        print(f'Initializing {self.config.model_type} on {self.device}')
 
         self.loss_func = nn.SmoothL1Loss(reduction="sum")
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
@@ -156,7 +157,7 @@ class ODFoveaModel():
         transforms = Compose([ToTensor(),
                             Resize(self.config.img_size, antialias=True),
                             CenterCrop(self.config.img_size)])
-        images = torch.stack([transforms(to_pil_image(img)) for img in images]).to(self.config.device)
+        images = torch.stack([transforms(to_pil_image(img)) for img in images]).to(self.device)
 
         with torch.inference_mode():
             outs = self.model(images)
@@ -185,7 +186,7 @@ class ODFoveaModel():
                     self._download_weights()
             else:
                 raise FileNotFoundError(f'Checkpoint {self.checkpoint_path} not found')
-        self.model.load_state_dict(torch.load(self.checkpoint_path, map_location=self.config.device))
+        self.model.load_state_dict(torch.load(self.checkpoint_path, map_location=self.device))
     
     def _get_model(self, type):
         if type == "resnet18":
@@ -271,8 +272,8 @@ class ODFoveaModel():
         return running_loss/n, running_iou/n, running_dist/n
 
     def _centroid_to_bbox(self, centroids, w=0.15, h=0.15):
-        x0_y0 = centroids - torch.tensor([w/2, h/2]).to(self.config.device)
-        x1_y1 = centroids + torch.tensor([w/2, h/2]).to(self.config.device)
+        x0_y0 = centroids - torch.tensor([w/2, h/2]).to(self.device)
+        x1_y1 = centroids + torch.tensor([w/2, h/2]).to(self.device)
         return torch.cat([x0_y0, x1_y1], dim=1)
     
     def _iou_batch(self, output_labels, target_labels):

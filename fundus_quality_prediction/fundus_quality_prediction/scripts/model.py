@@ -114,7 +114,7 @@ class FundusQualityModel:
         self.timestamp = dir.split("/")[-1]
         self.checkpoint_path = os.path.join(MODELS_DIR, f"{dir}/{self.config.model_type}_best.pt")
 
-        self.model.load_state_dict(torch.load(self.checkpoint_path))
+        self.model.load_state_dict(torch.load(self.checkpoint_path, map_location=self.config.device))
         self.model.to(self.config.device)
 
         print(f"Model loaded from {self.checkpoint_path.split('/')[-2]}")

@@ -185,7 +185,7 @@ class ODFoveaModel():
                     self._download_weights()
             else:
                 raise FileNotFoundError(f'Checkpoint {self.checkpoint_path} not found')
-        self.model.load_state_dict(torch.load(self.checkpoint_path))
+        self.model.load_state_dict(torch.load(self.checkpoint_path, map_location=self.config.device))
     
     def _get_model(self, type):
         if type == "resnet18":

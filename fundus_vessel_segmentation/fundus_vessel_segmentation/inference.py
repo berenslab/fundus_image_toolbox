@@ -88,7 +88,6 @@ def save_masks(x_paths, masks, path):
     pickle.dump(df, open(p, 'wb'))
     
 def load_ensemble(device:str="cuda:0"):
-    device = torch.device(device)
     models_paths = [os.path.join(MODELS_DIR, f) for f in os.listdir(MODELS_DIR) if f.endswith('.pth')]
     ensemble_models = get_ensemble(models_paths, dropout=False, device=device)
     return ensemble_models
@@ -96,7 +95,7 @@ def load_ensemble(device:str="cuda:0"):
 def predict(
         ensemble_models: list, 
         images:Union[List[str], str, List[Image.Image], Image.Image, List[np.ndarray], np.ndarray, List[torch.Tensor], torch.Tensor], 
-        device:str="cuda:0", 
+        device:str=None, 
         size:Tuple[int,int]=(512,512), 
         save_to:str=None, 
         plot=False, 
@@ -108,7 +107,7 @@ def predict(
         ensemble_models (list): List of models to ensemble.
         images (list, str, Image.Image, np.ndarray, torch.Tensor): List of paths to images, or a 
             single path or a batch of image objects or a single image.
-        device (str): Device to run inference on.
+        device (str): Device to run inference on. If None, the device the model is on is used.
         size (tuple): Size of the output masks.
         save_to (str): Path to save the masks, optional.
         plot (bool): Whether to plot the masks.
@@ -117,6 +116,9 @@ def predict(
     Returns:
         np.ndarray: Predicted mask(s)
     """
+    if device is None:
+        device = str(next(ensemble_models[0].parameters()).device)
+
     seed_everything(23, silent=True)
 
     images = Img(images).to_batch().img

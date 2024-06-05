@@ -24,4 +24,7 @@ setup(
     package_dir={'': '.'},
     python_requires='>=3.9.0, <3.10',
     include_package_data=True,
+    package_data={
+        '': ['*.csv'],
+        }
 )

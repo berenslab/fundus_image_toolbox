@@ -122,7 +122,7 @@ class ODFoveaModel():
         with torch.inference_mode():
             pbar = tqdm(total = len(test_dataloader))
             test_loss, test_iou, test_dist = self._train_val_step(test_dataloader, self.model, self.loss_func, None, pbar)
-            standardized_test_dist = test_dist / self.config.img_size
+            standardized_test_dist = test_dist * self.config.img_size
 
             print(f'Test loss: {test_loss:.4}, IoU: {test_iou:.2}, Dist: {test_dist:.4}, Standardized dist: {standardized_test_dist:.4}')
         
@@ -130,8 +130,8 @@ class ODFoveaModel():
             with open(f'{os.path.dirname(self.checkpoint_path)}/summary.txt', 'a') as f:
                 f.write(f'Test loss: {test_loss:.4}\n')
                 f.write(f'Test IoU: {test_iou:.2}\n')
-                f.write(f'Test distance in px: {test_dist:.4}\n')
-                f.write(f'Standardized test distance: {standardized_test_dist:.4}\n')
+                f.write(f'Normalized test distance: {test_dist:.4}\n')
+                f.write(f'Pixel distance in {self.config.img_size}px images: {standardized_test_dist:.4}\n')
         
         return test_loss, test_iou, test_dist, standardized_test_dist
 

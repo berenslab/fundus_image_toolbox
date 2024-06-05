@@ -12,9 +12,9 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
 ### Preparation
 - If you want to use the model, no preparation is needed and you can skip this part. Weights will be aquired automatically from zenodo.
 - If you want to train or evaluate a model, you have to download these three datasets and store the extracted datasets into a common parent folder s.t. it contains the subdirectories `ADAM`, `REFUGE` and `IDRID`.
-    - [ADAM dataset](https://doi.org/10.48550/arXiv.2202.07983) from [baidu](https://ai.baidu.com/broad/download)
-    - [REFUGE dataset](https://doi.org/10.48550/arXiv.1910.03667) from [baidu](https://ai.baidu.com/broad/download)
-    - [IDRID dataset](https://doi.org/10.1016/j.media.2019.101561) from [ieee](https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid)
+    - [ADAM dataset](https://doi.org/10.48550/arXiv.2202.07983) from [baidu](https://ai.baidu.com/broad/download) (paper: [link](https://doi.org/10.1109/TMI.2022.3172773))
+    - [REFUGE dataset](https://doi.org/10.48550/arXiv.1910.03667) from [baidu](https://ai.baidu.com/broad/download) (paper: [link](https://doi.org/10.1016/j.media.2019.101570))
+    - [IDRID dataset](https://doi.org/10.1016/j.media.2019.101561) from [ieee](https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid) (paper: [link](https://doi.org/10.1016/j.media.2019.101561))
 
 - As the ADAM and REFUGE datasets provide optic disc masks instead of center coordinates, we have to extract the center coordinates from the masks. This is done in the [misc_masks_to_coordinates_ADAM.ipynb](misc_masks_to_coordinates_ADAM.ipynb) and [misc_masks_to_coordinates_REFUGE.ipynb](misc_masks_to_coordinates_REFUGE.ipynb) scripts. Finally, combine all datasets using the [misc_combine_IDRID_ADAM_REFUGE.ipynb](misc_combine_IDRID_ADAM_REFUGE.ipynb) script.
 
@@ -29,6 +29,15 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
     ```bash
     python train_cli.py --help
     ```
+
+### Performance
+- On the test set of the combined dataset, the model achieves a mean distance to the fovea and optic disc targets (normalized to a value in [0,1]) of 0.0088. This corresponds to a distance of 3,08 pixels in the 350 x 350 pixel images used for training and testing.
+- Comparison of the above value to the winning model of the ADAM challenge wrt. the fovea localization task: The reported mean distance to the fovea target is 18.5538 pixels corresponds to a normalized distance of 0.0098*. Note that we did not evaluate on the ADAM test set, but on a combined dataset of ADAM, REFUGE and IDRID and that our multi-task model also predicts the optic disc center.
+
+- <details>
+    <summary>*details</summary>
+    The ADAM dataset consists of 824 images sized 2124 x 2056 pixels and 376 images sized 1444 x 1444 pixels. The average width of a squared image would be 0.5 * ((824(2124 + 2056)+376(1444*2)) / 1200) = 1887.59 pixels. Hence, the normalized distance of the winning model of the ADAM challenge is 18.5538 pixels / 1887.59 pixels = 0.0098.
+    </details>
 
 ### Ref
 This project uses substantial parts of a [tutorial](https://python.plainenglish.io/single-object-detection-with-pytorch-step-by-step-96430358ae9d) that has kindly given permission to use it. You can find the original code [here](https://github.com/dorzv/ComputerVision/blob/cc41b9d40af2b8b878f1352ec1308f031ad5b3f6/single_object_detection/Pytorch_Single_Object_Detection.ipynb).

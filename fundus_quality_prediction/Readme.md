@@ -29,5 +29,6 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
 
 ### Performance
 - The model ensemble achieves an accuracy and ROCAUC of 0.78 and 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.
+- To predict DeepDRiD's binary quality annotation is known to be a difficult task. Hence, the previous sota is 0.75 and 0.75 for accuracy and ROCAUC, respectively, on a DeepDRiD test split ([Tummala et al., 2023](https://doi.org/10.3390/diagnostics13040622)).
 
 ### Cite

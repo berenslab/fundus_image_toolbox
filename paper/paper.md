@@ -25,7 +25,7 @@ affiliations:
    index: 1
 
 date: 11 June 2024
-bibliography: paper/paper.bib
+bibliography: paper.bib
 ---
 
 <!-- ![Fundus Image Toolbox Icon](../icon.svg) -->

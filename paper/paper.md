@@ -16,9 +16,7 @@ authors:
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
   - name: Sarah Müller
-    equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
-    affiliation: 1
-  - name: Ziwei Huang
+    orcid: 0000-0003-1500-8673
     equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
 affiliations:

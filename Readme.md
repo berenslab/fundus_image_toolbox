@@ -114,41 +114,27 @@ plot_masks([fundus1, fundus2], vessel_masks)
 <p style="font-size:1.5em;"><b>Installation</b></p> -->
 ### Installation
 
-There are four options to install the toolbox (A-D). <br><small>Use Python version 3.9.5 as <i>fundus_vessel_segmentation</i> requires versions <3.10.</small><br> 
+<small>Use Python version 3.9.5 as <i>fundus_vessel_segmentation</i> requires versions <3.10.</small><br> 
 
-**D.** Install in a virtual environment. <br>
+#### 1) Create a virtual environment <br>
 ```bash
 conda create --name fundus_image_toolbox python=3.9.5 pip
 conda activate fundus_image_toolbox
 ```
-Then, install the toolbox or parts of it as described in B, C or D.
-<br>
 
-**B.** Install the toolbox directly via pip
+#### 2a) Install the toolbox <br>
 ```bash
 pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```
-<br>
+
 -or-
 
-**C.** Install parts of it directly via pip by replacing `<subpackage>` with the subfolder name of the desired package (e.g. `fundus_quality_prediction`, `fundus_fovea_od_localization`, `fundus_registration`, `fundus_vessel_segmentation`, `fundus_circle_crop`, `fundus_utilities`):
+#### 2b) Install parts of the toolbox
+Replace `<subpackage>` in the following command with the subfolder name of the desired package (i.e., `fundus_quality_prediction`, `fundus_fovea_od_localization`, `fundus_registration`, `fundus_vessel_segmentation`, `fundus_circle_crop`, or `fundus_utilities`) and run:
 ```bash
 pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
 ```
-<br>
--or-
 
-**D.** Clone the repository and install via pip to be able to edit the code:
-```bash 
-git clone https://github.com/berenslab/fundus_image_toolbox
-cd fundus_image_toolbox
-```
-Now, `cd` into the desired subdirectory to install a desired package via pip.<br>
-Run
-```bash
-pip install -e .
-```
-This procedure allows you to edit code in the repository and have the changes immediately reflected in your python environment. Run `cd ..` to go back to the main directory and repeat the `cd` and `pip install -e .` steps for other desired subpackages.
 
 <!-- <br>
 <p style="font-size:1.5em;"><b>Cite</b></p> -->
@@ -170,6 +156,6 @@ If you use external parts of the toolbox that this toolbox provides an interface
 <p style="font-size:1.5em;"><b>License</b></p> -->
 ### License
 
-The toolbox is licensed under the MIT License. See the [LICENSE file](./LICENSE) for more information. <!-- As external packages are used, please check the respective licenses. That includes [fundus_vessel_segmentation](fundus_vessel_segmentation).-->
+The toolbox is licensed under the MIT License. See the [license file](./LICENSE) for more information. <!-- As external packages are used, please check the respective licenses. That includes [fundus_vessel_segmentation](fundus_vessel_segmentation).-->
 
 

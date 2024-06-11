@@ -204,7 +204,10 @@ class ImageTorchUtils:
         self.img = self.to_tensor().set_channel_dim(-1).img 
 
         if dtype == "uint8":
-            self.img = (self.img * 255).byte()
+            if self.img.max() <= 1:
+                self.img = (self.img * 255).byte()
+            else:
+                self.img = self.img.byte()
         elif dtype == "float32":
             self.img = self.img.float()
         else:

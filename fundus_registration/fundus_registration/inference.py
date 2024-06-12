@@ -1,5 +1,5 @@
 # %%
-from typing import Union
+from typing import List, Union
 import os
 import torch
 import cv2
@@ -10,6 +10,7 @@ from PIL import Image
 import yaml
 import pandas as pd
 import pickle
+from fundus_utilities import ImageTorchUtils as Img
 
 from .SuperRetina import pre_processing, simple_nms, remove_borders, sample_keypoint_desc, SuperRetina
 
@@ -173,7 +174,7 @@ def load_model(config: dict=None):
     if not os.path.isfile(config['model_save_path']):
         download_weights()
 
-    model = SuperRetina(device=device).to(device)
+    model = SuperRetina().to(device)
     model.load_state_dict(torch.load(config['model_save_path'], map_location=device)['net'])
     model.eval()
 
@@ -366,7 +367,13 @@ def find_homography_and_align(fixed_image, moving_image, original_moving_image, 
 
 
 # %%
-def register(fixed_image:Union[str, np.array, Image.Image], moving_image:Union[str, np.array, Image.Image], show:bool=True, show_mapping:bool=False, save_to:str=None, config:dict=DEFAULT_CONFIG, model=None, matcher=None):
+def register_one(fixed_image:Union[str, np.ndarray, Image.Image], 
+                 moving_image:Union[str, np.ndarray, Image.Image], 
+                 show:bool=True, show_mapping:bool=False, 
+                 save_to:str=None, 
+                 config:dict=DEFAULT_CONFIG, 
+                 model=None, 
+                 matcher=None):
     """Register two images using SuperRetina and homography transformation.
     
     Args:
@@ -409,9 +416,6 @@ def register(fixed_image:Union[str, np.array, Image.Image], moving_image:Union[s
 
     keypoints, descriptors = predict_points(fixed_tensor, moving_tensor, config, model)
 
-    # print("Keypoints shapes: ", keypoints[0].shape, keypoints[1].shape)
-    # print("Descriptors shapes: ", descriptors[0].shape, descriptors[1].shape)
-
     fixed_keypoints, moving_keypoints = keypoints[1], keypoints[0]
     fixed_desc, moving_desc = descriptors[1].permute(1, 0).numpy(), descriptors[0].permute(1, 0).numpy()
 
@@ -429,9 +433,48 @@ def register(fixed_image:Union[str, np.array, Image.Image], moving_image:Union[s
 
     return moving_aligned
 
+def register(fixed_image:Union[str, List[str], List[np.ndarray], List[torch.Tensor], List[Image.Image], np.ndarray, torch.Tensor, Image.Image],
+                 moving_image:Union[str, List[str], List[np.ndarray], List[torch.Tensor], List[Image.Image], np.ndarray, torch.Tensor, Image.Image],
+                 show:bool=True, show_mapping:bool=False, 
+                 save_to:str=None, 
+                 config:dict=DEFAULT_CONFIG, 
+                 model=None, 
+                 matcher=None) -> Union[np.ndarray, List[np.ndarray]]:
+    """Register a pair or pairs of images from batches using SuperRetina and homography transformation.
+    
+    Args:
+        fixed_image (Union[torch.Tensor, list, str, np.array, Image.Image]): The fixed image(s).
+        moving_image (Union[torch.Tensor, list, str, np.array, Image.Image]): The moving image(s) to register to the fixed.
+        show (bool, optional): Show the images. Defaults to True.
+        show_mapping (bool, optional): Show the mapping of SuperPoints. Defaults to False.
+        save_to (str, optional): Save the images to this path. Defaults to None.
+        config (dict, optional): The configuration dict for inference. Defaults to DEFAULT_CONFIG.
+        model (optional): The SuperRetina model. Defaults to None.
+        matcher (optional): The matcher for matching keypoints. Defaults to None.
+            
+    Returns:
+        list of np.ndarrays or np.ndarray: The aligned moving image(s).
+    """
+
+    # To batch of numpy images
+    fixed_image = Img(fixed_image).to_batch().to_numpy().img
+    moving_image = Img(moving_image).to_batch().to_numpy().img
+
+    if len(fixed_image) != len(moving_image):
+        raise ValueError("The number of fixed and moving images must be the same.")
+    
+    moving_aligned = []
+    for fixed, moving in zip(fixed_image, moving_image):
+        moving_aligned.append(register_one(fixed, moving, show, show_mapping, save_to, config, model, matcher))
+    
+    if len(moving_aligned) == 1:
+        return moving_aligned[0]
+    return moving_aligned
+
+
 if __name__ == '__main__':
-    fixed_image = '/sample_img1.jpg'
-    moving_image = '/sample_img2.jpg'
+    fixed_image = './example1.jpg'
+    moving_image = './example2.jpg'
 
     moving_aligned = register(fixed_image, moving_image, show=True)
     plt.imshow(moving_aligned, 'gray')

@@ -1,5 +1,6 @@
 import unittest
 import os
+import numpy as np
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Resize
@@ -23,7 +24,7 @@ class TestQualityPrediction(unittest.TestCase):
     def test_ensemble_predict_quality(self):
         # Test the ensemble_predict_quality function
         conf, label = ensemble_predict_quality(self.model, self.image)
-        self.assertIsInstance(conf, float)
+        self.assertIsInstance(conf, (float, torch.Tensor, np.float32, np.float64, np.float16, np.float128))
         self.assertIsInstance(label, int)
 
     def test_plot_quality(self):

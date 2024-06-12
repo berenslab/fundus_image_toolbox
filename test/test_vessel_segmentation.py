@@ -36,8 +36,8 @@ class TestVesselSegmentation(unittest.TestCase):
         # Test the save_masks and load_masks_from_filenames functions
         target_dir = os.path.join(DIR, 'masks')
         mask = ensemble_predict_segmentation(self.model, self.image, device=self.device)
-        save_masks(self.image, mask, target_dir)
-        loaded_mask = load_masks_from_filenames(self.image, target_dir)
+        save_masks(fundus1_path, mask, target_dir)
+        loaded_mask = load_masks_from_filenames(fundus1_path, target_dir)
         self.assertIsInstance(loaded_mask, np.ndarray)
         self.assertEqual(loaded_mask.shape, mask.shape)
 

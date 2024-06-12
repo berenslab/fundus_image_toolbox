@@ -74,6 +74,35 @@ class ImageTorchUtils:
 
         return self
     
+    def squeeze(self, dim: int = 0):
+        """Squeezes the instance's image tensor along the specified dimension.
+
+        Args:
+            dim (int, optional): Dimension to squeeze. Defaults to 0.
+
+        Returns:
+            torch.Tensor: Image tensor with the specified dimension squeezed.
+        """
+        if self.is_batch_like():
+            # Recursively squeeze each image in the batch
+            imgs = [ImageTorchUtils(img).squeeze(dim).img for img in self.img]
+            return self
+
+        if self.is_batch():
+            # Recursively squeeze each image in the batch
+            imgs = [ImageTorchUtils(img).squeeze(dim).img for img in self.img]
+            self.img = torch.stack(imgs)
+            return self
+        
+        if isinstance(self.img, torch.Tensor):
+            self.img = self.img.squeeze(dim)
+        elif isinstance(self.img, np.ndarray):
+            self.img = np.squeeze(self.img, dim)
+        else:
+            raise ValueError("Image should be a torch tensor or numpy array but is of type", type(self.img))        
+        
+        return self
+    
     def to_cspace(self, from_cspace: str, to_cspace: str):
         """Converts the instance's image tensor from one colorspace to another.
 

@@ -78,7 +78,7 @@ def save_masks(x_paths, masks, path):
         masks = [masks]
     masks_flattened = [mask.flatten() for mask in masks]
     basenames = [os.path.basename(x) for x in x_paths]
-    df = pd.DataFrame({'image': basenames, 'mask': masks_flattened})
+    df = pd.DataFrame({'image': basenames, 'mask': masks_flattened, 'shape': [mask.shape for mask in masks]})
     p = os.path.join(path,'masks.pkl')
     os.makedirs(os.path.dirname(p), exist_ok=True)
 
@@ -205,6 +205,7 @@ def load_masks_from_filenames(filenames, masks_dir:str=None):
         row = masks.loc[masks["image"] == os.path.basename(filename)]
         mask = row["mask"].values[0]
         mask = np.array(mask)
+        mask = mask.reshape(row["shape"].values[0])
         out.append(mask)
 
     if len(out) == 1:

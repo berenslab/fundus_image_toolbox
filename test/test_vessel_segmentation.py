@@ -41,5 +41,10 @@ class TestVesselSegmentation(unittest.TestCase):
         self.assertIsInstance(loaded_mask, np.ndarray)
         self.assertEqual(loaded_mask.shape, mask.shape)
 
+        # Clean up
+        for file in os.listdir(os.path.join(target_dir, 'masks')):
+            os.remove(os.path.join(target_dir, 'masks', file))
+        os.rmdir(os.path.join(target_dir, 'masks'))
+
 if __name__ == '__main__':
     unittest.main()

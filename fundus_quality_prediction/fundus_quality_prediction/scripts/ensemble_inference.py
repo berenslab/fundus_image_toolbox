@@ -125,6 +125,12 @@ def ensemble_predict(ensemble:List[FundusQualityModel], image:Union[list, str, t
     else:
         raise ValueError("Image(s) must be a list of paths, a path, or a tensor of the image or of a batch of images.")
 
+    # Squeeze
+    if isinstance(ensemble_pred, (list,np.ndarray)) and len(ensemble_pred) == 1:
+        ensemble_pred = ensemble_pred[0]
+    if isinstance(binary_ensemble_pred, (list,np.ndarray)) and len(binary_ensemble_pred) == 1:
+        binary_ensemble_pred = binary_ensemble_pred[0]
+
     return ensemble_pred, binary_ensemble_pred
 
 def ensemble_predict_from_dataloader(ensemble:List[FundusQualityModel], dataloader:DataLoader, threshold:float=0.5, print_result:bool=True):

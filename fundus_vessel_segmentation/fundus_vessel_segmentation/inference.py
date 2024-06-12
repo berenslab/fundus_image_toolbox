@@ -16,11 +16,13 @@ from fundus_utilities import seed_everything
 # Clone the repository if not present
 try:
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
+    from .segmentation.utils.model_definition import FR_UNet
 except ImportError:
     from .clone import clone_repo
     this_dir = os.path.dirname(os.path.abspath(__file__))
     clone_repo(target_dir=os.path.join(this_dir, "segmentation").__str__())
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
+    from .segmentation.utils.model_definition import FR_UNet
 
 
 class Parser(ArgumentParser):
@@ -39,15 +41,9 @@ def plot_masks(images, masks):
     Returns:
         None
     """
-
-    if isinstance(images, str) or len(images) == 1:
-        images = [images]
-        masks = [masks]
-
-    # images = any_to_image_batch(images, cspace='rgb', imread="pil")
     images = Img(images).to_batch().to_numpy().img
     masks = [masks] if len(np.array(masks).shape) == 2 else masks
-    
+        
     if len(images) != len(masks):
         raise ValueError("Number of images and masks must be the same.")
 
@@ -76,7 +72,7 @@ def save_masks(x_paths, masks, path):
         masks = [masks]
     masks_flattened = [mask.flatten() for mask in masks]
     basenames = [os.path.basename(x) for x in x_paths]
-    df = pd.DataFrame({'image': basenames, 'mask': masks_flattened})
+    df = pd.DataFrame({'image': basenames, 'mask': masks_flattened, 'shape': [mask.shape for mask in masks]})
     p = os.path.join(path,'masks.pkl')
     os.makedirs(os.path.dirname(p), exist_ok=True)
 
@@ -203,6 +199,7 @@ def load_masks_from_filenames(filenames, masks_dir:str=None):
         row = masks.loc[masks["image"] == os.path.basename(filename)]
         mask = row["mask"].values[0]
         mask = np.array(mask)
+        mask = mask.reshape(row["shape"].values[0])
         out.append(mask)
 
     if len(out) == 1:

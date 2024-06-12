@@ -25,6 +25,5 @@ torch>=2.2.0
 torchinfo>=1.8.0
 torchvision>=0.15.2
 tqdm>=4.66.2
-wandb>=0.15.5
 scipy>=1.10.0
 albumentations # no version to prevent conflict with imaug

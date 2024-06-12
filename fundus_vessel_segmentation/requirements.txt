@@ -6,7 +6,6 @@ jupyter-black>=0.3.4
 mypy>=0.910
 PyYAML>=6.0
 matplotlib>=3.6.2
-wandb>=0.15.5
 torch>=2.2.0
 torchvision>=0.15.2
 captum>=0.7.0

@@ -5,6 +5,6 @@
   booktitle={Proceedings of the 17th European Conference on Computer Vision (ECCV)},
   year={2022}
 }""" 
-from .inference import register, DEFAULT_CONFIG, WEIGHT_PATH
+from .inference import register, DEFAULT_CONFIG, WEIGHT_PATH, SuperRetina
 from .inference import get_config as get_registration_config
 from .inference import load_model as load_registration_model

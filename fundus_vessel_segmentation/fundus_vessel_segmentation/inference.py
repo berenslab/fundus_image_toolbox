@@ -16,6 +16,7 @@ from fundus_utilities import seed_everything
 # Clone the repository if not present
 try:
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
+    from .segmentation.utils.model_definition import FR_UNet
 except ImportError:
     from .clone import clone_repo
     this_dir = os.path.dirname(os.path.abspath(__file__))

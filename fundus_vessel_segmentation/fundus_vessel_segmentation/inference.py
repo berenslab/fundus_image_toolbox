@@ -41,15 +41,9 @@ def plot_masks(images, masks):
     Returns:
         None
     """
-
-    if isinstance(images, str) or len(images) == 1:
-        images = [images]
-        masks = [masks]
-
-    # images = any_to_image_batch(images, cspace='rgb', imread="pil")
     images = Img(images).to_batch().to_numpy().img
     masks = [masks] if len(np.array(masks).shape) == 2 else masks
-    
+        
     if len(images) != len(masks):
         raise ValueError("Number of images and masks must be the same.")
 

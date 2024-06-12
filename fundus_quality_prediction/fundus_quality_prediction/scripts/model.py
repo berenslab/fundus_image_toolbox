@@ -46,6 +46,9 @@ def plot_quality(fundus, conf:float, label:int, threshold:float=0.5):
     """
     # Image to array with (H, W, C) shape
     fundus = Img(fundus).squeeze().to_numpy().set_channel_dim(-1).img
+    
+    if Img(fundus).is_batch_like():
+        raise ValueError("Pass a single image, not a batch.")
 
     fig = plt.figure(figsize=(4.3, 4))
     gs = gridspec.GridSpec(1, 2, width_ratios=[25, 1]) 

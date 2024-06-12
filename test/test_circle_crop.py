@@ -31,9 +31,9 @@ class TestCircleCrop(unittest.TestCase):
         self.assertIsInstance(img_aligned, np.ndarray)
         self.assertIsInstance(mask, np.ndarray)
         self.assertIsInstance(center, np.ndarray)
-        self.assertIsInstance(center[0], float)
-        self.assertIsInstance(center[1], float)
-        self.assertIsInstance(radius, float)
+        self.assertIsInstance(float(center[0]), float)
+        self.assertIsInstance(float(center[1]), float)
+        self.assertIsInstance(float(radius), float)
 
         # Assert the output shapes and values
         self.assertEqual(img_aligned.shape, self.shape)

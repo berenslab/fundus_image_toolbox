@@ -98,6 +98,9 @@ class ImageTorchUtils:
             self.img = self.img.squeeze(dim)
         elif isinstance(self.img, np.ndarray):
             self.img = np.squeeze(self.img, dim)
+        elif isinstance(self.img, Image.Image):
+            self.img = np.array(self.img).squeeze(dim)
+            self.img = Image.fromarray(self.img)
         else:
             raise ValueError("Image should be a torch tensor or numpy array but is of type", type(self.img))        
         
@@ -157,7 +160,7 @@ class ImageTorchUtils:
             input_type = type(self.img[0])
             imgs = [ImageTorchUtils(img).set_channel_dim(channel_dim).img for img in self.img]
             if input_type == np.ndarray:
-                imgs = np.array([np.ndarray(img) for img in imgs])
+                imgs = np.array([np.array(img) for img in imgs])
             else:
                 self.img = torch.stack(imgs)
             return self

@@ -26,4 +26,3 @@ runs/
 __pycache__/
 .mypy_cache/
 fundus_vessel_segmentation/segmentation/*
-test/masks/

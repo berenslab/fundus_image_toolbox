@@ -94,11 +94,11 @@ class ImageTorchUtils:
             self.img = torch.stack(imgs)
             return self
         
-        if isinstance(self.img, torch.Tensor):
+        if isinstance(self.img, torch.Tensor) and len(self.img.shape) == 4 and len(self.shape[dim]) == 1:
             self.img = self.img.squeeze(dim)
-        elif isinstance(self.img, np.ndarray):
+        elif isinstance(self.img, np.ndarray) and len(self.img.shape) == 4 and len(self.img.shape[dim]) == 1:
             self.img = np.squeeze(self.img, dim)
-        elif isinstance(self.img, Image.Image):
+        elif isinstance(self.img, Image.Image) and len(self.img.shape) == 4 and len(np.array(self.img).shape[dim]) == 1:
             self.img = np.array(self.img).squeeze(dim)
             self.img = Image.fromarray(self.img)
         else:

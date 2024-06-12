@@ -42,9 +42,8 @@ class TestVesselSegmentation(unittest.TestCase):
         self.assertEqual(loaded_mask.shape, mask.shape)
 
         # Clean up
-        for file in os.listdir(os.path.join(target_dir, 'masks')):
-            os.remove(os.path.join(target_dir, 'masks', file))
-        os.rmdir(os.path.join(target_dir, 'masks'))
+        for file in os.listdir(os.path.join(target_dir)):
+            os.remove(os.path.join(target_dir, file))
 
 if __name__ == '__main__':
     unittest.main()

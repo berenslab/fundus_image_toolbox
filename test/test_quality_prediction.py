@@ -29,7 +29,7 @@ class TestQualityPrediction(unittest.TestCase):
 
     def test_plot_quality(self):
         # Test the plot_quality function
-        plot_quality(self.image, 0.5, 1)
+        plot_quality(self.image.squeeze(), 0.5, 1)
 
 if __name__ == '__main__':
     unittest.main()

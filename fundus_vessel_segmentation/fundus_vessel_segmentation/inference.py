@@ -22,6 +22,7 @@ except ImportError:
     this_dir = os.path.dirname(os.path.abspath(__file__))
     clone_repo(target_dir=os.path.join(this_dir, "segmentation").__str__())
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
+    from .segmentation.utils.model_definition import FR_UNet
 
 
 class Parser(ArgumentParser):

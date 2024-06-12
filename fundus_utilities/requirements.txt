@@ -18,4 +18,3 @@ torchinfo>=1.8.0
 torchvision>=0.15.2
 tqdm>=4.66.2
 numpy>=1.24.0
-wandb>=0.15.5

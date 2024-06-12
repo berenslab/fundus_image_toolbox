@@ -98,11 +98,12 @@ class ImageTorchUtils:
             self.img = self.img.squeeze(dim)
         elif isinstance(self.img, np.ndarray) and len(self.img.shape) == 4 and len(self.img.shape[dim]) == 1:
             self.img = np.squeeze(self.img, dim)
-        elif isinstance(self.img, Image.Image) and len(self.img.shape) == 4 and len(np.array(self.img).shape[dim]) == 1:
+        elif isinstance(self.img, Image.Image) and len(np.array(self.img).shape) == 4 and len(np.array(self.img).shape[dim]) == 1:
             self.img = np.array(self.img).squeeze(dim)
             self.img = Image.fromarray(self.img)
         else:
-            raise ValueError("Image should be a torch tensor or numpy array but is of type", type(self.img))        
+            if not isinstance(self.img, (torch.Tensor, np.ndarray, Image.Image)):
+                raise ValueError("Image should be a torch tensor, Image.Image or numpy array but is of type", type(self.img))        
         
         return self
     

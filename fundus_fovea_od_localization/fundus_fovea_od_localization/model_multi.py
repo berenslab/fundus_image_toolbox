@@ -394,7 +394,7 @@ def plot_input(id, dataset):
     ImageDraw.Draw(image).rectangle(((od_x-w//2, od_y-h//2), (od_x+w//2, od_y+h//2)), outline='blue', width=thickness)
     plt.imshow(image)
 
-def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: Union[np.ndarray, List[np.ndarray]]):
+def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: Union[np.ndarray, List[np.ndarray]], return_fig_axs=False):
     if not isinstance(fundus, list):
         fundus = [fundus]
         coordinates = [coordinates]
@@ -416,3 +416,6 @@ def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: U
         axs[i].legend()
         axs[i].axis("off")
     plt.show()
+
+    if return_fig_axs:
+        return fig, axs

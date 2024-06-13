@@ -394,7 +394,19 @@ def plot_input(id, dataset):
     ImageDraw.Draw(image).rectangle(((od_x-w//2, od_y-h//2), (od_x+w//2, od_y+h//2)), outline='blue', width=thickness)
     plt.imshow(image)
 
-def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: Union[np.ndarray, List[np.ndarray]], return_fig_axs=False):
+def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: Union[np.ndarray, List[np.ndarray]], axs=None, return_axs=None):
+    """Plot the fundus image with the predicted fovea and optic disc coordinates
+    
+    Args:
+        fundus (Union[np.ndarray, List[np.ndarray]]): Fundus image or list of fundus images
+        coordinates (Union[np.ndarray, List[np.ndarray]]): Predicted coordinates of the fovea and optic disc
+        axs ([type], optional): Matplotlib axis. Defaults to None.
+        return_axs ([type], optional): Whether to return the axis. Defaults to None.
+    
+    Returns:
+        axs: (List of) Matplotlib axis, if return_axs is True
+    """
+    
     if not isinstance(fundus, list):
         fundus = [fundus]
         coordinates = [coordinates]
@@ -403,9 +415,11 @@ def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: U
     num_images = len(fundus)
     num_cols = min(num_images, max_ncols)
     num_rows = int(np.ceil(num_images / num_cols))
-    fig, axs = plt.subplots(num_rows, num_cols, figsize=(num_cols*4, num_rows*4))
 
-    if num_images == 1:
+    if axs is None:
+        fig, axs = plt.subplots(num_rows, num_cols, figsize=(num_cols*4, num_rows*4))
+
+    if num_images == 1 and not isinstance(axs, (list, np.ndarray)):
         axs = [axs]
     
     for i, f in enumerate(fundus):
@@ -415,7 +429,14 @@ def plot_coordinates(fundus: Union[np.ndarray, List[np.ndarray]], coordinates: U
         axs[i].scatter(ox, oy, c="b", label="Predicted OD Center")
         axs[i].legend()
         axs[i].axis("off")
-    plt.show()
+    
+    if return_axs:
+        if num_images == 1:
+            axs = axs[0]
+        return axs
 
-    if return_fig_axs:
-        return fig, axs
+    else:
+        plt.show()
+        plt.close()
+
+    

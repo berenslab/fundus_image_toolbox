@@ -140,6 +140,7 @@ class RandomZoom:
       image = tf.affine(image, translate=(0, 0), angle=0, scale=zoom_factor, shear=0)
       f_label= f_x * zoom_factor, f_y * zoom_factor
       od_label= od_x * zoom_factor, od_y * zoom_factor
+      # Shouldn't it be center_x + (x - center_x) * zoom_factor?
     return image, (f_label, od_label)
 
 

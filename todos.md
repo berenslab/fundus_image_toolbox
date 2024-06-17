@@ -18,15 +18,3 @@
 [ ] Once Sarah has refactored her image cropping code to yield an image as output, add it to circle_crop, s.t. one can choose between the two algorithms
 
 [ ] Once has DOI, add citation to single and main Readmes
-
-[ ] Write more unit tests
-
-    [x] Circle crop
-
-    [x] Segmentation
-
-    [x] Registration
-
-    [x] Fovea OD localization
-
-    [x] Quality prediction

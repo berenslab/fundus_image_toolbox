@@ -27,7 +27,7 @@ class ImageTorchUtils:
     def __init__(self, image: Union[str, Image.Image, np.ndarray, torch.Tensor, list]):
         self.img = image
 
-    def to_tensor(self, from_cspace: str = 'rgb', to_cspace:str = 'rgb'):
+    def to_tensor(self, from_cspace: str = 'rgb', to_cspace:str = 'rgb', silent: bool = False):
         """Converts the instance's image to a torch tensor of shape (C, H, W).
 
         Args:
@@ -38,8 +38,15 @@ class ImageTorchUtils:
         """
 
         if self.is_batch():
-            if None not in [from_cspace, to_cspace]:
+            if None not in [from_cspace, to_cspace] and not silent:
                 print("inside to_tensor, from_cspace and to_cspace are ignored for batch images. Use to_cspace instead.")
+            return self
+
+        if self.is_batch_like():
+            if None not in [from_cspace, to_cspace] and not silent:
+                print("inside to_tensor, from_cspace and to_cspace are ignored for batch images. Use to_cspace instead.")
+            imgs = [ImageTorchUtils(img).to_tensor().img for img in self.img]
+            self.img = torch.stack(imgs)
             return self
         
         from_cspace = from_cspace.lower().replace(' ', '')

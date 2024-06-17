@@ -457,8 +457,8 @@ def register(fixed_image:Union[str, List[str], List[np.ndarray], List[torch.Tens
     """
 
     # To batch of numpy images
-    fixed_image = Img(fixed_image).squeeze().to_batch().to_numpy().img
-    moving_image = Img(moving_image).squeeze().to_batch().to_numpy().img
+    fixed_image = Img(fixed_image).to_tensor().squeeze().to_batch().to_numpy().img
+    moving_image = Img(moving_image).to_tensor().squeeze().to_batch().to_numpy().img
 
     if len(fixed_image) != len(moving_image):
         raise ValueError("The number of fixed and moving images must be the same.")

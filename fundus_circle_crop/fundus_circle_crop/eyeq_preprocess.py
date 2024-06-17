@@ -249,7 +249,7 @@ def circle_crop(img: Union[str, Image.Image, np.ndarray, torch.Tensor, list], si
     input_is_a_batch = Img(img).is_batch_like()
 
     # Process images, batches of images, and paths to numpy batch
-    img_batch = Img(img).to_batch().set_channel_dim(-1).to_numpy().img
+    img_batch = Img(img).to_tensor(silent=True).set_channel_dim(-1).to_batch().to_numpy().img
 
     # Process
     imgs, masks, centers, radii = [], [], [], []

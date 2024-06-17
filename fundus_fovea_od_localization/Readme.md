@@ -19,8 +19,9 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
 - As the ADAM and REFUGE datasets provide optic disc masks instead of center coordinates, we have to extract the center coordinates from the masks. This is done in the [misc_masks_to_coordinates_ADAM.ipynb](misc_masks_to_coordinates_ADAM.ipynb) and [misc_masks_to_coordinates_REFUGE.ipynb](misc_masks_to_coordinates_REFUGE.ipynb) scripts. Finally, combine all datasets using the [misc_combine_IDRID_ADAM_REFUGE.ipynb](misc_combine_IDRID_ADAM_REFUGE.ipynb) script.
 
 ### How to
-- See [usage.ipynb](usage.ipynb) for prediction or training and evaluation from a notebook.
-- See [train_cli.py](train_cli.py) for training from the command line:
+- See [usage.ipynb](usage.ipynb) on how to use the model.
+- See [train_evaluate.ipynb](train_evaluate.ipynb) for training a model from scratch.
+- See [train_cli.py](train_cli.py) for training a model from the command line:
     You can pass a config file
     ```bash
     python train_cli.py --config /path/to/config.yaml

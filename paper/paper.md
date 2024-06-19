@@ -35,8 +35,7 @@ bibliography: paper.bib
 
 # Summary
 The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, image registration, blood vessel segmentation, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox has been designed to be flexible and easy to use, thus helping to speed up research pipelines. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates main functionalities. 
-
-Find the toolbox at [github.com/berenslab/fundus_image_toolbox](https://github.com/berenslab/fundus_image_toolbox).
+Find the toolbox at [https://github.com/berenslab/fundus_image_toolbox](https://github.com/berenslab/fundus_image_toolbox).
 
 # Statement of need
 In ophthalmic research, retinal fundus images are often used as a resource for studying various eye diseases such as diabetic retinopathy, glaucoma and age-related macular degeneration. Consequently, there is a large amount of research on machine learning for fundus image analysis. However, many of the works do not publish their source code, and very few of them provide ready-to-use open source tools to the community.
@@ -51,7 +50,7 @@ The main functionalities of the Fundus Image Toolbox are:
 - Registration. Alignment of a fundus photograph to another fundus photograph of the same eye using SuperRetina: A keypoint-based deep learning model that produced registrations of at least acceptable quality in 98.5 % of the cases on the test split of the FIRE dataset [@liu2022].
 - Vessel segmentation. Segmentation of blood vessels in a fundus image using an ensemble of FR-U-Nets. The ensemble achieved an average Dice score of 0.887 on the test split of the FIVES dataset [@koehler2024].
 - Circle crop. Fastly center fundus images and crop to a circle [@fu2019].
-- Utilities. A collection of useful other tools for fundus image processing.
+
 
 ![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Vessel segmentation. (c.) Quality prediction. (d.) Registration.\label{fig:example}](fig.svg){ width=100% }
 

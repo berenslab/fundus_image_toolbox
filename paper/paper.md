@@ -13,17 +13,21 @@ tags:
 authors:
   - name: Julius Gervelmeyer
     orcid: 0009-0007-7286-0017
-    equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
+    equal-contrib: false
     affiliation: 1
   - name: Sarah Müller
     orcid: 0000-0003-1500-8673
-    equal-contrib: false # (This is how you can denote equal contributions between multiple authors)
+    equal-contrib: false
+    affiliation: 1
+  - name: Philipp Berens
+    orcid: 0000-0002-0199-4727
+    equal-contrib: false
     affiliation: 1
 affiliations:
  - name: Hertie Institute for AI in Brain Health, University of Tübingen, Tübingen, Germany
    index: 1
 
-date: 11 June 2024
+date: 20 June 2024
 bibliography: paper.bib
 ---
 
@@ -40,7 +44,6 @@ The Fundus Image Toolbox has been developed to address this need within the medi
 ![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Vessel segmentation. (c.) Quality prediction. (d.) Registration.\label{fig:example}](fig.svg){ width=100% }
 
 # Acknowledgements
-
-This project was supported by the Hertie Foundation. J.G. received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”.
+We thank Ziwei Huang for reviewing the package. This project was supported by the Hertie Foundation. JG received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting SM.
 
 # References

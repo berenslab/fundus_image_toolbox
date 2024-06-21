@@ -34,7 +34,7 @@ bibliography: paper.bib
 <!-- ![Fundus Image Toolbox Icon](../icon.svg) -->
 
 # Summary
-The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, image registration, blood vessel segmentation, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox has been designed to be flexible and easy to use, thus helping to speed up research pipelines. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates main functionalities. 
+The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, blood vessel segmentation, image registration, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox has been designed to be flexible and easy to use, thus helping to speed up research pipelines. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates main functionalities. 
 Find the toolbox at [https://github.com/berenslab/fundus_image_toolbox](https://github.com/berenslab/fundus_image_toolbox).
 
 # Statement of need
@@ -45,14 +45,14 @@ The Fundus Image Toolbox has been developed to address this need within the medi
 # Tools
 The main functionalities of the Fundus Image Toolbox are:
 
-- Quality prediction. We trained an ensemble of ResNets and EfficientNets on the combined DeepDRiD and DrimDB datasets [@deepdrid;@drimdb] to predict the gradeability of fundus images. Both datasets are publicly available. The model ensemble achieved an accuracy of 0.78 and an area under the receiver operating characteristic curve of 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.
-- Fovea and optic disc localization. Prediction of fovea and optic disc center coordinates using a multi-task EfficientNet model. We trained the model on the combined ADAM, REFUGE and IDRID datasets [@adam;@refuge;@idrid], which are publicly available. On our test split, the model achieved a mean distance to the fovea and optic disc targets of 0.88 % of the image size. This corresponds to a mean distance of 3,08 pixels in the 350 x 350 pixel images used for training and testing.
-- Registration. Alignment of a fundus photograph to another fundus photograph of the same eye using SuperRetina: A keypoint-based deep learning model that produced registrations of at least acceptable quality in 98.5 % of the cases on the test split of the FIRE dataset [@liu2022].
-- Vessel segmentation. Segmentation of blood vessels in a fundus image using an ensemble of FR-U-Nets. The ensemble achieved an average Dice score of 0.887 on the test split of the FIVES dataset [@koehler2024].
+- Quality prediction (\autoref{fig:example}a.). We trained an ensemble of ResNets and EfficientNets on the combined DeepDRiD and DrimDB datasets [@deepdrid;@drimdb] to predict the gradeability of fundus images. Both datasets are publicly available. The model ensemble achieved an accuracy of 0.78 and an area under the receiver operating characteristic curve of 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.
+- Fovea and optic disc localization (\autoref{fig:example}b.). Prediction of fovea and optic disc center coordinates using a multi-task EfficientNet model. We trained the model on the combined ADAM, REFUGE and IDRID datasets [@adam;@refuge;@idrid], which are publicly available. On our test split, the model achieved a mean distance to the fovea and optic disc targets of 0.88 % of the image size. This corresponds to a mean distance of 3,08 pixels in the 350 x 350 pixel images used for training and testing.
+- Vessel segmentation (\autoref{fig:example}c.). Segmentation of blood vessels in a fundus image using an ensemble of FR-U-Nets. The ensemble achieved an average Dice score of 0.887 on the test split of the FIVES dataset [@koehler2024].
+- Registration (\autoref{fig:example}d.). Alignment of a fundus photograph to another fundus photograph of the same eye using SuperRetina: A keypoint-based deep learning model that produced registrations of at least acceptable quality in 98.5 % of the cases on the test split of the FIRE dataset [@liu2022].
 - Circle crop. Fastly center fundus images and crop to a circle [@fu2019].
 
 
-![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Vessel segmentation. (c.) Quality prediction. (d.) Registration.\label{fig:example}](fig.svg){ width=100% }
+![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Quality prediction. (c.) Vessel segmentation. (d.) Registration.\label{fig:example}](fig2.svg){ width=100% }
 
 # Acknowledgements
 We thank Ziwei Huang for reviewing the package. This project was supported by the Hertie Foundation. JG received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting SM.

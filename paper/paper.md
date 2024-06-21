@@ -34,7 +34,7 @@ bibliography: paper.bib
 <!-- ![Fundus Image Toolbox Icon](../icon.svg) -->
 
 # Summary
-The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, blood vessel segmentation, image registration, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox has been designed to be flexible and easy to use, thus helping to speed up research pipelines. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates main functionalities. 
+The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, blood vessel segmentation, image registration, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox has been designed to be flexible and easy to use, thus helping to speed up research workflows. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates main functionalities. 
 Find the toolbox at [https://github.com/berenslab/fundus_image_toolbox](https://github.com/berenslab/fundus_image_toolbox).
 
 # Statement of need

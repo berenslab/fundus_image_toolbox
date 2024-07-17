@@ -32,12 +32,12 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
     ```
 
 ### Performance
-- On the test set of the combined dataset, the model achieves a mean distance to the fovea and optic disc targets (normalized to a value in [0,1]) of 0.0088. This corresponds to a distance of 3,08 pixels in the 350 x 350 pixel images used for training and testing.
-- Comparison of the above value to the winning model of the ADAM challenge wrt. the fovea localization task: The reported mean distance to the fovea target is 18.5538 pixels corresponds to a normalized distance of 0.0098*. Note that we did not evaluate on the ADAM test set, but on a combined dataset of ADAM, REFUGE and IDRID and that our multi-task model also predicts the optic disc center.
+- On the test set of the combined dataset, the model achieves a mean distance to the fovea and optic disc targets of 0.88 % of the image size. This corresponds to a distance of 3,08 pixels in the 350 x 350 pixel images used for training and testing.
+- Comparison of the above value to the winning model of the ADAM challenge wrt. the fovea localization task: The reported mean distance to the fovea target is 18.5538 pixels. This corresponds to a relative distance of 0.98 % of the image size*. Note that we did not evaluate on the ADAM test set, but on a combined dataset of ADAM, REFUGE and IDRID and that our multi-task model also predicts the optic disc center.
 
 - <details>
     <summary>*details</summary>
-    The ADAM dataset consists of 824 images sized 2124 x 2056 pixels and 376 images sized 1444 x 1444 pixels. The average width of a squared image would be 0.5 * ((824(2124 + 2056)+376(1444*2)) / 1200) = 1887.59 pixels. Hence, the normalized distance of the winning model of the ADAM challenge is 18.5538 pixels / 1887.59 pixels = 0.0098.
+    The ADAM dataset consists of 824 images sized 2124 x 2056 pixels and 376 images sized 1444 x 1444 pixels. The average side length of a squared image would be 0.5 * ((824(2124 + 2056)+376(1444*2)) / 1200) = 1887.59 pixels. Hence, the normalized distance of the winning model of the ADAM challenge is 18.5538 pixels / 1887.59 pixels = 0.0098.
     </details>
 
 ### Ref

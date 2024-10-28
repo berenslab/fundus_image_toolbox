@@ -1,16 +1,23 @@
-import os 
+import os
 import yaml
 from pprint import pprint
 from types import SimpleNamespace
-from fundus_quality_prediction import FundusQualityModel, FundusQualityLoader, MODELS_DIR
+from fundus_quality_prediction import (
+    FundusQualityModel,
+    FundusQualityLoader,
+    MODELS_DIR,
+)
 
 from argparse import ArgumentParser
 import sys
+
+
 class Parser(ArgumentParser):
     def error(self, message):
         sys.stderr.write("error: %s\n" % message)
         self.print_help()
         sys.exit(2)
+
 
 if __name__ == "__main__":
     parser = Parser()
@@ -24,9 +31,13 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--device", type=str, default="cuda:0")
     parser.add_argument("--seed", type=int, default=12345)
-    parser.add_argument("--balance_datasets", type=bool, default=True) # balances the ocurrence of samples from the different dataset origins without changing the total number of training samples
+    parser.add_argument(
+        "--balance_datasets", type=bool, default=True
+    )  # balances the ocurrence of samples from the different dataset origins without changing the total number of training samples
     parser.add_argument("--weight_decay", type=float, default=0.0)
-    parser.add_argument("--use_datasets", nargs="+", default=['drimdb', 'deepdrid-isbi2020']) # "all", 'areds', 'registration', 'drimdb', 'deepdrid-isbi2020'
+    parser.add_argument(
+        "--use_datasets", nargs="+", default=["drimdb", "deepdrid-isbi2020"]
+    )  # "all", 'areds', 'registration', 'drimdb', 'deepdrid-isbi2020'
     parser.add_argument("--batch_size", type=int, default=8)
 
     args = parser.parse_args()
@@ -36,7 +47,7 @@ if __name__ == "__main__":
         with open(args.config) as c:
             config = yaml.safe_load(c)
             pprint(config)
-    else: 
+    else:
         config = {}
         config["model_type"] = args.model_type
         config["epochs"] = args.epochs
@@ -55,14 +66,17 @@ if __name__ == "__main__":
 
     model = FundusQualityModel(config)
 
-    train_dataloader, val_dataloader, test_dataloader = FundusQualityLoader(config).get_dataloaders()
+    train_dataloader, val_dataloader, test_dataloader = FundusQualityLoader(
+        config
+    ).get_dataloaders()
 
     if TRAIN:
         model.train(train_dataloader, val_dataloader)
 
     else:
         print("Looking for latest model...")
-        dirs = os.listdir(MODELS_DIR)
+        # dirs = os.listdir(MODELS_DIR)
+        dirs = MODELS_DIR.iterdir()
         ckpt = sorted(dirs)[-1]
         model.load_checkpoint(ckpt)
 
@@ -72,7 +86,3 @@ if __name__ == "__main__":
     model.save_summary()
 
     # model.plot_grid(test_dataloader)
-
-
-
-

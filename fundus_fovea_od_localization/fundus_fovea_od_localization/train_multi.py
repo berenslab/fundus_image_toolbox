@@ -99,9 +99,8 @@ def load_model(
         config = yaml.safe_load(open(checkpoint_dir / "config.yaml", "r"))
         config = SimpleNamespace(**config)
 
-    if not MODELS_DIR in checkpoint_dir:
-        # checkpoint_dir = os.path.join(MODELS_DIR, checkpoint_dir)
-        checkpoint_dir = MODELS_DIR / checkpoint_dir
+    if not MODELS_DIR in checkpoint_dir.parts:
+        checkpoint_dir = Path(MODELS_DIR) / checkpoint_dir
 
     if config.csv_path is None:
         config.csv_path = DEFAULT_CSV_PATH

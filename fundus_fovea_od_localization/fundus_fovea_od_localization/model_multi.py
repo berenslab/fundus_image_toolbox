@@ -250,7 +250,9 @@ class ODFoveaModel:
             else:
                 raise FileNotFoundError(f"Checkpoint {self.checkpoint_path} not found")
         self.model.load_state_dict(
-            torch.load(self.checkpoint_path, map_location=self.device)
+            torch.load(
+                self.checkpoint_path, map_location=self.device, weights_only=True
+            )
         )
 
     def _get_model(self, type):

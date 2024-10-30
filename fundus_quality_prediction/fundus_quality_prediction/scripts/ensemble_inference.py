@@ -1,4 +1,5 @@
 import os
+import time
 import yaml
 import datetime
 import numpy as np
@@ -151,7 +152,6 @@ def ensemble_predict(
     preds = []
 
     if isinstance(image, list) and isinstance(image[0], str):
-        # Load images
         image = [any_to_tensor(i) for i in image]
 
     if (

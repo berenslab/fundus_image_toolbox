@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from types import SimpleNamespace
 from pathlib import Path
 
@@ -42,7 +43,10 @@ class FundusQualityDataset(torch.utils.data.Dataset):
         seed_everything(self.config.seed, silent=True)
         self.verbose = verbose
         self.normalize = normalize
-        self.data_dirs = {"drimdb": drimdb_dir, "deepdrid-isbi2020": deepdrid_dir}
+        self.data_dirs = {
+            "drimdb": Path(drimdb_dir),
+            "deepdrid-isbi2020": Path(deepdrid_dir),
+        }
 
         self.data = self._load_data()
 

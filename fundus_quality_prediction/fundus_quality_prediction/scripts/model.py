@@ -182,7 +182,9 @@ class FundusQualityModel:
         self.checkpoint_path = dir / f"{self.config.model_type}_best.pt"
 
         self.model.load_state_dict(
-            torch.load(self.checkpoint_path, map_location=self.config.device)
+            torch.load(
+                self.checkpoint_path, map_location=self.config.device, weights_only=True
+            )
         )
         self.model.to(self.config.device)
 

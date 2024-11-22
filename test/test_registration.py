@@ -12,8 +12,8 @@ from cv2 import BFMatcher
 
 DIR = os.path.join(os.path.dirname(__file__))
 
-fundus1_path = os.path.join(DIR, "..", "fundus1.jpg")
-fundus2_path = os.path.join(DIR, "..", "fundus2.jpg")
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
+fundus2_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus2.jpg")
 
 
 class TestRegistration(unittest.TestCase):

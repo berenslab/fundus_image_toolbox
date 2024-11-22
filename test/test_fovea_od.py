@@ -7,7 +7,7 @@ from torchvision.transforms import Compose, ToTensor, Resize, CenterCrop
 from fundus_image_toolbox.fovea_od_localization import ODFoveaModel, load_fovea_od_model
 
 DIR = os.path.join(os.path.dirname(__file__))
-fundus1_path = os.path.join(DIR, "..", "fundus1.jpg")
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
 DEVICE = "cpu"
 
 

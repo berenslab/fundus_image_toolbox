@@ -6,9 +6,12 @@ import cv2
 import torch
 from torchvision.transforms.functional import to_tensor
 from fundus_image_toolbox.utilities import ImageTorchUtils as Img
+import os
 
-fundus1_path = "fundus1.jpg"
-fundus2_path = "fundus2.jpg"
+DIR = os.path.dirname(__file__)
+
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
+fundus2_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus2.jpg")
 
 fundus1_plt = plt.imread(fundus1_path)
 fundus1_img = Image.open(fundus1_path)

@@ -14,7 +14,7 @@ from fundus_image_toolbox.vessel_segmentation import (
 
 DIR = os.path.join(os.path.dirname(__file__))
 
-fundus1_path = os.path.join(DIR, "..", "fundus1.jpg")
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
 
 
 class TestVesselSegmentation(unittest.TestCase):

@@ -10,8 +10,8 @@ from fundus_image_toolbox.utilities import ImageTorchUtils as Img
 
 DIR = os.path.join(os.path.dirname(__file__))
 
-fundus1_path = os.path.join(DIR, "..", "fundus1.jpg")
-fundus2_path = os.path.join(DIR, "..", "fundus2.jpg")
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
+fundus2_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus2.jpg")
 
 fundus1_plt = plt.imread(fundus1_path)
 fundus1_img = Image.open(fundus1_path)

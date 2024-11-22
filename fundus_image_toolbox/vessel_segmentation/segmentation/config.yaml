@@ -1,0 +1,5 @@
+uncertainty_type: 'entropy'
+no_patches: 6
+dice_thresh: 0.85
+fg_thresh: 0.085
+patch_size: 81 # must be uneven!

@@ -1,0 +1,12 @@
+balance_datasets: true
+batch_size: 8
+device: cuda:1
+epochs: 25
+img_size: 350
+lr: 0.0001
+model_type: efficientnet-b3
+seed: 12345
+use_datasets:
+- drimdb
+- deepdrid-isbi2020
+weight_decay: 0.0

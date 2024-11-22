@@ -212,8 +212,7 @@ def load_model(config: dict = None):
 
     model = SuperRetina().to(device)
     model.load_state_dict(
-        torch.load(config["model_save_path"], map_location=device)["net"],
-        weights_only=True,
+        torch.load(config["model_save_path"], map_location=device)["net"]
     )
     model.eval()
 

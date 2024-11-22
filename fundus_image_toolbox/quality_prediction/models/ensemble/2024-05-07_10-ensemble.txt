@@ -1,0 +1,45 @@
+# Results for 10-ensemble trained on ['drimdb', 'deepdrid-isbi2020'] 
+#  of models ['2024-05-03 14-38-34', '2024-05-03 16-23-29', '2024-05-03 14-58-37', '2024-05-03 14-25-19', '2024-05-03 15-28-00', '2024-05-03 14-25-42', '2024-05-03 15-52-56', '2024-05-03 15-04-29', '2024-05-06 20-25-14', '2024-05-03 15-59-31']
+#  of types ['resnet34', 'efficientnet-b0', 'resnet152', 'resnet101', 'resnet50', 'resnet50', 'efficientnet-b1', 'resnet101', 'resnet152', 'efficientnet-b3']
+#  selected by best test accuracies on ['drimdb', 'deepdrid-isbi2020'] test splits
+# All results except for AUROC and AUPRC rely on a threshold of 0.5.
+
+# -
+# Data test splits: ['drimdb', 'deepdrid-isbi2020']
+# ['drimdb', 'deepdrid-isbi2020']
+# Acc: 0.7968397291196389
+# AUROC: 0.8681975913451725
+# AUPRC: 0.8757315026918165
+# F1: 0.7783251231527094
+# Precision: 0.8186528497409327
+# Recall: 0.7417840375586855
+
+# -
+# Data test splits: ['areds', 'registration']
+# ['areds', 'registration']
+# Acc: 0.7380952380952381
+# AUROC: 0.9375
+# AUPRC: 0.9113976201482652
+# F1: 0.56
+# Precision: 1.0
+# Recall: 0.3888888888888889
+
+# -
+# Data test splits: ['drimdb']
+# ['drimdb']
+# Acc: 1.0
+# AUROC: 1.0
+# AUPRC: 1.0
+# F1: 1.0
+# Precision: 1.0
+# Recall: 1.0
+
+# -
+# Data test splits: ['deepdrid-isbi2020']
+# ['deepdrid-isbi2020']
+# Acc: 0.775
+# AUROC: 0.8384935768767563
+# AUPRC: 0.8388254319320166
+# F1: 0.7471910112359551
+# Precision: 0.7916666666666666
+# Recall: 0.7074468085106383

@@ -13,11 +13,13 @@ from fundus_image_toolbox.quality_prediction import (
 
 DIR = os.path.join(os.path.dirname(__file__))
 
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
+
 
 class TestQualityPrediction(unittest.TestCase):
     def setUp(self):
         # Initialize test variables here
-        self.image_path = os.path.join(DIR, "..", "fundus1.jpg")
+        self.image_path = fundus1_path
         self.transforms = Compose([ToTensor(), Resize((350, 350))])
         self.image = self.transforms(Image.open(self.image_path)).unsqueeze(0)
         self.model = load_quality_ensemble(device="cpu")

@@ -1,0 +1,20 @@
+2024-05-03 14-55-03
+model_type: resnet34
+epochs: 25
+img_size: 350
+lr: 0.0001
+weight_decay: 0.01
+device: cuda:0
+seed: 12345
+balance_datasets: True
+use_datasets: ['drimdb', 'deepdrid-isbi2020']
+batch_size: 8
+
+Best epoch: 17
+Best val loss: 0.5265205286310187
+Best val acc: 0.734375
+test performance:
+acc: 0.7878
+auroc: 0.7844
+auprc: 0.7277
+

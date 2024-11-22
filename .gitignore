@@ -32,12 +32,12 @@ test/masks/
 
 # Submodule dependencies (Repos, weights, data)
 ######################
-fundus_fovea_od_localization/models/*
-fundus_quality_prediction/models/*
-fundus_quality_prediction/data/*
-fundus_vessel_segmentation/segmentation/*
+fovea_od_localization/models/*
+quality_prediction/models/*
+quality_prediction/data/*
+vessel_segmentation/segmentation/*
 *.egg-info
-*/fundus.jpg
+fundus.jpg
 
 
 

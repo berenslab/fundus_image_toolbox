@@ -5,14 +5,15 @@ from PIL import Image
 import cv2
 import torch
 from torchvision.transforms.functional import to_tensor
-from fundus_utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utilities import ImageTorchUtils as Img
 
-fundus1_path = 'fundus1.jpg'
-fundus2_path = 'fundus2.jpg'
+fundus1_path = "fundus1.jpg"
+fundus2_path = "fundus2.jpg"
 
 fundus1_plt = plt.imread(fundus1_path)
 fundus1_img = Image.open(fundus1_path)
 fundus1_cv2 = cv2.imread(fundus1_path)
+
 
 class TestImageTorchUtils(unittest.TestCase):
     def _to_tensor(self):
@@ -23,9 +24,14 @@ class TestImageTorchUtils(unittest.TestCase):
         outs = [Img(img).to_tensor().img for img in imgs_rgb]
 
         # Convert to rgb tensor from bgr image
-        bgr_out = Img(fundus1_cv2).to_tensor(from_cspace='bgr').img
+        bgr_out = Img(fundus1_cv2).to_tensor(from_cspace="bgr").img
         # Alternatively, use a sequence of calls:
-        bgr_out = Img(fundus1_cv2).to_tensor().to_cspace(from_cspace='bgr', to_cspace='rgb').img
+        bgr_out = (
+            Img(fundus1_cv2)
+            .to_tensor()
+            .to_cspace(from_cspace="bgr", to_cspace="rgb")
+            .img
+        )
         outs.append(bgr_out)
 
         assert all([torch.equal(outs[0], out) for out in outs[1:]])
@@ -36,16 +42,25 @@ class TestImageTorchUtils(unittest.TestCase):
         img_bgr = fundus1_cv2
 
         # Convert from rgb to bgr
-        outs = [Img(img).to_tensor().to_cspace(from_cspace='rgb', to_cspace='bgr').img for img in imgs_rgb]
+        outs = [
+            Img(img).to_tensor().to_cspace(from_cspace="rgb", to_cspace="bgr").img
+            for img in imgs_rgb
+        ]
 
         assert all([torch.equal(outs[0], out) for out in outs[1:]])
         assert torch.equal(Img(img_bgr).to_tensor().img, outs[0])
 
         # Convert to grey scale
-        outs = [Img(img).to_tensor().to_cspace(from_cspace='rgb', to_cspace='grey').img for img in imgs_rgb]
+        outs = [
+            Img(img).to_tensor().to_cspace(from_cspace="rgb", to_cspace="grey").img
+            for img in imgs_rgb
+        ]
 
         assert all([torch.equal(outs[0], out) for out in outs[1:]])
-        assert torch.equal(Img(img_bgr).to_tensor().to_cspace(from_cspace='bgr', to_cspace='grey').img, outs[0])
+        assert torch.equal(
+            Img(img_bgr).to_tensor().to_cspace(from_cspace="bgr", to_cspace="grey").img,
+            outs[0],
+        )
 
     def _set_channel_dim(self):
         # Test set_channel_dim function
@@ -56,7 +71,7 @@ class TestImageTorchUtils(unittest.TestCase):
 
         # Check if the channel dimension is the last dimension
         assert all([out.shape[-1] == 3 for out in outs])
-    
+
     def _to_pil(self):
         # Test to_pil function
         imgs = [fundus1_path, fundus1_plt, fundus1_img, fundus1_cv2]
@@ -114,14 +129,24 @@ class TestImageTorchUtils(unittest.TestCase):
         ndarray_fundus_cv2 = np.array(list_fundus_cv2)
 
         # Apply the to_batch function
-        outs = [Img(fundus).to_batch().img for fundus in [list_fundus_plt, list_fundus_img, list_fundus_cv2]]
-        outs += [Img(fundus).to_batch().img for fundus in [ndarray_fundus_plt, ndarray_fundus_img, ndarray_fundus_cv2]]
+        outs = [
+            Img(fundus).to_batch().img
+            for fundus in [list_fundus_plt, list_fundus_img, list_fundus_cv2]
+        ]
+        outs += [
+            Img(fundus).to_batch().img
+            for fundus in [ndarray_fundus_plt, ndarray_fundus_img, ndarray_fundus_cv2]
+        ]
 
         # Check if the output is a tensor
         for out in outs:
             assert isinstance(out, torch.Tensor)
-            assert out.shape[0] == len(batch_fundus) and out.shape[1] == 3 and isinstance(out, torch.Tensor)
-        
+            assert (
+                out.shape[0] == len(batch_fundus)
+                and out.shape[1] == 3
+                and isinstance(out, torch.Tensor)
+            )
+
         # Single image to batch
         out = Img(fundus1_img).to_batch().img
         assert len(out.shape) == 4 and isinstance(out, torch.Tensor)
@@ -132,8 +157,15 @@ class TestImageTorchUtils(unittest.TestCase):
 
     def _combi(self):
         # Test the to_cspace and set_channel_dim function
-        out = Img(fundus1_plt).to_tensor().to_cspace(from_cspace="rgb", to_cspace="gray").set_channel_dim(-1).img
+        out = (
+            Img(fundus1_plt)
+            .to_tensor()
+            .to_cspace(from_cspace="rgb", to_cspace="gray")
+            .set_channel_dim(-1)
+            .img
+        )
         assert out.shape[-1] == 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

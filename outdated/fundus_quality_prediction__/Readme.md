@@ -1,7 +1,7 @@
 ## A quality prediction model for fundus images (gradeable vs. ungradeable)
 Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and DrimDB data. For DrimDB images, we considered out-of-domain images such as photographs of the outer eye as ungradeable.
 
-<img src="./fundus_quality_prediction/ex.png" alt="Example image" width="800"/>
+<img src="./quality_prediction/ex.png" alt="Example image" width="800"/>
 
 <br>
 [x] Works on tensor images <br>

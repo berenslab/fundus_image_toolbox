@@ -9,7 +9,10 @@ import torch
 
 from PIL import Image
 from torchvision import transforms
-from fundus_utilities import multilevel_3way_split as split3, seed_everything
+from fundus_image_toolbox.utilities import (
+    multilevel_3way_split as split3,
+    seed_everything,
+)
 
 from .transforms import get_transforms
 

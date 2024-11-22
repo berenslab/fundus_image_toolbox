@@ -16,7 +16,7 @@ from torchvision import models
 from torchvision.ops import box_iou
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 from torchvision.transforms.functional import to_pil_image
-from fundus_utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utilities import ImageTorchUtils as Img
 
 from .transforms_multi import ToPILImage
 from .default import DEFAULT_MODEL, MODELS_DIR

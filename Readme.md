@@ -7,31 +7,31 @@
 <details>
 <summary><b>Fundus quality prediction</b></summary>
 A quality prediction model for fundus images (gradeable vs. ungradeable) based on an ensemble of 10 models (ResNets and EfficientNets) trained on DeepDRiD and DrimDB data. Can be just used for prediction or retrained. 
-<br><a href="./fundus_quality_prediction/">Read more</a>. <br>
+<br><a href="./quality_prediction/">Read more</a>. <br>
 
-<img src="./fundus_quality_prediction/fundus_quality_prediction/ex.png" alt="Example image" width="800"/>
+<img src="./quality_prediction/ex.png" alt="Example image" width="800"/>
 </details>
 
 <details>
 <summary><b>Fundus fovea and optic disc localization</b></summary>
-A model to predict the center coordinates of the fovea and the optic disc in fundus images based on a multi-task EfficientNet trained on ADAM, REFUGE and IDRID datasets. Can be just used for prediction or retrained. <br><a href="./fundus_fovea_od_localization/">Read more</a>. <br>
+A model to predict the center coordinates of the fovea and the optic disc in fundus images based on a multi-task EfficientNet trained on ADAM, REFUGE and IDRID datasets. Can be just used for prediction or retrained. <br><a href="./fovea_od_localization/">Read more</a>. <br>
 
-<img src="./fundus_fovea_od_localization/fundus_fovea_od_localization/ex1.png" alt="Example image" width="800"/>
+<img src="./fovea_od_localization/ex1.png" alt="Example image" width="800"/>
 <br>Example predictions from the external dataset "DeepDRiD".
 </details>
 
 <details>
 <summary><b>Fundus registration</b></summary>
-Align a fundus photograph to another fundus photograph from the same eye using SuperRetina (<a href="https://arxiv.org/abs/2207.07932">Liu et al., 2022</a>). Image registration also goes by the terms image alignment and image matching. <br><a href="./fundus_registration/">Read more</a>. <br>
+Align a fundus photograph to another fundus photograph from the same eye using SuperRetina (<a href="https://arxiv.org/abs/2207.07932">Liu et al., 2022</a>). Image registration also goes by the terms image alignment and image matching. <br><a href="./registration/">Read more</a>. <br>
 
-<img src="./fundus_registration/fundus_registration/image2.png" alt="Example image" width="800"/>
+<img src="./registration/image2.png" alt="Example image" width="800"/>
 </details>
 
 <details>
 <summary><b>Fundus vessel segmentation</b></summary>
-Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets trained on the FIVES dataset (<a href="https://openreview.net/forum?id=DDHRGHfwji">Köhler et al., 2024</a>). <br><a href="./fundus_vessel_segmentation/">Read more</a>. <br>
+Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets trained on the FIVES dataset (<a href="https://openreview.net/forum?id=DDHRGHfwji">Köhler et al., 2024</a>). <br><a href="./vessel_segmentation/">Read more</a>. <br>
 
-<img src="./fundus_vessel_segmentation/fundus_vessel_segmentation/exs.png" alt="Example image" width="800"/>
+<img src="./vessel_segmentation/exs.png" alt="Example image" width="800"/>
 
 
 </details>
@@ -39,14 +39,14 @@ Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets train
 <details>
 <summary><b>Fundus circle crop</b></summary>
 Fastly crop fundus images to a circle and center it (<a href="http://dx.doi.org/10.1007/978-3-030-32239-7_6">Fu et al., 2019</a>).
-<br><a href="./fundus_circle_crop/">Read more</a>. <br>
+<br><a href="./circle_crop/">Read more</a>. <br>
 
-<img src="./fundus_circle_crop/fundus_circle_crop/ex.png" alt="Example image" width="500"/>
+<img src="./circle_crop/ex.png" alt="Example image" width="500"/>
 </details>
 
 <details>
 <summary><b>Fundus utilities</b></summary>
-A collection of additional utilities that can come in handy when working with fundus images.<br><a href="./fundus_utilities/">Read more</a>. <br>
+A collection of additional utilities that can come in handy when working with fundus images.<br><a href="./utilities/">Read more</a>. <br>
 
 - ImageTorchUtils: Image manipulation based on Pytorch tensors.
 - Balancing: A script to balance a torch dataset by both oversampling the minority class and undersampling the majority class from [imbalanced-dataset-sampler](https://github.com/ufoym/imbalanced-dataset-sampler/).
@@ -69,19 +69,22 @@ fundus1, fundus2 = "path/to/fundus1.jpg", "path/to/fundus2.jpg"
 ```
 
 ```python
-from fundus_circle_crop import circle_crop
-fundus1_cropped = circle_crop(fundus1, size=(512,512)) # > np.ndarray (512, 512, 3) uint8
+import fundus_image_toolbox as fit
+from fit.circle_crop import crop
+fundus1_cropped = crop(fundus1, size=(512,512)) # > np.ndarray (512, 512, 3) uint8
 ```
 
 ```python
-from fundus_fovea_od_localization import load_fovea_od_model, plot_coordinates
+import fundus_image_toolbox as fit
+from fit.fovea_od_localization import load_fovea_od_model, plot_coordinates
 model, _ = load_fovea_od_model(device="cuda:0")
 coordinates = model.predict([fundus1, fundus2]) # > List[np.ndarray[fovea_x,fovea_y,od_x,od_y], ...]
 plot_coordinates([fundus1, fundus2], coordinates)
 ```
 
 ```python
-from fundus_quality_prediction import load_quality_ensemble, ensemble_predict_quality, plot_quality
+import fundus_image_toolbox as fit
+from fit.quality_prediction import load_quality_ensemble, ensemble_predict_quality, plot_quality
 ensemble = load_quality_ensemble(device="cuda:0")
 confs, labels = ensemble_predict_quality(ensemble, [fundus1, fundus2], threshold=0.5) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
 for img, conf, label in zip([fundus1, fundus2], confs, labels):
@@ -89,7 +92,8 @@ for img, conf, label in zip([fundus1, fundus2], confs, labels):
 ```
 
 ```python
-from fundus_registration import load_registration_model, register, DEFAULT_CONFIG
+import fundus_image_toolbox as fit
+from fit.registration import load_registration_model, register, DEFAULT_CONFIG
 model, matcher = load_registration_model(config)
 
 moving_image_aligned = register(
@@ -104,7 +108,8 @@ moving_image_aligned = register(
 ```
 
 ```python
-from fundus_vessel_segmentation import load_segmentation_ensemble, ensemble_predict_segmentation, plot_masks
+import fundus_image_toolbox as fit
+from fit.vessel_segmentation import load_segmentation_ensemble, ensemble_predict_segmentation, plot_masks
 ensemble = load_segmentation_ensemble(device=device)
 vessel_masks = ensemble_predict_segmentation(ensemble, [fundus1, fundus2], threshold=0.5, size=(512, 512)) # > np.ndarray[np.ndarray[h_in, w_in], ...] float64
 plot_masks([fundus1, fundus2], vessel_masks)
@@ -114,7 +119,7 @@ plot_masks([fundus1, fundus2], vessel_masks)
 <p style="font-size:1.5em;"><b>Installation</b></p> -->
 ### Installation
 
-<small>Use Python version 3.9.5 as <i>fundus_vessel_segmentation</i> requires versions <3.10.</small><br> 
+<small>Use Python version 3.9.5 as <i>vessel_segmentation</i> requires versions <3.10.</small><br> 
 
 #### 1) Create a virtual environment <br>
 ```bash
@@ -122,18 +127,18 @@ conda create --name fundus_image_toolbox python=3.9.5 pip
 conda activate fundus_image_toolbox
 ```
 
-#### 2a) Install the toolbox <br>
+#### 2) Install the toolbox <br>
 ```bash
 pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```
 
--or-
+<!-- -or- -->
 
-#### 2b) Install parts of the toolbox
+<!-- #### 2b) Install parts of the toolbox
 Replace `<subpackage>` in the following command with the subfolder name of the desired package (i.e., `fundus_quality_prediction`, `fundus_fovea_od_localization`, `fundus_registration`, `fundus_vessel_segmentation`, `fundus_circle_crop`, or `fundus_utilities`) and run:
 ```bash
 pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
-```
+``` -->
 
 ### Contribute
 You are very welcome to contribute to the toolbox. Please raise an issue or create a pull request to do so. Please feel free to contact us if you have any questions or need help via julius.gervelmeyer [at] uni-tuebingen.de.

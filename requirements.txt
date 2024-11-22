@@ -1,4 +1,4 @@
-bunch>=1.0.1 # bunch in fundus_vessel_segmentation prevents a python version >= 3.10
+bunch>=1.0.1 # bunch in vessel_segmentation prevents a python version >= 3.10
 captum>=0.7.0
 gdown
 imgaug>=0.4.0

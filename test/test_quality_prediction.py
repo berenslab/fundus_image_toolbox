@@ -4,14 +4,20 @@ import numpy as np
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Resize
-from fundus_quality_prediction import load_quality_ensemble, ensemble_predict_quality, plot_quality, FundusQualityModel
+from fundus_image_toolbox.quality_prediction import (
+    load_quality_ensemble,
+    ensemble_predict_quality,
+    plot_quality,
+    FundusQualityModel,
+)
 
 DIR = os.path.join(os.path.dirname(__file__))
+
 
 class TestQualityPrediction(unittest.TestCase):
     def setUp(self):
         # Initialize test variables here
-        self.image_path = os.path.join(DIR, '..', 'fundus1.jpg')
+        self.image_path = os.path.join(DIR, "..", "fundus1.jpg")
         self.transforms = Compose([ToTensor(), Resize((350, 350))])
         self.image = self.transforms(Image.open(self.image_path)).unsqueeze(0)
         self.model = load_quality_ensemble(device="cpu")
@@ -31,5 +37,6 @@ class TestQualityPrediction(unittest.TestCase):
         # Test the plot_quality function
         plot_quality(self.image.squeeze(), 0.5, 1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

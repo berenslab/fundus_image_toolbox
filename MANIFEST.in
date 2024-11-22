@@ -2,4 +2,4 @@ include Readme.md
 include requirements.txt
 include fundus1.jpg
 include fundus2.jpg
-include fundus_fovea_od_localization/data/ADAM+IDRID+REFUGE_df.csv
+include od_localization/data/ADAM+IDRID+REFUGE_df.csv

@@ -2,7 +2,7 @@ import os
 import yaml
 from pprint import pprint
 from types import SimpleNamespace
-from fundus_quality_prediction import (
+from fundus_image_toolbox.quality_prediction import (
     FundusQualityModel,
     FundusQualityLoader,
     MODELS_DIR,

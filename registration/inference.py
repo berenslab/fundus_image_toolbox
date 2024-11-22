@@ -11,7 +11,7 @@ from PIL import Image
 import yaml
 import pandas as pd
 import pickle
-from fundus_utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utilities import ImageTorchUtils as Img
 
 from .SuperRetina import (
     pre_processing,

@@ -1,20 +1,33 @@
-import os 
+import os
 from setuptools import setup, find_packages
 
 THIS_REPO = "https://github.com/berenslab/fundus_image_toolbox"
 ROOT = os.path.join(os.path.dirname(__file__))
-SUBMODULES = [f for f in os.listdir(ROOT) if os.path.isdir(f) and not f.startswith('.') and not f.startswith('__') and not "egg" in f and not "test" in f]
+SUBMODULES = [
+    f
+    for f in os.listdir(ROOT)
+    if os.path.isdir(f)
+    and not f.startswith(".")
+    and not f.startswith("__")
+    and not "egg" in f
+    and not "test" in f
+]
 
-with open(os.path.join(ROOT,"Readme.md"), "r", encoding='utf8') as f:
+with open(os.path.join(ROOT, "Readme.md"), "r", encoding="utf8") as f:
     long_description = f.read()
 
-with open(os.path.join(ROOT,"requirements.txt")) as f:
+with open(os.path.join(ROOT, "requirements.txt")) as f:
     required = f.read().splitlines()
 
 # Add subfolders as dependencies
-submodules_required = [f"{submodule} @ git+{THIS_REPO}#egg={submodule}&subdirectory={submodule}" for submodule in SUBMODULES]
+# TODO remove temporary branch
+branch_name = "main"
+submodules_required = [
+    f"{submodule} @ git+{THIS_REPO}@{branch_name}#egg={submodule}&subdirectory={submodule}"
+    for submodule in SUBMODULES
+]
 
-# Include all subpackages. 
+# Include all subpackages.
 # - as pip dependencies: use install_requires=required+submodules_required, packages=[], package_dir={}
 # - from local subdirectories: use find_packages() and to prevent extra import
 #   hierarchy, add an __init__.py into every outer subpackage folder and import the functions there.
@@ -25,16 +38,13 @@ setup(
     version="0.0.1",
     author="Julius Gervelmeyer et al.",
     author_email="Julius.Gervelmeyer@uni-tuebingen.de",
-    description=long_description.split('\n')[0],
+    description=long_description.split("\n")[0],
     long_description=long_description,
     long_description_content_type="text/markdown",
     # url=None,
     packages=[],
     install_requires=required + submodules_required,
-    package_dir={'': ROOT},
-    python_requires='>=3.9.0, <3.10',
+    package_dir={"": ROOT},
+    python_requires=">=3.9.0, <3.10",
     include_package_data=True,
 )
-
-
-

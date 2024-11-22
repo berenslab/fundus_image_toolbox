@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 from fundus_image_toolbox.circle_crop import crop
 
 DIR = os.path.join(os.path.dirname(__file__))
+fundus1_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus1.jpg")
 
 
 class TestCircleCrop(unittest.TestCase):
     def setUp(self):
-        self.image_path = os.path.join(DIR, "..", "fundus1.jpg")
+        self.image_path = fundus1_path
         self.image = plt.imread(self.image_path)
         self.size = (100, 100)
         self.shape = self.size + (3,)

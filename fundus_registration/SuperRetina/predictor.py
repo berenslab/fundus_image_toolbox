@@ -5,8 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torchvision import transforms
 
-from .common.common_util import pre_processing, simple_nms, remove_borders, \
-    sample_keypoint_desc
+from .common.common_util import (
+    pre_processing,
+    simple_nms,
+    remove_borders,
+    sample_keypoint_desc,
+)
 from .model.super_retina import SuperRetina
 
 from PIL import Image
@@ -16,37 +20,38 @@ import os
 class Predictor:
     def __init__(self, config):
 
-        predict_config = config['PREDICT']
+        predict_config = config["PREDICT"]
 
-        device = predict_config['device']
+        device = predict_config["device"]
         device = torch.device(device if torch.cuda.is_available() else "cpu")
 
-        model_save_path = predict_config['model_save_path']
-        self.nms_size = predict_config['nms_size']
-        self.nms_thresh = predict_config['nms_thresh']
+        model_save_path = predict_config["model_save_path"]
+        self.nms_size = predict_config["nms_size"]
+        self.nms_thresh = predict_config["nms_thresh"]
         self.scale = 8
-        self.knn_thresh = predict_config['knn_thresh']
+        self.knn_thresh = predict_config["knn_thresh"]
 
         self.image_width = None
         self.image_height = None
 
-        self.model_image_width = predict_config['model_image_width']
-        self.model_image_height = predict_config['model_image_height']
+        self.model_image_width = predict_config["model_image_width"]
+        self.model_image_height = predict_config["model_image_height"]
 
-        checkpoint = torch.load(model_save_path, map_location=device)
+        checkpoint = torch.load(model_save_path, map_location=device, weights_only=True)
         model = SuperRetina()
-        model.load_state_dict(checkpoint['net'])
+        model.load_state_dict(checkpoint["net"])
         model.to(device)
         model.eval()
         self.device = device
         self.model = model
         self.knn_matcher = cv2.BFMatcher(cv2.NORM_L2)
 
-        self.trasformer = transforms.Compose([
-            transforms.Resize((self.model_image_height, self.model_image_width)),
-            transforms.ToTensor(),
-
-        ])
+        self.trasformer = transforms.Compose(
+            [
+                transforms.Resize((self.model_image_height, self.model_image_width)),
+                transforms.ToTensor(),
+            ]
+        )
 
     def image_read(self, query_path, refer_path, query_is_image=False):
         if query_is_image:
@@ -69,7 +74,9 @@ class Predictor:
 
         return query_image, refer_image
 
-    def draw_result(self, query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status):
+    def draw_result(
+        self, query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status
+    ):
         def drawMatches(imageA, imageB, kpsA, kpsB, matches, status):
             # initialize the output visualization image
             (hA, wA) = imageA.shape[:2]
@@ -99,12 +106,14 @@ class Predictor:
         query_np = np.array([kp.pt for kp in cv_kpts_query])
         refer_np = np.array([kp.pt for kp in cv_kpts_refer])
         refer_np[:, 0] += query_image.shape[1]
-        matched_image = drawMatches(query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status)
+        matched_image = drawMatches(
+            query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status
+        )
         plt.figure(dpi=300)
-        plt.scatter(query_np[:, 0], query_np[:, 1], s=1, c='r')
-        plt.scatter(refer_np[:, 0], refer_np[:, 1], s=1, c='r')
-        plt.axis('off')
-        plt.title('Match Result, #goodMatch: {}'.format(status.sum()))
+        plt.scatter(query_np[:, 0], query_np[:, 1], s=1, c="r")
+        plt.scatter(refer_np[:, 0], refer_np[:, 1], s=1, c="r")
+        plt.axis("off")
+        plt.title("Match Result, #goodMatch: {}".format(status.sum()))
         plt.imshow(cv2.cvtColor(matched_image, cv2.COLOR_BGR2RGB))
         plt.show()
         plt.close()
@@ -121,41 +130,56 @@ class Predictor:
         b, _, h, w = detector_pred.shape
         scores = scores.reshape(-1, h, w)
 
-        keypoints = [
-            torch.nonzero(s > self.nms_thresh)
-            for s in scores]
+        keypoints = [torch.nonzero(s > self.nms_thresh) for s in scores]
 
         scores = [s[tuple(k.t())] for s, k in zip(scores, keypoints)]
 
         # Discard keypoints near the image borders
-        keypoints, scores = list(zip(*[
-            remove_borders(k, s, 4, h, w)
-            for k, s in zip(keypoints, scores)]))
+        keypoints, scores = list(
+            zip(*[remove_borders(k, s, 4, h, w) for k, s in zip(keypoints, scores)])
+        )
 
         keypoints = [torch.flip(k, [1]).float().data for k in keypoints]
 
-        descriptors = [sample_keypoint_desc(k[None], d[None], 8)[0].cpu()
-                       for k, d in zip(keypoints, descriptor_pred)]
+        descriptors = [
+            sample_keypoint_desc(k[None], d[None], 8)[0].cpu()
+            for k, d in zip(keypoints, descriptor_pred)
+        ]
         keypoints = [k.cpu() for k in keypoints]
         return keypoints, descriptors
 
     def match(self, query_path, refer_path, show=False, query_is_image=False):
-        query_image, refer_image = self.image_read(query_path, refer_path, query_is_image)
+        query_image, refer_image = self.image_read(
+            query_path, refer_path, query_is_image
+        )
         query_tensor = self.trasformer(Image.fromarray(query_image))
         refer_tensor = self.trasformer(Image.fromarray(refer_image))
 
         keypoints, descriptors = self.model_run_pair(query_tensor, refer_tensor)
 
         query_keypoints, refer_keypoints = keypoints[0], keypoints[1]
-        query_desc, refer_desc = descriptors[0].permute(1, 0).numpy(), descriptors[1].permute(1, 0).numpy()
+        query_desc, refer_desc = (
+            descriptors[0].permute(1, 0).numpy(),
+            descriptors[1].permute(1, 0).numpy(),
+        )
 
         # mapping keypoints to scaled keypoints
-        cv_kpts_query = [cv2.KeyPoint(int(i[0] / self.model_image_width * self.image_width),
-                                      int(i[1] / self.model_image_height * self.image_height), 30)
-                         for i in query_keypoints]
-        cv_kpts_refer = [cv2.KeyPoint(int(i[0] / self.model_image_width * self.image_width),
-                                      int(i[1] / self.model_image_height * self.image_height), 30)
-                         for i in refer_keypoints]
+        cv_kpts_query = [
+            cv2.KeyPoint(
+                int(i[0] / self.model_image_width * self.image_width),
+                int(i[1] / self.model_image_height * self.image_height),
+                30,
+            )
+            for i in query_keypoints
+        ]
+        cv_kpts_refer = [
+            cv2.KeyPoint(
+                int(i[0] / self.model_image_width * self.image_width),
+                int(i[1] / self.model_image_height * self.image_height),
+                30,
+            )
+            for i in refer_keypoints
+        ]
 
         goodMatch = []
         status = []
@@ -172,12 +196,20 @@ class Predictor:
             pass
 
         if show:
-            self.draw_result(query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, np.array(status))
+            self.draw_result(
+                query_image,
+                refer_image,
+                cv_kpts_query,
+                cv_kpts_refer,
+                matches,
+                np.array(status),
+            )
         return goodMatch, cv_kpts_query, cv_kpts_refer, query_image, refer_image
 
     def compute_homography(self, query_path, refer_path, query_is_image=False):
-        goodMatch, cv_kpts_query, cv_kpts_refer, raw_query_image, raw_refer_image = \
+        goodMatch, cv_kpts_query, cv_kpts_refer, raw_query_image, raw_refer_image = (
             self.match(query_path, refer_path, query_is_image=query_is_image)
+        )
         H_m = None
         inliers_num_rate = 0
 
@@ -198,12 +230,19 @@ class Predictor:
         return H_m, inliers_num_rate, raw_query_image, raw_refer_image
 
     def align_image_pair(self, query_path, refer_path, show=False):
-        H_m, inliers_num_rate, raw_query_image, raw_refer_image = self.compute_homography(query_path, refer_path)
+        H_m, inliers_num_rate, raw_query_image, raw_refer_image = (
+            self.compute_homography(query_path, refer_path)
+        )
 
         if H_m is not None:
             h, w = self.image_height, self.image_width
-            query_align = cv2.warpPerspective(raw_query_image, H_m, (w, h), borderMode=cv2.BORDER_CONSTANT,
-                                              borderValue=(0))
+            query_align = cv2.warpPerspective(
+                raw_query_image,
+                H_m,
+                (w, h),
+                borderMode=cv2.BORDER_CONSTANT,
+                borderValue=(0),
+            )
 
             merged = np.zeros((h, w, 3), dtype=np.uint8)
 
@@ -219,8 +258,8 @@ class Predictor:
             if show:
                 plt.figure(dpi=200)
                 plt.imshow(merged)
-                plt.axis('off')
-                plt.title('Registration Result')
+                plt.axis("off")
+                plt.title("Registration Result")
                 plt.show()
                 plt.close()
             return merged
@@ -245,41 +284,51 @@ class Predictor:
         b, _, h, w = detector_pred.shape
         scores = scores.reshape(-1, h, w)
 
-        keypoints = [
-            torch.nonzero(s > self.nms_thresh)
-            for s in scores]
+        keypoints = [torch.nonzero(s > self.nms_thresh) for s in scores]
 
         scores = [s[tuple(k.t())] for s, k in zip(scores, keypoints)]
 
         # Discard keypoints near the image borders
-        keypoints, scores = list(zip(*[
-            remove_borders(k, s, 4, h, w)
-            for k, s in zip(keypoints, scores)]))
+        keypoints, scores = list(
+            zip(*[remove_borders(k, s, 4, h, w) for k, s in zip(keypoints, scores)])
+        )
 
         keypoints = [torch.flip(k, [1]).float().data for k in keypoints]
 
-        descriptors = [sample_keypoint_desc(k[None], d[None], 8)[0].cpu()
-                       for k, d in zip(keypoints, descriptor_pred)]
+        descriptors = [
+            sample_keypoint_desc(k[None], d[None], 8)[0].cpu()
+            for k, d in zip(keypoints, descriptor_pred)
+        ]
         keypoints = [k.cpu() for k in keypoints]
 
         if save_path is not None:
-            save_info = {'kp': keypoints[0].cpu(), 'desc': descriptors[0].cpu()}
+            save_info = {"kp": keypoints[0].cpu(), "desc": descriptors[0].cpu()}
             torch.save(save_info, save_path)
 
         return keypoints[0], descriptors[0]
 
     def homography_from_tensor(self, query_info, refer_info):
-        query_keypoints, query_desc = query_info['kp'], query_info['desc']
-        refer_keypoints, refer_desc = refer_info['kp'], refer_info['desc']
+        query_keypoints, query_desc = query_info["kp"], query_info["desc"]
+        refer_keypoints, refer_desc = refer_info["kp"], refer_info["desc"]
 
         query_desc = query_desc.permute(1, 0).numpy()
         refer_desc = refer_desc.permute(1, 0).numpy()
-        cv_kpts_query = [cv2.KeyPoint(int(i[0] / self.model_image_width * self.image_width),
-                                      int(i[1] / self.model_image_height * self.image_height), 30)
-                         for i in query_keypoints]
-        cv_kpts_refer = [cv2.KeyPoint(int(i[0] / self.model_image_width * self.image_width),
-                                      int(i[1] / self.model_image_height * self.image_height), 30)
-                         for i in refer_keypoints]
+        cv_kpts_query = [
+            cv2.KeyPoint(
+                int(i[0] / self.model_image_width * self.image_width),
+                int(i[1] / self.model_image_height * self.image_height),
+                30,
+            )
+            for i in query_keypoints
+        ]
+        cv_kpts_refer = [
+            cv2.KeyPoint(
+                int(i[0] / self.model_image_width * self.image_width),
+                int(i[1] / self.model_image_height * self.image_height),
+                30,
+            )
+            for i in refer_keypoints
+        ]
 
         goodMatch = []
         status = []
@@ -313,10 +362,11 @@ class Predictor:
 
         return H_m, inliers_num
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import yaml
 
-    config_path = 'config/test.yaml'
+    config_path = "config/test.yaml"
     if os.path.exists(config_path):
         with open(config_path) as f:
             config = yaml.safe_load(f)
@@ -324,8 +374,8 @@ if __name__ == '__main__':
         raise FileNotFoundError("Config File doesn't Exist")
 
     P = Predictor(config)
-    f1 = './data/samples/query.jpg'
-    f2 = './data/samples/refer.jpg'
+    f1 = "./data/samples/query.jpg"
+    f2 = "./data/samples/refer.jpg"
     P.match(f1, f2, show=True)
     merged = P.align_image_pair(f1, f2)
     plt.imshow(merged)

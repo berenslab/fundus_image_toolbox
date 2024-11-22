@@ -7,14 +7,14 @@
 <details>
 <summary><b>Fundus quality prediction</b></summary>
 A quality prediction model for fundus images (gradeable vs. ungradeable) based on an ensemble of 10 models (ResNets and EfficientNets) trained on DeepDRiD and DrimDB data. Can be just used for prediction or retrained. 
-<br><a href="./quality_prediction/">Read more</a>. <br>
+<br><a href="./1_read_more/Readmore_quality_prediction.md">Read more</a>. <br>
 
 <img src="./quality_prediction/ex.png" alt="Example image" width="800"/>
 </details>
 
 <details>
 <summary><b>Fundus fovea and optic disc localization</b></summary>
-A model to predict the center coordinates of the fovea and the optic disc in fundus images based on a multi-task EfficientNet trained on ADAM, REFUGE and IDRID datasets. Can be just used for prediction or retrained. <br><a href="./fovea_od_localization/">Read more</a>. <br>
+A model to predict the center coordinates of the fovea and the optic disc in fundus images based on a multi-task EfficientNet trained on ADAM, REFUGE and IDRID datasets. Can be just used for prediction or retrained. <br><a href="./1_read_more/Readmore_fovea_od_localization.md">Read more</a>. <br>
 
 <img src="./fovea_od_localization/ex1.png" alt="Example image" width="800"/>
 <br>Example predictions from the external dataset "DeepDRiD".
@@ -22,14 +22,14 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
 
 <details>
 <summary><b>Fundus registration</b></summary>
-Align a fundus photograph to another fundus photograph from the same eye using SuperRetina (<a href="https://arxiv.org/abs/2207.07932">Liu et al., 2022</a>). Image registration also goes by the terms image alignment and image matching. <br><a href="./registration/">Read more</a>. <br>
+Align a fundus photograph to another fundus photograph from the same eye using SuperRetina (<a href="https://arxiv.org/abs/2207.07932">Liu et al., 2022</a>). Image registration also goes by the terms image alignment and image matching. <br><a href="./1_read_more/Readmore_registration.md">Read more</a>. <br>
 
 <img src="./registration/image2.png" alt="Example image" width="800"/>
 </details>
 
 <details>
 <summary><b>Fundus vessel segmentation</b></summary>
-Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets trained on the FIVES dataset (<a href="https://openreview.net/forum?id=DDHRGHfwji">Köhler et al., 2024</a>). <br><a href="./vessel_segmentation/">Read more</a>. <br>
+Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets trained on the FIVES dataset (<a href="https://openreview.net/forum?id=DDHRGHfwji">Köhler et al., 2024</a>). <br><a href="./1_read_more/Readmore_vessel_segmentation.md">Read more</a>. <br>
 
 <img src="./vessel_segmentation/exs.png" alt="Example image" width="800"/>
 
@@ -39,14 +39,14 @@ Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets train
 <details>
 <summary><b>Fundus circle crop</b></summary>
 Fastly crop fundus images to a circle and center it (<a href="http://dx.doi.org/10.1007/978-3-030-32239-7_6">Fu et al., 2019</a>).
-<br><a href="./circle_crop/">Read more</a>. <br>
+<br><a href="./1_read_more/Readmore_circle_crop.md">Read more</a>. <br>
 
 <img src="./circle_crop/ex.png" alt="Example image" width="500"/>
 </details>
 
 <details>
 <summary><b>Fundus utilities</b></summary>
-A collection of additional utilities that can come in handy when working with fundus images.<br><a href="./utilities/">Read more</a>. <br>
+A collection of additional utilities that can come in handy when working with fundus images.<br><a href="./1_read_more/Readmore_utilities.md">Read more</a>. <br>
 
 - ImageTorchUtils: Image manipulation based on Pytorch tensors.
 - Balancing: A script to balance a torch dataset by both oversampling the minority class and undersampling the majority class from [imbalanced-dataset-sampler](https://github.com/ufoym/imbalanced-dataset-sampler/).
@@ -62,7 +62,7 @@ A collection of additional utilities that can come in handy when working with fu
 <p style="font-size:1.5em;"><b>Usage</b></p> -->
 ### Usage
 
-The following code summarises the usage of the toolbox. See the [usage.ipynb](usage.ipynb) for a tutorial notebook and the subdirectories for more detailed usage examples information on the respective packages.
+The following code summarises the usage of the toolbox. See the [usage.ipynb](usage.ipynb) for a tutorial notebook and [examples directory](./0_example_usage/) for more detailed usage examples information on the respective packages.
 ```python
 # Get sample images. All methods work on path(s) to image(s) or on image(s) as numpy arrays, tensors or PIL images.
 fundus1, fundus2 = "path/to/fundus1.jpg", "path/to/fundus2.jpg"

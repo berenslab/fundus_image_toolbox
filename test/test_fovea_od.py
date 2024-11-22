@@ -4,11 +4,12 @@ import numpy as np
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Resize, CenterCrop
-from fundus_fovea_od_localization import ODFoveaModel, load_fovea_od_model
+from fundus_image_toolbox.fovea_od_localization import ODFoveaModel, load_fovea_od_model
 
 DIR = os.path.join(os.path.dirname(__file__))
-fundus1_path = os.path.join(DIR, '..', 'fundus1.jpg')
-DEVICE = 'cpu'
+fundus1_path = os.path.join(DIR, "..", "fundus1.jpg")
+DEVICE = "cpu"
+
 
 class TestFoveaODModel(unittest.TestCase):
     def setUp(self):
@@ -18,7 +19,9 @@ class TestFoveaODModel(unittest.TestCase):
         self.device = DEVICE
 
     def test_load_fovea_od_model(self):
-        model, checkpoint_path = load_fovea_od_model("default", device=self.device, return_test_dataloader=False)
+        model, checkpoint_path = load_fovea_od_model(
+            "default", device=self.device, return_test_dataloader=False
+        )
         self.assertIsInstance(model, ODFoveaModel)
         self.assertEqual(self.device, str(model.device))
 
@@ -35,6 +38,6 @@ class TestFoveaODModel(unittest.TestCase):
         self.assertEqual(len(labels[0]), 4)
         self.assertIsInstance(float(labels[0][0]), float)
 
-        
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,7 @@
 ## A quality prediction model for fundus images (gradeable vs. ungradeable)
 Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and DrimDB data. For DrimDB images, we considered out-of-domain images such as photographs of the outer eye as ungradeable.
 
-<img src="./quality_prediction/ex.png" alt="Example image" width="800"/>
+<img src="../quality_prediction/ex.png" alt="Example image" width="800"/>
 
 <br>
 [x] Works on tensor images <br>
@@ -14,9 +14,9 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
     - [DrimDB dataset](https://doi.org/10.1117/1.jbo.19.4.046006) from [kaggle](https://www.kaggle.com/datasets/subhajournal/drimdb-diabetic-retinopathy-images-database?resource=download), see [here](https://academictorrents.com/details/99811ba62918f8e73791d21be29dcc372d660305) for a description
 
 ### How to
-- Refer to [usage_inference.ipynb](usage_inference.ipynb) to use the model ensemble to predict the quality of an image.
-- Refer to [usage_train_single.ipynb](usage_train_single.ipynb) to train a model on the above datasets from a notebook.
-- Refer to [train_cli.py](train_cli.py) to train and/or evaluate a single model on the above datasets from the command line.
+- Refer to [usage_quality.ipynb](../0_example_usage/usage_quality.ipynb) to use the model ensemble to predict the quality of an image.
+- Refer to [training_quality_single-model.ipynb](../0_example_usage/training and evaluation/training_quality_single-model.ipynb) to train a model on the above datasets from a notebook.
+- Refer to [training_quality_cli.py](../0_example_usage/training and evaluation/training_quality_cli.py) to train and/or evaluate a single model on the above datasets from the command line.
     You can pass a config file
     ```bash
     python train_cli.py --config /path/to/config.yaml
@@ -25,7 +25,7 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
     ```bash
     python train_cli.py --help
     ```
-- Refer to [usage_eval_ensemble.ipynb](usage_eval_ensemble.ipynb) to evaluate the pre-trained model ensemble on the above datasets.
+- Refer to [training_quality_eval_ensemble.ipynb](../0_example_usage/training and evaluation/training_quality_eval_ensemble.ipynb) to evaluate the pre-trained model ensemble on the above datasets.
 
 ### Performance
 - The model ensemble achieves an accuracy and ROCAUC of 0.78 and 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.

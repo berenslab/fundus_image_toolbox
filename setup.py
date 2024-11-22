@@ -3,15 +3,15 @@ from setuptools import setup, find_packages
 
 THIS_REPO = "https://github.com/berenslab/fundus_image_toolbox"
 ROOT = os.path.join(os.path.dirname(__file__))
-SUBMODULES = [
-    f
-    for f in os.listdir(ROOT)
-    if os.path.isdir(f)
-    and not f.startswith(".")
-    and not f.startswith("__")
-    and not "egg" in f
-    and not "test" in f
-]
+# SUBMODULES = [
+#     f
+#     for f in os.listdir(ROOT)
+#     if os.path.isdir(f)
+#     and not f.startswith(".")
+#     and not f.startswith("__")
+#     and not "egg" in f
+#     and not "test" in f
+# ]
 
 with open(os.path.join(ROOT, "Readme.md"), "r", encoding="utf8") as f:
     long_description = f.read()
@@ -42,7 +42,7 @@ setup(
     description=long_description.split("\n")[0],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    # url=None,
+    url=THIS_REPO,
     packages=[],
     install_requires=required + submodules_required,
     package_dir={"": ROOT},

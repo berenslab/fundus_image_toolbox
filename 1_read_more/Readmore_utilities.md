@@ -5,7 +5,7 @@ A collection of additional utilities that can come in handy when working with fu
 - **ImageTorchUtils**: Image manipulation based on Pytorch tensors. <br>
     Example usage:
     ```python
-    from fundus_utilities import ImageTorchUtils as Img
+    from fundus_image_toolbox.utilities import ImageTorchUtils as Img
     # Functions can be chained together. The final output is accessed via the `.img` attribute.
     # Load an image as an RGB tensor
     image = Img("path/to/image.jpg").to_tensor().img
@@ -30,7 +30,7 @@ A collection of additional utilities that can come in handy when working with fu
     Example usage to balance by a custom label. 
     ```python
     # In this example case, `data["dataset"]` refers to where the data originally came from before combining it into a single dataset
-    from fundus_utilities import ImbalancedDatasetSampler
+    from fundus_image_toolbox.utilities import ImbalancedDatasetSampler
     if config.balance_datasets:
         # Balance by custom label
         sampler = ImbalancedDatasetSampler(self.train_dataset, method="balanced", labels = self.train_dataset.data["dataset"])
@@ -48,7 +48,7 @@ A collection of additional utilities that can come in handy when working with fu
     Example usage:
     ```python
     from torchvision import transforms
-    from fundus_utilities import get_transforms, get_unnormalization
+    from fundus_image_toolbox.utilities import get_transforms, get_unnormalization
     # If mean and std are not provided, ImageNet values are used
     # If split is not "train", then only normalization, resize and centercrop are applied
     transformations = transforms.Compose(
@@ -60,7 +60,7 @@ A collection of additional utilities that can come in handy when working with fu
 - **Get pixel mean std**: A script to calculate the mean and standard deviation of the pixel values by channel of a dataset from pytorch dataloaders. <br>
     Example usage:
     ```python
-    from fundus_utilities import get_pixel_mean_std
+    from fundus_image_toolbox.utilities import get_pixel_mean_std
     # d: List of all torch dataloaders. Make sure not to augment the data in any loader.
     d = [train_loader, val_loader, test_loader] 
     mean, std = get_pixel_mean_std(d, device="cuda:0")
@@ -69,7 +69,7 @@ A collection of additional utilities that can come in handy when working with fu
 - **Model getter**: Getter for torchvision models with efficientnet and resnet architectures initialized with ImageNet weights. <br>
     Example usage:
     ```python
-    from fundus_utilities import get_efficientnet_or_resnet
+    from fundus_image_toolbox.utilities import get_efficientnet_or_resnet
     # Options: resnet{18,34,50,101,152}, efficientnet-b{0-7}
     model = get_efficientnet_or_resnet("resnet18", n_outs=1):
     ```
@@ -77,7 +77,7 @@ A collection of additional utilities that can come in handy when working with fu
 - **LR scheduler**: Get a pytorch learning rate scheduler (plus a warmup scheduler) for a given optimizer: Constant, OneCycleLR, CosineAnnealingLR, CosineAnnealingWarmRestarts. <br>
     Example usage:
     ```python
-    from fundus_utilities import get_lr_scheduler
+    from fundus_image_toolbox.utilities import get_lr_scheduler
     # Options: "cosine", "cosine_restart", "onecycle"
     # Without warmup scheduler:
     self.scheduler = get_lr_scheduler(
@@ -110,7 +110,7 @@ A collection of additional utilities that can come in handy when working with fu
 - **Multilevel 3-way split**: Split a pandas dataframe into train, validation and test splits with the options to split by group (i.e. keep groups together) and stratify by label. Wrapper for [multi_level_split](https://github.com/lmkoch/multi-level-split/). <br>
     Example usage:
     ```python
-    from fundus_utilities import multilevel_3way_split, multilevel_train_test_split
+    from fundus_image_toolbox.utilities import multilevel_3way_split, multilevel_train_test_split
     # Fix this for each of your experiments to guarantee equal splits across runs. If None, 12345 is used.
     SPLIT_SEED = 12345 
     train_df, val_df, test_df = multilevel_3way_split(
@@ -126,13 +126,13 @@ A collection of additional utilities that can come in handy when working with fu
 - **Seed everything**: Set seed for reproducibility in python, numpy and torch, depending on the availability of the respective libraries. <br>
     Example usage:
     ```python
-    from fundus_utilities import seed_everything
+    from fundus_image_toolbox.utilities import seed_everything
     seed_everything(SEED)
     ```
 
 - **Other basics**: 
     ```python
-    from fundus_utilities import exist, exists, flatten_one, parse_list, on_slurm_job
+    from fundus_image_toolbox.utilities import exist, exists, flatten_one, parse_list, on_slurm_job
     
     # Check if a file or multiple files exist
     exists("path/to/file") # > True

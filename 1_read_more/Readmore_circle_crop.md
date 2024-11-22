@@ -3,12 +3,12 @@
 A simple tool to fastly crop fundus images to a circle and center it.
 It uses cv2 and numpy to process single images.
 
-![Example](circle_crop/ex.png)
+![Example](../circle_crop/ex.png)
 
 [ ] Works on tensor images <br>
 [ ] Has batch support
 ### How to
-See the [usage.ipynb](usage.ipynb).
+See the [usage.ipynb](../0_example_usage/usage_circle-crop.ipynb).
 
 ### Ref
 This is a wrapper for a part of the EyeQ preprocessing from <i>Huazhu Fu et al., "Evaluation of Retinal Image Quality Assessment Networks in Different Color-spaces" (2020)</i>. The original code is available [here](https://github.com/HzFu/EyeQ/blob/master/EyeQ_preprocess/fundus_prep.py).

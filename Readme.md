@@ -135,6 +135,8 @@ Replace `<subpackage>` in the following command with the subfolder name of the d
 pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
 ```
 
+### Contribute
+You are very welcome to contribute to the toolbox. Please raise an issue or create a pull request to do so. Please feel free to contact us if you have any questions or need help via julius.gervelmeyer [at] uni-tuebingen.de.
 
 <!-- <br>
 <p style="font-size:1.5em;"><b>Cite</b></p> -->

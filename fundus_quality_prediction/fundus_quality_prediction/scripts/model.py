@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from typing import Union
 import yaml
 from pathlib import Path
+import requests
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -42,14 +43,29 @@ from .default import ENSEMBLE_MODELS, MODELS_DIR
 #     print('Done')
 
 
+def wget(link, target):
+    # platform independent wget alternative
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
+    }
+    r = requests.get(link, headers=headers, stream=True)
+    downloaded_file = open(target, "wb")
+
+    for chunk in r.iter_content(chunk_size=8192):
+        if chunk:
+            downloaded_file.write(chunk)
+
+
 def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.gz"):
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     print("Downloading weights...")
-    os.system(f'wget -q {url} -O {MODELS_DIR / "weights.tar.gz"}')
+    target = (MODELS_DIR / "weights.tar.gz").__str__()
+    # os.system(f'wget -q {url} -O {MODELS_DIR / "weights.tar.gz"}')
+    wget(url, target)
     print("Extracting weights...")
     os.system(f'tar -xzf {MODELS_DIR / "weights.tar.gz"} -C {MODELS_DIR}')
     print("Removing tar file...")
-    os.system(f'rm {MODELS_DIR / "weights.tar.gz"}')
+    os.remove(target)
     print("Done")
 
 

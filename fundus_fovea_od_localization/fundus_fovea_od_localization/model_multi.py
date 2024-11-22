@@ -3,6 +3,7 @@ import os
 from types import SimpleNamespace
 from typing import List, Union
 from pathlib import Path
+import requests
 
 import yaml
 import numpy as np
@@ -19,6 +20,19 @@ from fundus_utilities import ImageTorchUtils as Img
 
 from .transforms_multi import ToPILImage
 from .default import DEFAULT_MODEL, MODELS_DIR
+
+
+def wget(link, target):
+    # platform independent wget alternative
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
+    }
+    r = requests.get(link, headers=headers, stream=True)
+    downloaded_file = open(target, "wb")
+
+    for chunk in r.iter_content(chunk_size=8192):
+        if chunk:
+            downloaded_file.write(chunk)
 
 
 class ODFoveaModel:
@@ -249,6 +263,7 @@ class ODFoveaModel:
                     self._download_weights()
             else:
                 raise FileNotFoundError(f"Checkpoint {self.checkpoint_path} not found")
+
         self.model.load_state_dict(
             torch.load(
                 self.checkpoint_path, map_location=self.device, weights_only=True
@@ -301,25 +316,16 @@ class ODFoveaModel:
 
         return model
 
-    # def _download_weights(self, url = "https://zenodo.org/records/11174642/files/weights.tar.gz"):
-    #     os.makedirs(MODELS_DIR, exist_ok=True)
-    #     os.system(f'wget -q {url} -O {MODELS_DIR}/weights.tar.gz')
-    #     print('Extracting weights...')
-    #     os.system(f'tar -xzf {MODELS_DIR}/weights.tar.gz -C {MODELS_DIR}')
-    #     print('Removing tar file...')
-    #     os.system(f'rm {MODELS_DIR}/weights.tar.gz')
-    #     print('Done')
-
     def _download_weights(
         self, url="https://zenodo.org/records/11174642/files/weights.tar.gz"
     ):
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
-        weights_path = MODELS_DIR / "weights.tar.gz"
-        os.system(f"wget -q {url} -O {weights_path}")
+        weights_path = (MODELS_DIR / "weights.tar.gz").__str__()
+        wget(url, weights_path)
         print("Extracting weights...")
         os.system(f"tar -xzf {weights_path} -C {MODELS_DIR}")
         print("Removing tar file...")
-        weights_path.unlink()
+        os.remove(weights_path)
         print("Done")
 
     def _train_val_step(self, dataloader, model, loss_func, optimizer=None, pbar=None):

@@ -22,10 +22,11 @@ with open(os.path.join(ROOT, "requirements.txt")) as f:
 # Add subfolders as dependencies
 # TODO remove temporary branch
 branch_name = "main"
-submodules_required = [
-    f"{submodule} @ git+{THIS_REPO}@{branch_name}#egg={submodule}&subdirectory={submodule}"
-    for submodule in SUBMODULES
-]
+submodules_required = []
+# [
+#     f"{submodule} @ git+{THIS_REPO}@{branch_name}#egg={submodule}&subdirectory={submodule}"
+#     for submodule in SUBMODULES
+# ]
 
 # Include all subpackages.
 # - as pip dependencies: use install_requires=required+submodules_required, packages=[], package_dir={}

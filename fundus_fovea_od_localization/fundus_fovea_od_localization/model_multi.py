@@ -242,7 +242,7 @@ class ODFoveaModel:
         print(f"Loading model from {self.checkpoint_path}")
         # if not os.path.exists(self.checkpoint_path):
         if not self.checkpoint_path.exists():
-            if DEFAULT_MODEL in self.checkpoint_path:
+            if DEFAULT_MODEL in self.checkpoint_path.__str__():
                 print(f"Default model {DEFAULT_MODEL} not found, downloading...")
                 # if not os.path.exists(DEFAULT_MODEL):
                 if not (MODELS_DIR / DEFAULT_MODEL).exists():

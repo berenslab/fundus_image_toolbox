@@ -1,8 +1,0 @@
-Best epoch: 461
-Best loss: 0.0001165
-Best IoU: 0.87
-Best distance: 0.0084
-Test loss: 0.0001291
-Test IoU: 0.87
-Test distance in px: 0.008789
-Standardized test distance: 2.511e-05

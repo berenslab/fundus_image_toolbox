@@ -19,14 +19,19 @@ def clone_repo(
     # Clone Segmentation Quality Control repo
     os.makedirs(target_dir, exist_ok=True)
     if not os.listdir(target_dir):
+        print(
+            f"The vessel segmentation folder is missing. Downloading it from {link}..."
+        )
         pwd = os.getcwd()
         os.system(f"git clone {link} {target_dir}")
         os.system(
             f"cd {target_dir} && git checkout {branch} && git reset --hard {commit}"
         )
-        remove_folder(os.path.join(target_dir, ".git"))
+        try:
+            remove_folder(os.path.join(target_dir, ".git"))
+        except:
+            pass
         os.chdir(pwd)
-        print("Repo cloned successfully.")
 
         print("Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)

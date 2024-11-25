@@ -60,7 +60,6 @@ class FundusQualityDataset(torch.utils.data.Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        # img_name = os.path.join(self.data_root, self.data.iloc[idx]["image"])
         img_name = self.data_root / self.data.iloc[idx]["image"]
         image = Image.open(img_name)
         label = self.data.iloc[idx]["label"]
@@ -86,16 +85,12 @@ class FundusQualityDataset(torch.utils.data.Dataset):
         data = []
         for quality in ["bad", "good"]:
             for dataset in datasets:
-                # image_dir = os.path.join(self.data_root, quality, dataset)
                 image_dir = self.data_root / quality / dataset
-                # for img_name in os.listdir(image_dir):
                 for img_name in image_dir.iterdir():
-                    # Keep records from the same patient in a split, where possible
                     if dataset == "deepdrid-isbi2020":
                         patient = img_name.split("_")[0]
                     else:
                         patient = len(data) - 10000
-                    # data.append([os.path.join(quality, dataset, img_name), quality, dataset, patient])
                     data.append(
                         [Path(quality) / dataset / img_name, quality, dataset, patient]
                     )
@@ -140,10 +135,6 @@ class FundusQualityDataset(torch.utils.data.Dataset):
         """If DATA_ROOT does not yet contain the data, transfer it from the passed locations."""
         # Verify that desired folder structure exists
         for dataset in self.data_dirs:
-            # if not os.path.exists(os.path.join(self.data_root, "good", dataset)):
-            #     os.makedirs(os.path.join(self.data_root, "good", dataset))
-            # if not os.path.exists(os.path.join(self.data_root, "bad", dataset)):
-            #     os.makedirs(os.path.join(self.data_root, "bad", dataset))
             if not (self.data_root / "good" / dataset).exists():
                 (self.data_root / "good" / dataset).mkdir(parents=True)
             if not (self.data_root / "bad" / dataset).exists():
@@ -165,19 +156,14 @@ class FundusQualityDataset(torch.utils.data.Dataset):
         # Transfer DrimDB data
         drimdb_dir = self.data_dirs["drimdb"]
         for d in ["Bad", "Good", "Outlier"]:
-            # assert os.path.isdir(os.path.join(drimdb_dir, d)), f"Directory {os.path.join(drimdb_dir, d)} not found. Check your path to DrimDB data."
             assert (
                 Path(drimdb_dir) / d
             ).exists(), f"Directory {(Path(drimdb_dir) / d)} not found. Check your path to DrimDB data."
         for d in ["Bad", "Outlier"]:
-            # for f in os.listdir(os.path.join(drimdb_dir, d)):
-            #     os.system(f"cp '{os.path.join(drimdb_dir, d, f)}' '{os.path.join(self.data_root, 'bad', 'drimdb', f)}'")
             for f in (Path(drimdb_dir) / d).iterdir():
                 os.system(
                     f"cp '{Path(drimdb_dir) / d / f}' '{self.data_root / 'bad' / 'drimdb' / f.name}'"
                 )
-        # for f in os.listdir(os.path.join(drimdb_dir, "Good")):
-        #     os.system(f"cp '{os.path.join(drimdb_dir, 'Good', f)}' '{os.path.join(self.data_root, 'good', 'drimdb', f)}'")
         for f in (Path(drimdb_dir) / "Good").iterdir():
             os.system(
                 f"cp '{Path(drimdb_dir) / 'Good' / f}' '{self.data_root / 'good' / 'drimdb' / f.name}'"
@@ -185,7 +171,6 @@ class FundusQualityDataset(torch.utils.data.Dataset):
 
         # Transfer DeepDrid data
         deepdrid_dir = self.data_dirs["deepdrid-isbi2020"]
-        # assert os.path.isdir(os.path.join(deepdrid_dir, "regular_fundus_images")), f"Directory {os.path.join(deepdrid_dir, 'regular_fundus_images')} not found. Check your path to DeepDrid data."
         assert (
             Path(deepdrid_dir) / "regular_fundus_images"
         ).exists(), f"Directory {(Path(deepdrid_dir) / 'regular_fundus_images')} not found. Check your path to DeepDrid data."
@@ -201,7 +186,6 @@ class FundusQualityDataset(torch.utils.data.Dataset):
                 label = row["Overall quality"]  # 1: good, 0: bad
                 target_dir = target_dirs[label]
                 suffix = ".jpg"
-                # img.save(os.path.join(target_dir, f"{row['image_id']}{suffix}"))
                 img.save(target_dir / f"{row['image_id']}{suffix}")
 
         def _copy(df, target_dirs):
@@ -212,25 +196,15 @@ class FundusQualityDataset(torch.utils.data.Dataset):
                 target_path = target_dirs[label] / f"{row['image_id']}.jpg"
                 os.system(f"cp '{img_path}' '{target_path}'")
 
-        # fundus_dir = os.path.join(self.data_dirs["deepdrid-isbi2020"],'regular_fundus_images')
-        # train_data = os.path.join(fundus_dir,'regular-fundus-training')
-        # valid_data = os.path.join(fundus_dir, 'regular-fundus-validation')
-        # test_data = os.path.join(fundus_dir, 'Online-Challenge1&2-Evaluation')
         fundus_dir = Path(self.data_dirs["deepdrid-isbi2020"]) / "regular_fundus_images"
         train_data = fundus_dir / "regular-fundus-training"
         valid_data = fundus_dir / "regular-fundus-validation"
         test_data = fundus_dir / "Online-Challenge1&2-Evaluation"
 
-        # train_df = pd.read_csv(os.path.join(train_data,'regular-fundus-training.csv'))
-        # val_df = pd.read_csv(os.path.join(valid_data, 'regular-fundus-validation.csv'))
-        # test_df = pd.read_excel(os.path.join(test_data, 'Challenge2_labels.xlsx'))
         train_df = pd.read_csv(train_data / "regular-fundus-training.csv")
         val_df = pd.read_csv(valid_data / "regular-fundus-validation.csv")
         test_df = pd.read_excel(test_data / "Challenge2_labels.xlsx")
 
-        # train_df["image_path"] = train_df["image_id"].apply(lambda x: os.path.join(train_data,'Images',x.split("_")[0],f'{x}.jpg'))
-        # val_df["image_path"] = val_df["image_id"].apply(lambda x: os.path.join(valid_data,'Images',x.split("_")[0],f'{x}.jpg'))
-        # test_df["image_path"] = test_df["image_id"].apply(lambda x: os.path.join(test_data,'Images',x.split("_")[0],f'{x}.jpg'))
         train_df["image_path"] = train_df["image_id"].apply(
             lambda x: train_data / "Images" / x.split("_")[0] / f"{x}.jpg"
         )
@@ -243,8 +217,6 @@ class FundusQualityDataset(torch.utils.data.Dataset):
 
         df = pd.concat([train_df, val_df, test_df], ignore_index=True)
 
-        # target_dir_good = os.path.join(self.data_root, "good/deepdrid-isbi2020/")
-        # target_dir_bad = os.path.join(self.data_root, "bad/deepdrid-isbi2020/")
         target_dir_good = self.data_root / "good" / "deepdrid-isbi2020"
         target_dir_bad = self.data_root / "bad" / "deepdrid-isbi2020"
 

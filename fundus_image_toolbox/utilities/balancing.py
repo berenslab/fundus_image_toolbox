@@ -30,10 +30,11 @@ import torch
 import torch.utils.data
 import torchvision
 
+
 class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
     """Samples elements randomly from a given list of indices for imbalanced dataset.
-    An imbalanced dataset sampler for oversampling low frequent classes and undersampling high 
-    frequent ones. Does not alter length of dataset. 
+    An imbalanced dataset sampler for oversampling low frequent classes and undersampling high
+    frequent ones. Does not alter length of dataset.
 
 
     Args:
@@ -46,7 +47,7 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
 
     Returns:
         Iterable: indices to sample from
-    
+
     Example:
         ```
         if config.balance_datasets:
@@ -86,21 +87,17 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
 
         self.label_count = df["label"].value_counts()
         label_count_sorted = self.label_count.sort_values()
-        
+
         self.minority_class = label_count_sorted.keys()[0]
         self.majority_class = label_count_sorted.keys()[-1]
 
         self.df_minority = df[df["label"] == self.minority_class]
         self.df_majority = df[df["label"] == self.majority_class]
 
-        if method == "undersampling":
-            self.num_samples = len(self.label_count) * len(self.df_minority) if num_samples is None else num_samples
-        elif method == "oversampling":
-            self.num_samples = len(self.label_count) * len(self.df_majority) if num_samples is None else num_samples
-        elif method == "balanced":
+        if method == "balanced":
             self.num_samples = len(self.indices) if num_samples is None else num_samples
         else:
-            raise NotImplementedError       
+            raise NotImplementedError
 
     def _get_labels(self, dataset):
         if self.callback_get_label:
@@ -124,8 +121,11 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
         if self.method == "balanced":
             weights = 1.0 / self.label_count[self.df["label"]]
             weights = torch.DoubleTensor(weights.to_list())
-            return (self.indices[i] for i in torch.multinomial(weights, self.num_samples, replacement=True))
-        
+            return (
+                self.indices[i]
+                for i in torch.multinomial(weights, self.num_samples, replacement=True)
+            )
+
         else:
             raise NotImplementedError
 

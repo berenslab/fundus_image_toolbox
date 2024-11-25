@@ -124,9 +124,9 @@ def get_mask(img):
     tg_img = cv2.normalize(g_img, None, 0, 255, cv2.NORM_MINMAX)
     tmp_mask = get_mask_BZ(tg_img)
     center = _get_center_by_edge(tmp_mask)
-    # bbox=_get_bbox_by_mask(tmp_mask)
     radius = _get_radius_by_mask_center(tmp_mask, center)
-    # resize back
+
+    # Resize back
     center = [center[0] * 2, center[1] * 2]
     radius = int(radius * 2)
     s_h = max(0, int(center[0] - radius))

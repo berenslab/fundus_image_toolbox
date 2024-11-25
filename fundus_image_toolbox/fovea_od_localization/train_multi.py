@@ -25,7 +25,7 @@ def get_ensemble(
     device: str = "cuda:0",
     return_test_dataloader: bool = False,
 ):
-    ens = ["2024-05-07 11:13.05", "2024-05-07 11:13.13"]
+    ens = ["2024-05-07 11_13.05", "2024-05-07 11_13.13"]
     models = []
     checkpoints = []
     # for model_dir in [os.path.join(models_dir, x) for x in ens]:
@@ -120,24 +120,6 @@ def load_model(
     model.loss_tracking = {"train": [], "val": []}
     model.iou_tracking = {"train": [], "val": []}
     model.dist_tracking = {"train": [], "val": []}
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_train_loss.txt"), "r") as f:
-    #     for line in f:
-    #         model.loss_tracking['train'].append(float(line.strip()))
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_val_loss.txt"), "r") as f:
-    #     for line in f:
-    #         model.loss_tracking['val'].append(float(line.strip()))
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_train_iou.txt"), "r") as f:
-    #     for line in f:
-    #         model.iou_tracking['train'].append(float(line.strip()))
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_val_iou.txt"), "r") as f:
-    #     for line in f:
-    #         model.iou_tracking['val'].append(float(line.strip()))
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_train_dist.txt"), "r") as f:
-    #     for line in f:
-    #         model.dist_tracking['train'].append(float(line.strip()))
-    # with open(os.path.join(checkpoint_dir, f"multi_{m_type}_val_dist.txt"), "r") as f:
-    #     for line in f:
-    #         model.dist_tracking['val'].append(float(line.strip()))
 
     with open(checkpoint_dir / f"multi_{m_type}_train_loss.txt", "r") as f:
         for line in f:

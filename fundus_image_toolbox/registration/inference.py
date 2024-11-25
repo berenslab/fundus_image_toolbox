@@ -50,7 +50,6 @@ def wget(link, target):
 def download_weights(url="https://zenodo.org/records/11241985/files/SuperRetina.pth"):
     os.makedirs(os.path.dirname(WEIGHT_PATH), exist_ok=True)
     print("Downloading weights...")
-    # os.system(f'wget -q {url} -O {WEIGHT_PATH}')
     wget(url, WEIGHT_PATH)
     print("Done")
 
@@ -76,7 +75,6 @@ def get_mask(filename, masks: pd.DataFrame = None, show=True, binarize=True):
         plt.show()
         plt.close()
 
-    # assert mask not empty
     assert np.sum(mask) > 0
 
     return mask

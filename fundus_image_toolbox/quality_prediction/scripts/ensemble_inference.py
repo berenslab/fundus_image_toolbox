@@ -49,44 +49,6 @@ def any_to_tensor(image):
     return image
 
 
-# def get_ensemble(models_dir:str=MODELS_DIR, device:str="cpu"):
-#     """Load the 10-model ensemble from the specified models or project directory.
-
-#     Args:
-#         device (str, optional): Device to use. Defaults to "cpu".
-#         models_dir (str, optional): Directory containing the "models" folder or its parent.
-#             Defaults to "./quality_prediction/models".
-
-#     Returns:
-#         ensemble: List of FundusQualityModel objects
-#     """
-#     # Get model directories
-#     if "models" not in models_dir:
-#         models_dir = os.path.join(models_dir, "models")
-#     os.makedirs(models_dir, exist_ok=True)
-#     for e in ENSEMBLE_MODELS:
-#         if e not in os.listdir(models_dir):
-#             print("At least one model was not found.")
-#             download_weights()
-#     model_dirs = os.listdir(models_dir)
-#     model_dirs = [os.path.join(models_dir, i) for i in model_dirs if os.path.isdir(os.path.join(models_dir, i))]
-#     model_dirs = [i for i in model_dirs if is_datetime_format(os.path.basename(i))]
-#     assert len(model_dirs) == len(ENSEMBLE_MODELS), f"Expected 10 models, got {len(model_dirs)}. Did you download the models and place them into {models_dir}?"
-
-#     # Get configs and load models
-#     configs = []
-#     for p in model_dirs:
-#         with open(os.path.join(p, "config.yaml")) as c:
-#             configs.append(yaml.safe_load(c))
-#             configs[-1]["device"] = device
-#     ensemble = []
-#     for ckpt, conf in zip(model_dirs, configs):
-#         ensemble.append(FundusQualityModel(conf))
-#         ensemble[-1].load_checkpoint(ckpt)
-
-#     return ensemble
-
-
 def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
     """Load the 10-model ensemble from the specified models or project directory.
 

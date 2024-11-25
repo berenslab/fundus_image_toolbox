@@ -2,7 +2,7 @@
 from pathlib import Path
 from types import SimpleNamespace
 
-DEFAULT_MODEL = "2024-05-07 11:13.05"
+DEFAULT_MODEL = "2024-05-07 11_13.05"
 # DEFAULT_CSV_PATH = os.path.join(os.path.dirname(__file__), "data/ADAM+IDRID+REFUGE_df.csv").__str__()
 # MODELS_DIR = os.path.join(os.path.dirname(__file__), "models").__str__()
 DEFAULT_CSV_PATH = Path(__file__).parent / "data/ADAM+IDRID+REFUGE_df.csv"

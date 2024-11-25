@@ -32,16 +32,6 @@ from fundus_image_toolbox.utilities import seed_everything
 from .transforms import get_unnormalization, get_transforms
 from .default import ENSEMBLE_MODELS, MODELS_DIR
 
-# def download_weights(url = "https://zenodo.org/records/11174749/files/weights.tar.gz"):
-#     os.makedirs(MODELS_DIR, exist_ok=True)
-#     print('Downloading weights...')
-#     os.system(f'wget -q {url} -O {MODELS_DIR}/weights.tar.gz')
-#     print('Extracting weights...')
-#     os.system(f'tar -xzf {MODELS_DIR}/weights.tar.gz -C {MODELS_DIR}')
-#     print('Removing tar file...')
-#     os.system(f'rm {MODELS_DIR}/weights.tar.gz')
-#     print('Done')
-
 
 def wget(link, target):
     # platform independent wget alternative
@@ -60,7 +50,6 @@ def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     print("Downloading weights...")
     target = (MODELS_DIR / "weights.tar.gz").__str__()
-    # os.system(f'wget -q {url} -O {MODELS_DIR / "weights.tar.gz"}')
     wget(url, target)
     print("Extracting weights...")
     os.system(f'tar -xzf {MODELS_DIR / "weights.tar.gz"} -C {MODELS_DIR}')
@@ -150,12 +139,8 @@ class FundusQualityModel:
 
         self.model.to(self.config.device)
 
-        # os.makedirs(MODELS_DIR, exist_ok=True)
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-        # self.checkpoint_path = os.path.join(
-        #     MODELS_DIR, f"{self.timestamp}/{self.config.model_type}_best.pt"
-        # )
         self.checkpoint_path = (
             MODELS_DIR / f"{self.timestamp}/{self.config.model_type}_best.pt"
         )
@@ -166,25 +151,6 @@ class FundusQualityModel:
             lr=self.config.lr,
             weight_decay=self.config.weight_decay,
         )
-
-    # def load_checkpoint(self, dir: str):
-    #     if dir.endswith(".pt"):
-    #         dir = dir.split(self.config.model_type + "_best.pt")[0]
-    #     if dir.endswith("/"):
-    #         dir = dir[:-1]
-    #     if dir in ENSEMBLE_MODELS and not os.path.isdir(dir):
-    #         download_weights()
-    #     self.timestamp = dir.split("/")[-1]
-    #     self.checkpoint_path = os.path.join(
-    #         MODELS_DIR, f"{dir}/{self.config.model_type}_best.pt"
-    #     )
-
-    #     self.model.load_state_dict(
-    #         torch.load(self.checkpoint_path, map_location=self.config.device)
-    #     )
-    #     self.model.to(self.config.device)
-
-    #     print(f"Model loaded from {self.checkpoint_path.split('/')[-2]}")
 
     def load_checkpoint(self, dir: str):
         dir = Path(dir)
@@ -207,7 +173,6 @@ class FundusQualityModel:
         print(f"Model loaded from {self.checkpoint_path.parent.name}")
 
     def train(self, train_dataloader, val_dataloader):
-        # os.makedirs(os.path.dirname(self.checkpoint_path), exist_ok=True)
         self.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
 
         self.loss_tracker = {"train": [], "val": []}
@@ -457,10 +422,6 @@ class FundusQualityModel:
         binary_preds = torch.where(all_preds > threshold, 1, 0).float().squeeze()
 
         acc = torch.mean((binary_preds == all_labels).float()).item()
-        # accuracy = accuracy_score(all_labels, binary_preds)
-        # f1 = f1_score(all_labels, binary_preds)
-        # precision = precision_score(all_labels, binary_preds)
-        # recall = recall_score(all_labels, binary_preds)
         fpr, tpr, _ = roc_curve(all_labels, all_preds)
         auroc = auc(fpr, tpr)
         precision_, recall_, _ = precision_recall_curve(all_labels, all_preds)
@@ -476,23 +437,15 @@ class FundusQualityModel:
         self.performance[loader]["acc"] = acc
         self.performance[loader]["auroc"] = auroc
         self.performance[loader]["auprc"] = auprc
-        # self.performance[loader]["f1"] = f1
-        # self.performance[loader]["precision"] = precision
-        # self.performance[loader]["recall"] = recall
 
         return self.performance[loader]
 
     def save_summary(self, log=None):
-        # summary_path = os.path.join(
-        #     MODELS_DIR, f"{self.timestamp}/{self.config.model_type}_summary.txt"
-        # )
         summary_path = (
             MODELS_DIR / f"{self.timestamp}/{self.config.model_type}_summary.txt"
         )
-        # config_path = os.path.join(MODELS_DIR, f"{self.timestamp}/config.yaml")
         config_path = MODELS_DIR / f"{self.timestamp}/config.yaml"
 
-        # if not os.path.isfile(config_path):
         if not config_path.is_file():
             with open(config_path, "w") as c:
                 yaml.dump(vars(self.config), c)
@@ -535,12 +488,7 @@ class FundusQualityModel:
 
         if save:
             plt.savefig(
-                # os.path.join(
-                #     MODELS_DIR,
-                #     f"{self.timestamp}/{self.config.model_type}_loss_plot.png",
-                # )
-                MODELS_DIR
-                / f"{self.timestamp}/{self.config.model_type}_loss_plot.png"
+                MODELS_DIR / f"{self.timestamp}/{self.config.model_type}_loss_plot.png"
             )
 
         plt.show()

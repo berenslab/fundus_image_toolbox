@@ -40,8 +40,7 @@ class ODFoveaModel:
         self.config = config
         self.device = config.device
         self.model = self._get_model(config.model_type).to(self.device)
-        self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M.%S")
-        # self.checkpoint_path = os.path.join(MODELS_DIR, f'{self.timestamp}/multi_{self.config.model_type}_best.pt')
+        self.timestamp = datetime.now().strftime("%Y-%m-%d %H_%M.%S")
         self.checkpoint_path = (
             MODELS_DIR / self.timestamp / f"multi_{self.config.model_type}_best.pt"
         )
@@ -52,9 +51,6 @@ class ODFoveaModel:
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
 
     def train(self, train_dataloader, val_dataloader):
-        # os.makedirs(os.path.dirname(self.checkpoint_path), exist_ok=True)
-        # if not os.path.exists(os.path.join(MODELS_DIR, self.timestamp, "config.yaml")):
-        #     yaml.safe_dump(vars(self.config), open(os.path.join(MODELS_DIR, self.timestamp, "config.yaml"), "w"))
         self.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
         if not (self.checkpoint_path.parent / "config.yaml").exists():
             yaml.safe_dump(
@@ -105,9 +101,7 @@ class ODFoveaModel:
         print(f"Model saved at {self.checkpoint_path}")
 
         # Save summary to file
-        # p = os.path.dirname(self.checkpoint_path)
         p = self.checkpoint_path.parent
-        # with open(os.path.join(p, "summary.txt"), 'w') as f:
         with open(p / "summary.txt", "w") as f:
             f.write(f"Best epoch: {best_epoch}\n")
             f.write(f"Best loss: {self.best_loss:.4}\n")
@@ -115,22 +109,16 @@ class ODFoveaModel:
             f.write(f'Best distance: {self.dist_tracking["val"][best_epoch]:.4}\n')
 
         # Save loss, IoU and distance tracking to files
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_train_loss.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_train_loss.txt", "w") as f:
             f.write("\n".join(map(str, self.loss_tracking["train"])))
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_val_loss.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_val_loss.txt", "w") as f:
             f.write("\n".join(map(str, self.loss_tracking["val"])))
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_train_iou.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_train_iou.txt", "w") as f:
             f.write("\n".join(map(str, self.iou_tracking["train"])))
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_val_iou.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_val_iou.txt", "w") as f:
             f.write("\n".join(map(str, self.iou_tracking["val"])))
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_train_dist.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_train_dist.txt", "w") as f:
             f.write("\n".join(map(str, self.dist_tracking["train"])))
-        # with open(os.path.join(p, f"multi_{self.config.model_type}_val_dist.txt"), 'w') as f:
         with open(p / f"multi_{self.config.model_type}_val_dist.txt", "w") as f:
             f.write("\n".join(map(str, self.dist_tracking["val"])))
 
@@ -154,9 +142,7 @@ class ODFoveaModel:
         """
         if checkpoint_path is not None:
             if checkpoint_path == "latest":
-                # checkpoint_path = sorted(os.listdir('models'))[-1]
                 checkpoint_path = sorted(MODELS_DIR.iterdir())[-1]
-                # checkpoint_path = os.path.join('models', checkpoint_path, f'multi_{self.config.model_type}_best.pt')
                 checkpoint_path = (
                     checkpoint_path / f"multi_{self.config.model_type}_best.pt"
                 )
@@ -181,7 +167,6 @@ class ODFoveaModel:
             )
 
         if save_summary:
-            # with open(f'{os.path.dirname(self.checkpoint_path)}/summary.txt', 'a') as f:
             with open(f"{self.checkpoint_path.parent}/summary.txt", "a") as f:
                 f.write(f"Test loss: {test_loss:.4}\n")
                 f.write(f"Test IoU: {test_iou:.2}\n")
@@ -254,11 +239,9 @@ class ODFoveaModel:
 
     def load_checkpoint(self):
         print(f"Loading model from {self.checkpoint_path}")
-        # if not os.path.exists(self.checkpoint_path):
         if not self.checkpoint_path.exists():
             if DEFAULT_MODEL in self.checkpoint_path.__str__():
                 print(f"Default model {DEFAULT_MODEL} not found, downloading...")
-                # if not os.path.exists(DEFAULT_MODEL):
                 if not (MODELS_DIR / DEFAULT_MODEL).exists():
                     self._download_weights()
             else:
@@ -324,6 +307,14 @@ class ODFoveaModel:
         wget(url, weights_path)
         print("Extracting weights...")
         os.system(f"tar -xzf {weights_path} -C {MODELS_DIR}")
+
+        # Get Windows compatible folder names
+        extracted_folders = sorted(MODELS_DIR.iterdir())
+        for folder in extracted_folders:
+            if folder.is_dir():
+                new_folder_name = folder.name.replace(":", "_")
+                folder.rename(folder.parent / new_folder_name)
+
         print("Removing tar file...")
         os.remove(weights_path)
         print("Done")
@@ -394,7 +385,6 @@ class ODFoveaModel:
         plt.plot(self.loss_tracking["train"], label="Train loss")
         plt.plot(self.loss_tracking["val"], label="Val loss")
         plt.legend()
-        # p = os.path.join(os.path.dirname(self.checkpoint_path), f'multi_{self.config.model_type}_loss.png')
         p = self.checkpoint_path.parent / f"multi_{self.config.model_type}_loss.png"
         plt.savefig(p)
         plt.show()
@@ -404,7 +394,6 @@ class ODFoveaModel:
         plt.plot(self.iou_tracking["train"], label="Train IoU")
         plt.plot(self.iou_tracking["val"], label="Val IoU")
         plt.legend()
-        # p = os.path.join(os.path.dirname(self.checkpoint_path), f'multi_{self.config.model_type}_iou.png')
         p = self.checkpoint_path.parent / f"multi_{self.config.model_type}_iou.png"
         plt.savefig(p)
         plt.show()
@@ -414,7 +403,6 @@ class ODFoveaModel:
         plt.plot(self.dist_tracking["train"], label="Train distance")
         plt.plot(self.dist_tracking["val"], label="Val distance")
         plt.legend()
-        # p = os.path.join(os.path.dirname(self.checkpoint_path), f'multi_{self.config.model_type}_dist.png')
         p = self.checkpoint_path.parent / f"multi_{self.config.model_type}_dist.png"
         plt.savefig(p)
         plt.show()
@@ -490,7 +478,6 @@ class ODFoveaModel:
             self._show_image_with_4_bounding_box(image, outputs, labels, ax)
             ax.set_title(f"{iou:.2f}")
             ax.axis("off")
-        # p = os.path.join(os.path.dirname(self.checkpoint_path), f'multi_{self.config.model_type}_grid.png')
         p = self.checkpoint_path.parent / f"multi_{self.config.model_type}_grid.png"
         plt.savefig(p)
         plt.show()

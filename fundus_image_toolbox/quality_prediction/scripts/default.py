@@ -3,9 +3,7 @@ from pathlib import Path
 
 # Data root. In there, folders "bad" and "good" with subfolders "drimdb" and "deepdrid-isbi2020"
 # must exist.
-# DATA_ROOT = os.path.join(os.path.dirname(__file__), "../data").__str__()
 DATA_ROOT = Path(__file__).resolve().parent.parent / "data"
-# MODELS_DIR = os.path.join(os.path.dirname(__file__), "../models").__str__()
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 # Model folders names for 10-ensemble
 ENSEMBLE_MODELS = [

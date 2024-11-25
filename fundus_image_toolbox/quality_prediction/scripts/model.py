@@ -115,9 +115,7 @@ class FundusQualityModel:
         if isinstance(config, dict):
             config = SimpleNamespace(**config)
         self.config = config
-        self.model = self._get_model(
-            self.config.model_type
-        )  # TODO: Does it use a cuda device automatically if available?
+        self.model = self._get_model(self.config.model_type)
         self.best_epoch = 0
         self.best_loss = float("inf")
         self.best_acc = 0.0

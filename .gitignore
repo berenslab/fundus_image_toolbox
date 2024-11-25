@@ -36,8 +36,13 @@ fundus_image_toolbox/fovea_od_localization/models/*
 fundus_image_toolbox/quality_prediction/models/*
 fundus_image_toolbox/quality_prediction/data/*
 fundus_image_toolbox/vessel_segmentation/segmentation/*
-*.egg-info
 fundus.jpg
+
+# Others
+######################
+*.egg-info
+installed_packages_linux.txt
+
 
 
 

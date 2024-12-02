@@ -49,10 +49,25 @@ def wget(link, target):
 def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.gz"):
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     print("Downloading weights...")
-    target = (MODELS_DIR / "weights.tar.gz").__str__()
-    wget(url, target)
+    target = MODELS_DIR / "weights.tar.gz"
+
+    # Stream the download with requests and display a progress bar
+    with requests.get(url, stream=True) as response:
+        response.raise_for_status()
+        total_size = int(response.headers.get('content-length', 0))
+        with open(target, 'wb') as file, tqdm(
+            desc="Downloading",
+            total=total_size,
+            unit='B',
+            unit_scale=True,
+            unit_divisor=1024,
+        ) as progress_bar:
+            for chunk in response.iter_content(chunk_size=1024):
+                file.write(chunk)
+                progress_bar.update(len(chunk))
+
     print("Extracting weights...")
-    os.system(f'tar -xzf {MODELS_DIR / "weights.tar.gz"} -C {MODELS_DIR}')
+    os.system(f'tar -xzf {target} -C {MODELS_DIR}')
     print("Removing tar file...")
     os.remove(target)
     print("Done")

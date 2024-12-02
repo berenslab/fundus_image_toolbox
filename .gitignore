@@ -42,7 +42,7 @@ fundus.jpg
 ######################
 *.egg-info
 installed_packages_linux.txt
-
+dist/
 
 
 

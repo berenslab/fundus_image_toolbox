@@ -128,6 +128,15 @@ conda activate fundus_image_toolbox
 ```
 
 #### 2) Install the toolbox <br>
+
+You can install the latest tagged version of the toolbox by running:
+
+```bash
+pip install fundus_image_toolbox
+```
+
+or the development version by running:
+
 ```bash
 pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```

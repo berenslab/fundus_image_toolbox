@@ -322,6 +322,13 @@ class ImageTorchUtils:
         else:
             raise ValueError("Image should be a list of paths, numpy arrays, PIL Images or torch tensors but is of type", type(self.img[0]))
         
+        # Find the smallest image size
+        min_height = min(img.shape[1] for img in self.img)
+        min_width = min(img.shape[2] for img in self.img)
+        
+        # Crop images to the smallest size to prevent error in torch.stack
+        self.img = [img[:, :min_height, :min_width] for img in self.img]
+        
         self.img = torch.stack(self.img)
         return self
 

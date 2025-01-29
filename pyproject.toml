@@ -16,7 +16,7 @@ authors = [
 requires-python = ">=3.9"
 dependencies = [
     "albumentations",
-    "bunch",
+    "bunch>=0.0.2",
     "captum>=0.7.0",
     "gdown>=5.2.0",
     "imgaug>=0.4.0",

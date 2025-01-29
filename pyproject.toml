@@ -16,7 +16,7 @@ authors = [
 requires-python = ">=3.9"
 dependencies = [
     "albumentations>=2.0.2",
-    "bunch>=1.0.1",
+    "bunch",
     "captum>=0.7.0",
     "gdown>=5.2.0",
     "imgaug>=0.4.0",
@@ -60,3 +60,6 @@ where = ["."]
 
 [tool.uv.workspace]
 members = ["."]
+
+[tool.uv.sources]
+bunch = { git = "https://github.com/dsc/bunch", rev = "85ed684" }

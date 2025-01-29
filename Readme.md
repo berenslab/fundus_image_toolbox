@@ -136,8 +136,8 @@ Alternatively, you can create a new conda environment and install the toolbox th
 ```bash
 conda create --name fundus_image_toolbox python=3.9.19 pip
 conda activate fundus_image_toolbox
-pip install fundus_image_toolbox
 ```
+And then `pip install fundus_image_toolbox` or `pip install -r requirements.txt` within the new environment.<br>
 Or create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
 ```bash
 uv venv

@@ -117,8 +117,6 @@ fit.plot_masks([fundus1, fundus2], vessel_masks)
 <p style="font-size:1.5em;"><b>Installation</b></p> -->
 ### Installation
 
-<small>Use Python versions >=3.9 and <3.10 as <i>vessel_segmentation</i> requires versions <3.10.</small><br> 
-
 #### Install the toolbox <br>
 
 You can install the latest tagged version of the toolbox by running:

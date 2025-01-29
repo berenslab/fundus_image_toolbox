@@ -70,38 +70,37 @@ fundus1, fundus2 = "path/to/fundus1.jpg", "path/to/fundus2.jpg"
 
 ```python
 import fundus_image_toolbox as fit
-from fit.circle_crop import crop
-fundus1_cropped = crop(fundus1, size=(512,512)) # > np.ndarray (512, 512, 3) uint8
+fundus1_cropped = fit.crop(fundus1, size=(512,512)) # > np.ndarray (512, 512, 3) uint8
 ```
 
 ```python
 import fundus_image_toolbox as fit
-from fit.fovea_od_localization import load_fovea_od_model, plot_coordinates
-model, _ = load_fovea_od_model(device="cuda:0")
+model, _ = fit.load_fovea_od_model(device="cuda:0")
 coordinates = model.predict([fundus1, fundus2]) # > List[np.ndarray[fovea_x,fovea_y,od_x,od_y], ...]
-plot_coordinates([fundus1, fundus2], coordinates)
+fit.plot_coordinates([fundus1, fundus2], coordinates)
 ```
 
 ```python
 import fundus_image_toolbox as fit
-from fit.quality_prediction import load_quality_ensemble, ensemble_predict_quality, plot_quality
-ensemble = load_quality_ensemble(device="cuda:0")
-confs, labels = ensemble_predict_quality(ensemble, [fundus1, fundus2], threshold=0.5) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
+ensemble = fit.load_quality_ensemble(device="cuda:0")
+confs, labels = fit.ensemble_predict_quality(ensemble, [fundus1, fundus2], threshold=0.5) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
 for img, conf, label in zip([fundus1, fundus2], confs, labels):
-    plot_quality(img, conf, label, threshold=0.5)
+    fit.plot_quality(img, conf, label, threshold=0.5)
 ```
 
 ```python
 import fundus_image_toolbox as fit
-from fit.registration import load_registration_model, register, DEFAULT_CONFIG
-model, matcher = load_registration_model(config)
 
-moving_image_aligned = register(
+config = fit.get_registration_config()
+# if wanted, change the config dictionary
+model, matcher = fit.load_registration_model(config)
+
+moving_image_aligned = fit.register(
     fundus1, 
     fundus2, 
     show=True, 
     show_mapping=False, 
-    config=DEFAULT_CONFIG, 
+    config=config, 
     model=model, 
     matcher=matcher
 ) # > np.ndarray (h_in, w_in, 3) uint8
@@ -109,25 +108,18 @@ moving_image_aligned = register(
 
 ```python
 import fundus_image_toolbox as fit
-from fit.vessel_segmentation import load_segmentation_ensemble, ensemble_predict_segmentation, plot_masks
-ensemble = load_segmentation_ensemble(device=device)
-vessel_masks = ensemble_predict_segmentation(ensemble, [fundus1, fundus2], threshold=0.5, size=(512, 512)) # > np.ndarray[np.ndarray[h_in, w_in], ...] float64
-plot_masks([fundus1, fundus2], vessel_masks)
+ensemble = fit.load_segmentation_ensemble(device=device)
+vessel_masks = fit.ensemble_predict_segmentation(ensemble, [fundus1, fundus2], threshold=0.5, size=(512, 512)) # > np.ndarray[np.ndarray[h_in, w_in], ...] float64
+fit.plot_masks([fundus1, fundus2], vessel_masks)
 ```
 
 <!-- <br>
 <p style="font-size:1.5em;"><b>Installation</b></p> -->
 ### Installation
 
-<small>Use Python version 3.9.5 as <i>vessel_segmentation</i> requires versions <3.10.</small><br> 
+<small>Use Python versions >=3.9 and <3.10 as <i>vessel_segmentation</i> requires versions <3.10.</small><br> 
 
-#### 1) Create a virtual environment <br>
-```bash
-conda create --name fundus_image_toolbox python=3.9.5 pip
-conda activate fundus_image_toolbox
-```
-
-#### 2) Install the toolbox <br>
+#### Install the toolbox <br>
 
 You can install the latest tagged version of the toolbox by running:
 
@@ -141,13 +133,18 @@ or the development version by running:
 pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```
 
-<!-- -or- -->
-
-<!-- #### 2b) Install parts of the toolbox
-Replace `<subpackage>` in the following command with the subfolder name of the desired package (i.e., `fundus_quality_prediction`, `fundus_fovea_od_localization`, `fundus_registration`, `fundus_vessel_segmentation`, `fundus_circle_crop`, or `fundus_utilities`) and run:
+#### Create a virtual environment <br>
+Alternatively, you can create a new conda environment and install the toolbox there:
 ```bash
-pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=<subpackage>&subdirectory=<subpackage>'
-``` -->
+conda create --name fundus_image_toolbox python=3.9.19 pip
+conda activate fundus_image_toolbox
+pip install fundus_image_toolbox
+```
+Or create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
+```bash
+uv venv
+source .venv/bin/activate
+```
 
 ### Contribute
 You are very welcome to contribute to the toolbox. Please raise an issue or create a pull request to do so. Please feel free to contact us if you have any questions or need help via julius.gervelmeyer [at] uni-tuebingen.de.

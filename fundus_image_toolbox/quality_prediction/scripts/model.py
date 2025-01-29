@@ -26,8 +26,8 @@ from sklearn.metrics import (
     roc_curve,
     precision_recall_curve,
 )
-from fundus_image_toolbox.utilities import ImageTorchUtils as Img
-from fundus_image_toolbox.utilities import seed_everything
+from fundus_image_toolbox.utils import ImageTorchUtils as Img
+from fundus_image_toolbox.utils import seed_everything
 
 from .transforms import get_unnormalization, get_transforms
 from .default import ENSEMBLE_MODELS, MODELS_DIR

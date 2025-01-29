@@ -6,7 +6,7 @@ from PIL import Image
 import cv2
 import torch
 from torchvision.transforms.functional import to_tensor
-from fundus_image_toolbox.utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utils import ImageTorchUtils as Img
 
 DIR = os.path.join(os.path.dirname(__file__))
 

@@ -11,7 +11,7 @@ from PIL import Image
 import yaml
 import pandas as pd
 import pickle
-from fundus_image_toolbox.utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utils import ImageTorchUtils as Img
 
 from .SuperRetina import (
     pre_processing,
@@ -140,7 +140,7 @@ def transform(image: Image, model_image_height, model_image_width):
 
 
 # %%
-def get_config(config=Union[dict, str, None]):
+def get_config(config:Union[dict, str, None]=None):
     """Get the configuration for inference. If config is None, use the default config. Adds the
     path to the model weights, if needed, as well as the image size for the model
     (Default: 512x512). The latter is independent of the image output size, so you can leave it at

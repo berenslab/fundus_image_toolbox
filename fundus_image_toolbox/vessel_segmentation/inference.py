@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from typing import Union, Tuple, List
 from PIL import Image
 from .default import MODELS_DIR
-from fundus_image_toolbox.utilities import ImageTorchUtils as Img
-from fundus_image_toolbox.utilities import seed_everything
+from fundus_image_toolbox.utils import ImageTorchUtils as Img
+from fundus_image_toolbox.utils import seed_everything
 
 # Clone the repository if not present
 try:

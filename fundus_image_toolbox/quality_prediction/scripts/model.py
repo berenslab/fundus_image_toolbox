@@ -49,7 +49,7 @@ def wget(link, target):
 def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.gz"):
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     print("Downloading weights...")
-    target = MODELS_DIR / "weights.tar.gz"
+    target = (MODELS_DIR / "weights.tar.gz").__str__()
 
     # Stream the download with requests and display a progress bar
     with requests.get(url, stream=True) as response:

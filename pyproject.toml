@@ -7,43 +7,49 @@ write_to = "fundus_image_toolbox/_version.py"
 
 [project]
 name = "fundus_image_toolbox"
-version = "0.0.3"
+version = "0.0.4"
 description = "A toolbox for fundus image analysis"
 readme = {file = "README.md", content-type = "text/markdown"}
 authors = [
     {name = "Julius Gervelmeyer", email = "Julius.Gervelmeyer@uni-tuebingen.de"},
 ]
-requires-python = ">=3.9, <3.10"
+requires-python = ">=3.9"
 dependencies = [
-    # "bunch>=1.0.1",
+    "albumentations>=2.0.2",
+    "bunch",
     "captum>=0.7.0",
-    "gdown",
+    "gdown>=5.2.0",
     "imgaug>=0.4.0",
-    "ipykernel>=6.15.2",
-    "ipython>=8.16.1",
-    "jupyter>=1.0.0",
-    "jupyter-black>=0.3.4",
-    "matplotlib>=3.6.2",
-    "matplotlib-inline>=0.1.6",
+    "ipykernel>=6.29.5",
+    "ipython>=8.18.1",
+    "jupyter>=1.1.1",
+    "jupyter-black>=0.4.0",
+    "matplotlib>=3.9.4",
+    "matplotlib-inline>=0.1.7",
     "munch>=4.0.0",
-    "mypy>=0.910",
-    "notebook_shim>=0.2.4",
-    "numpy>=1.24.0, <2.0",
-    "opencv-python-headless>=4.9.0.80",
-    "openpyxl>=3.1.2",
-    "pandas>=1.4.2",
-    "pillow>=10.2.0",
-    "PyYAML>=6.0",
-    "scikit-image>=0.22.0",
-    "scikit-learn>=1.1.2",
+    "mypy>=1.14.1",
+    "notebook-shim>=0.2.4",
+    "numpy>=2.0.2",
+    "opencv-python-headless>=4.11.0.86",
+    "openpyxl>=3.1.5",
+    "pandas>=2.2.3",
+    "pillow>=11.1.0",
+    "pip>=25.0",
+    "pyyaml>=6.0.2",
+    "scikit-image>=0.24.0",
+    "scikit-learn>=1.6.1",
+    "scipy>=1.13.1",
     "seaborn>=0.13.2",
-    "timm>=0.9.16",
-    "torch>=2.2.0",
+    "timm>=1.0.14",
+    "torch>=2.5.1",
     "torchinfo>=1.8.0",
-    "torchvision>=0.15.2",
-    "tqdm>=4.66.2",
-    "scipy>=1.10.0",
-    "albumentations",
+    "torchvision>=0.20.1",
+    "tqdm>=4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "tox>=4.24.1",
 ]
 
 [tool.setuptools]
@@ -51,3 +57,9 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.uv.workspace]
+members = ["."]
+
+[tool.uv.sources]
+bunch = { git = "https://github.com/dsc/bunch", rev = "85ed684" }

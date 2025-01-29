@@ -35,8 +35,8 @@ def clone_repo(
 
         print("Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
+        replace_timm(target_dir)
         print("Done.")
-
 
 # Make imports relative
 def add_dots_to_imports(file_path):
@@ -103,3 +103,13 @@ def add_dots_to_imports_in_folder(folder_path):
             if file.endswith(".py"):
                 print("########\n", file)
                 add_dots_to_imports(os.path.join(root, file))
+
+def replace_timm(folder_path):
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(".py"):
+                with open(os.path.join(root, file), "r") as f:
+                    lines = f.readlines()
+                with open(os.path.join(root, file), "w") as f:
+                    for line in lines:
+                        f.write(line.replace("timm.models.layers", "timm.layers"))

@@ -19,17 +19,6 @@ Thumbs.db
 *.joblib
 *.out
 
-# Other dirs
-######################
-wandb/
-runs/
-__pycache__/
-.mypy_cache/
-*.egg-info/
-.tox/
-*/build
-test/masks/
-
 # Submodule dependencies (Repos, weights, data)
 ######################
 fundus_image_toolbox/fovea_od_localization/models/*
@@ -40,8 +29,18 @@ fundus.jpg
 
 # Others
 ######################
+wandb/
+runs/
+__pycache__/
+.mypy_cache/
+*.egg-info/
+.tox/
+*/build
+test/masks/
 *.egg-info
+.venv/
 installed_packages_linux.txt
+outdated/
 dist/
 
 

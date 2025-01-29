@@ -3,7 +3,7 @@ import torch
 import os
 import cv2
 from typing import Union
-from fundus_image_toolbox.utilities import ImageTorchUtils as Img
+from fundus_image_toolbox.utils import ImageTorchUtils as Img
 from PIL import Image
 
 # Adapted from https://github.com/HzFu/EyeQ/blob/master/EyeQ_preprocess/fundus_prep.py

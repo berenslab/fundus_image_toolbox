@@ -5,7 +5,7 @@ import pandas as pd
 import torch
 
 from .dataset import FundusQualityDataset
-from fundus_image_toolbox.utilities import ImbalancedDatasetSampler
+from fundus_image_toolbox.utils import ImbalancedDatasetSampler
 from .default import DATA_ROOT
 
 

@@ -35,8 +35,8 @@ def clone_repo(
 
         print("Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
+        replace_timm(target_dir)
         print("Done.")
-
 
 # Make imports relative
 def add_dots_to_imports(file_path):

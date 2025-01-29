@@ -62,4 +62,4 @@ where = ["."]
 members = ["."]
 
 [tool.uv.sources]
-bunch = { git = "https://github.com/dsc/bunch", rev = "85ed684" }
+bunch = { git = "https://github.com/dsc/bunch", rev = "85ed6841bf5754867703e67324a4c82b66f1cd4b" }

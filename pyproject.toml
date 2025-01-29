@@ -47,6 +47,11 @@ dependencies = [
     "tqdm>=4.67.1",
 ]
 
+[dependency-groups]
+dev = [
+    "tox>=4.24.1",
+]
+
 [tool.setuptools]
 include-package-data = true
 

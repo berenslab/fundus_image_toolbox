@@ -1,3 +1,4 @@
+albumentations # no version to prevent conflict with imaug
 bunch @ git+https://github.com/dsc/bunch@85ed684#egg=bunch
 captum>=0.7.0
 gdown
@@ -19,11 +20,10 @@ pillow>=10.2.0
 PyYAML>=6.0
 scikit-image>=0.22.0
 scikit-learn>=1.1.2
+scipy>=1.10.0
 seaborn>=0.13.2
 timm>=0.9.16
 torch>=2.2.0
 torchinfo>=1.8.0
 torchvision>=0.15.2
 tqdm>=4.66.2
-scipy>=1.10.0
-albumentations # no version to prevent conflict with imaug

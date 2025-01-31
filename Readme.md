@@ -137,7 +137,7 @@ Alternatively, you can create a new conda environment and install the toolbox th
 conda create --name fundus_image_toolbox python=3.9.19 pip
 conda activate fundus_image_toolbox
 ```
-And then `pip install fundus_image_toolbox` or `pip install -r requirements.txt` within the new environment.<br>
+And then `pip install fundus_image_toolbox` or `pip install .` within the new environment.<br>
 Or create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
 ```bash
 uv venv
@@ -153,7 +153,7 @@ You are very welcome to contribute to the toolbox. Please raise an issue or crea
 
 If you use this toolbox in your research, please consider citing it:
 ```bibtex
-TODO: Have a doi to cite
+TODO: Have a doi to cite. Currently, this work is under review.
 ```
 
 If you use external parts of the toolbox that this toolbox provides an interface for, please consider citing the respective papers:

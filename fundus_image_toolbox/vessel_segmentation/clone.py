@@ -118,4 +118,5 @@ def replace_args(folder_path):
                 with open(os.path.join(root, file), "w") as f:
                     for line in lines:
                         for arg in args:
-                            f.write(line.replace(arg[0], arg[1]))
+                            line = line.replace(arg[0], arg[1])
+                        f.write(line)

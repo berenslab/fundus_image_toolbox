@@ -35,7 +35,7 @@ def clone_repo(
 
         print("Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
-        replace_timm(target_dir)
+        replace_args(target_dir)
         print("Done.")
 
 # Make imports relative
@@ -104,7 +104,12 @@ def add_dots_to_imports_in_folder(folder_path):
                 print("########\n", file)
                 add_dots_to_imports(os.path.join(root, file))
 
-def replace_timm(folder_path):
+def replace_args(folder_path):
+    # Prevents deprecation error from timm module and torch error when loading model from bunch object
+    args = [
+        ("timm.models.layers", "timm.layers"),
+        ("checkpoint= torch.load(predictor_path, map_location=device)", "checkpoint= torch.load(predictor_path, map_location=device, weights_only=False)")
+    ]
     for root, _, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".py"):
@@ -112,4 +117,6 @@ def replace_timm(folder_path):
                     lines = f.readlines()
                 with open(os.path.join(root, file), "w") as f:
                     for line in lines:
-                        f.write(line.replace("timm.models.layers", "timm.layers"))
+                        for arg in args:
+                            line = line.replace(arg[0], arg[1])
+                        f.write(line)

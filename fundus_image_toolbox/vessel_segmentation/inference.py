@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import sys
 import pickle
-import os
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
@@ -20,8 +20,8 @@ try:
 except ImportError:
     from .clone import clone_repo
 
-    this_dir = os.path.dirname(os.path.abspath(__file__))
-    clone_repo(target_dir=os.path.join(this_dir, "segmentation").__str__())
+    this_dir = Path(__file__).resolve().parent
+    clone_repo(target_dir=(this_dir / "segmentation").__str__())
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
     from .segmentation.utils.model_definition import FR_UNet
 
@@ -73,7 +73,7 @@ def save_masks(x_paths, masks, path):
         x_paths = [x_paths]
         masks = [masks]
     masks_flattened = [mask.flatten() for mask in masks]
-    basenames = [os.path.basename(x) for x in x_paths]
+    basenames = [Path(x).name for x in x_paths]
     df = pd.DataFrame(
         {
             "image": basenames,
@@ -81,22 +81,22 @@ def save_masks(x_paths, masks, path):
             "shape": [mask.shape for mask in masks],
         }
     )
-    p = os.path.join(path, "masks.pkl")
-    os.makedirs(os.path.dirname(p), exist_ok=True)
+    p = Path(path) / "masks.pkl"
+    p.parent.mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(p):
-        df_ = pickle.load(open(p, "rb"))
+    if p.exists():
+        df_ = pickle.load(p.open("rb"))
         df_ = df_[~df_["image"].isin(df["image"])]
         df = pd.concat([df_, df], axis=0)
 
-    pickle.dump(df, open(p, "wb"))
+    pickle.dump(df, p.open("wb"))
 
 
 def load_ensemble(device: str = "cuda:0"):
     models_paths = [
-        os.path.join(MODELS_DIR, f)
-        for f in os.listdir(MODELS_DIR)
-        if f.endswith(".pth")
+        (Path(MODELS_DIR) / f).__str__()
+        for f in Path(MODELS_DIR).iterdir()
+        if f.suffix == ".pth"
     ]
     ensemble_models = get_ensemble(models_paths, dropout=False, device=device)
     return ensemble_models
@@ -217,12 +217,12 @@ def load_masks_from_filenames(filenames, masks_dir: str = None):
     if isinstance(filenames, str):
         filenames = [filenames]
 
-    p = os.path.join(masks_dir, "masks.pkl")
+    p = Path(masks_dir) / "masks.pkl"
     masks = pickle.load(open(p, "rb"))
     out = []
 
     for filename in filenames:
-        row = masks.loc[masks["image"] == os.path.basename(filename)]
+        row = masks.loc[masks["image"] == Path(filename).name]
         mask = row["mask"].values[0]
         mask = np.array(mask)
         mask = mask.reshape(row["shape"].values[0])

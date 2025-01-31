@@ -15,6 +15,10 @@ authors:
     orcid: 0009-0007-7286-0017
     equal-contrib: false
     affiliation: 1
+  - name: Ziwei Huang
+    orcid: 0000-0001-7517-0395
+    equal-contrib: false
+    affiliation: 1
   - name: Sarah Müller
     orcid: 0000-0003-1500-8673
     equal-contrib: false
@@ -34,7 +38,7 @@ bibliography: paper.bib
 <!-- ![Fundus Image Toolbox Icon](../icon.svg) -->
 
 # Summary
-The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, blood vessel segmentation, image registration, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox is designed to be flexible and easy to use, thus helping to speed up research workflows. All tools can be installed as a whole or individually, depending on the user's needs. \autoref{fig:example} illustrates the main functionalities. 
+The Fundus Image Toolbox is an open source Python suite of tools for working with retinal fundus images. It includes quality prediction, fovea and optic disc center localization, blood vessel segmentation, image registration, and fundus cropping functions. It also provides a collection of useful utilities for image manipulation and image-based PyTorch models. The toolbox is designed to be flexible and easy to use, thus helping to speed up research workflows. It is available as a PyPI package. \autoref{fig:example} illustrates the main functionalities. 
 Find the toolbox at [https://github.com/berenslab/fundus_image_toolbox](https://github.com/berenslab/fundus_image_toolbox).
 
 # Statement of need
@@ -55,6 +59,6 @@ The main functionalities of the Fundus Image Toolbox are:
 ![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Quality prediction. (c.) Vessel segmentation. (d.) Registration.\label{fig:example}](fig3.pdf){ width=100% }
 
 # Acknowledgements
-We thank Ziwei Huang for reviewing the package and Murat Seçkin Ayhan for inspiring the development of the quality prediction model. This project was supported by the Hertie Foundation. JG received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting SM.
+We thank Murat Seçkin Ayhan for inspiring the development of the quality prediction model. This project was supported by the Hertie Foundation. JG received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting SM.
 
 # References

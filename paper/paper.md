@@ -15,12 +15,12 @@ authors:
     orcid: 0009-0007-7286-0017
     equal-contrib: false
     affiliation: 1
-  - name: Ziwei Huang
-    orcid: 0000-0001-7517-0395
-    equal-contrib: false
-    affiliation: 1
   - name: Sarah Müller
     orcid: 0000-0003-1500-8673
+    equal-contrib: false
+    affiliation: 1
+  - name: Ziwei Huang
+    orcid: 0000-0001-7517-0395
     equal-contrib: false
     affiliation: 1
   - name: Philipp Berens
@@ -31,7 +31,7 @@ affiliations:
  - name: Hertie Institute for AI in Brain Health, University of Tübingen, Tübingen, Germany
    index: 1
 
-date: 20 July 2024
+date: 03 February 2025
 bibliography: paper.bib
 ---
 
@@ -59,6 +59,9 @@ The main functionalities of the Fundus Image Toolbox are:
 ![Examples for main functionalities of the Fundus Image Toolbox. (a.) Fovea and optic disc localization. (b.) Quality prediction. (c.) Vessel segmentation. (d.) Registration.\label{fig:example}](fig3.pdf){ width=100% }
 
 # Acknowledgements
-We thank Murat Seçkin Ayhan for inspiring the development of the quality prediction model. This project was supported by the Hertie Foundation. JG received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting SM.
+We thank Murat Seçkin Ayhan for inspiring the development of the quality prediction model. This project was supported by the Hertie Foundation. Julius Gervelmeyer received funding through the Else Kröner Medical Scientist Kolleg "ClinbrAIn: Artificial Intelligence for Clinical Brain Research”. The authors thank the International Max Planck Research School for Intelligent Systems (IMPRS-IS) for supporting Sarah Müller. 
+
+# Author contributions
+Julius Gervelmeyer: Conceptualization, Software, Writing. Sarah Müller: Software. Ziwei Huang: Software: Code review & PyPI. Philipp Berens: Supervision, Writing: Review & Editing.
 
 # References

@@ -4,7 +4,7 @@ Segment the blood vessels in a fundus image using an ensemble of FR-U-Nets train
 
 See the [usage_vessel-segmentation.ipynb](../0_example_usage/usage_vessel-segmentation.ipynb).
 
-<img src="../vessel_segmentation/exs.png" alt="Example image" width="800"/>
+<img src="../fundus_image_toolbox/vessel_segmentation/exs.png" alt="Example image" width="800"/>
 
 [ x ] Works on tensor images <br>
 [(x)] Has batch support: Yes, you can pass batches, but internally, certain image preprocessing steps are performed sequentially.

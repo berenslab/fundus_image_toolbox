@@ -1,7 +1,7 @@
 ## A Fovea and optic disc localization model for fundus images
 A model to predict the center coordinates of the fovea and the optic disc in fundus images based on a multi-task EfficientNet trained on ADAM, REFUGE and IDRID datasets.
 
-<img src="../fovea_od_localization/ex1.png" alt="Example image" width="800"/>
+<img src="../fundus_image_toolbox/fovea_od_localization/ex1.png" alt="Example image" width="800"/>
 <br>Example predictions from the external dataset "DeepDRiD".
 
 <br>
@@ -45,3 +45,4 @@ This project uses substantial parts of a [tutorial](https://python.plainenglish.
 
 
 ### Cite
+See [Readme.md](../Readme.md#cite).

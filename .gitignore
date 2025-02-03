@@ -25,6 +25,7 @@ fundus_image_toolbox/fovea_od_localization/models/*
 fundus_image_toolbox/quality_prediction/models/*
 fundus_image_toolbox/quality_prediction/data/*
 fundus_image_toolbox/vessel_segmentation/segmentation/*
+fundus_image_toolbox/vessel_segmentation/bunch/
 fundus.jpg
 
 # Others

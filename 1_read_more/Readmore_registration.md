@@ -8,8 +8,8 @@ See the [usage_registration.ipynb](../0_example_usage/usage_registration.ipynb).
 [ ] Has batch support
 
 ### Example: Alignment of the <i>moving</i> image to the <i>fixed</i> image
-![Example](../registration/image2.png)
-![SuperPoints](../registration/image1.png)
+![Example](../fundus_image_toolbox/registration/image2.png)
+![SuperPoints](../fundus_image_toolbox/registration/image1.png)
 
 ### Ref
 This is a wrapper for SuperRetina from [<i>Jiazhen Liu et al., "Semi-Supervised Keypoint Detector and Descriptor for Retinal Image Matching" (2022)</i>](https://arxiv.org/abs/2207.07932). This package <!--clones the [official repository](https://github.com/ruc-aimc-lab/SuperRetina) and--> provides an interface to the registration task. Weights will be aquired automatically from [zenodo](https://zenodo.org/records/11241985/files/SuperRetina.pth). The input image contrasts are enhanced before being fed into the SuperRetina model at a size of 512x512 pixels.

@@ -3,7 +3,7 @@
 A simple tool to fastly crop fundus images to a circle and center it.
 It uses cv2 and numpy to process single images.
 
-![Example](../circle_crop/ex.png)
+![Example](../fundus_image_toolbox/circle_crop/ex.png)
 
 [ ] Works on tensor images <br>
 [ ] Has batch support

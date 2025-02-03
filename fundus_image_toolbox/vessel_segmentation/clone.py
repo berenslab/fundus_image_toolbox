@@ -16,11 +16,10 @@ def clone_repo(
     branch="main",
     target_dir=f"./segmentation",
 ):
-    # Clone Segmentation Quality Control repo
     os.makedirs(target_dir, exist_ok=True)
     if not os.listdir(target_dir):
         print(
-            f"The vessel segmentation folder is missing. Downloading it from {link}..."
+            f"Module missing, downloading it from {link}..."
         )
         pwd = os.getcwd()
         os.system(f"git clone {link} {target_dir}")
@@ -33,6 +32,9 @@ def clone_repo(
             pass
         os.chdir(pwd)
 
+def adjust_imports(target_dir):
+    # Make imports of segmentation module relative
+    if os.path.exists(target_dir):
         print("Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
         replace_args(target_dir)
@@ -63,11 +65,11 @@ def add_dots_to_imports(file_path):
 
                 # Check if is a local file in same directory
                 if os.path.exists(os.path.join(this_dir, fname)):
-                    print(os.path.join(this_dir, fname + ".py"))
+                    # print(os.path.join(this_dir, fname + ".py"))
                     is_local_file = True
                 # Check if is a local folder in parent directory
                 elif os.path.exists(os.path.join(par_dir, fname)):
-                    print(os.path.join(par_dir, fname))
+                    # print(os.path.join(par_dir, fname))
                     is_local_folder = True
 
             c = ".." if is_local_folder else "."
@@ -83,8 +85,8 @@ def add_dots_to_imports(file_path):
                 imports = terms[-1].split(",")
                 imports = [i.replace(" ", "") for i in imports]
 
-                print("parents: ", parents)
-                print("imports: ", imports)
+                # print("parents: ", parents)
+                # print("imports: ", imports)
 
                 if len(parents) > 0:
                     file.write(
@@ -101,7 +103,7 @@ def add_dots_to_imports_in_folder(folder_path):
     for root, _, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".py"):
-                print("########\n", file)
+                # print("########\n", file)
                 add_dots_to_imports(os.path.join(root, file))
 
 def replace_args(folder_path):

@@ -18,12 +18,25 @@ try:
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
     from .segmentation.utils.model_definition import FR_UNet
 except ImportError:
-    from .clone import clone_repo
+    from .clone import clone_repo, adjust_imports
 
     this_dir = Path(__file__).resolve().parent
-    clone_repo(target_dir=(this_dir / "segmentation").__str__())
+    target_dir = (this_dir / "segmentation").__str__()
+    clone_repo(target_dir=target_dir)
+    adjust_imports(target_dir)
     from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
     from .segmentation.utils.model_definition import FR_UNet
+
+try:
+    # The pickled model is a bunch object but PyPI's bunch is too old.
+    import bunch
+except ImportError:
+    from .clone import clone_repo
+    
+    this_dir = Path(__file__).resolve().parent
+    clone_repo(target_dir=(this_dir / "bunch").__str__(), link="https://github.com/dsc/bunch", branch="master", commit="85ed6841bf5754867703e67324a4c82b66f1cd4b")
+    sys.path.append((this_dir / "bunch").__str__())
+    import bunch
 
 
 class Parser(ArgumentParser):

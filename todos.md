@@ -13,7 +13,7 @@
 
     [x] circle_crop
 
-[ ] Vessel Segmentation: Ask Patrick & Jerry if they could get rid of "bunch" dependency: "bunch" prevents the use of python >= 3.10
+[ ] Vessel Segmentation: Ask Patrick & Jerry if they could get rid of "bunch" dependency: "bunch" prevents the use of python >= 3.10. 31.1.205: Relaxed it using the development version from git.
 
 [ ] Once Sarah has refactored her image cropping code to yield an image as output, add it to circle_crop, s.t. one can choose between the two algorithms
 

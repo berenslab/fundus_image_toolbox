@@ -45,4 +45,26 @@ This project uses substantial parts of a [tutorial](https://python.plainenglish.
 
 
 ### Cite
-See [Readme.md](../Readme.md#cite).
+
+Gervelmeyer et al., (2025). Fundus Image Toolbox: A Python package for fundus image processing. Journal of Open Source Software, 10(108), 7101, https://doi.org/10.21105/joss.07101
+
+<details>
+<summary>Bibtex</summary>
+
+```bibtex
+@article{Gervelmeyer2025-fit,
+  title     = "Fundus Image Toolbox: A Python package for fundus image processing",
+  author    = "Gervelmeyer, Julius and M{\"u}ller, Sarah and Huang, Ziwei and Berens, Philipp",
+  journal   = "Journal of Open Source Software",
+  publisher = "The Open Journal",
+  volume    =  10,
+  number    =  108,
+  pages     = "7101",
+  month     =  apr,
+  year      =  2025,
+  doi       = "https://doi.org/10.21105/joss.07101",
+  }
+```
+
+</details>
+<br>

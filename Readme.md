@@ -1,5 +1,5 @@
 ## Fundus Image Toolbox
-
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07101/status.svg)](https://doi.org/10.21105/joss.07101)
 <img src="icon.svg" alt="Logo" align="right">
 
 <!-- <p style="font-size:3em;">Fundus Image Toolbox</p> -->
@@ -152,9 +152,29 @@ You are very welcome to contribute to the toolbox. Please raise an issue or crea
 ### Cite
 
 If you use this toolbox in your research, please consider citing it:
+
+Gervelmeyer et al., (2025). Fundus Image Toolbox: A Python package for fundus image processing. Journal of Open Source Software, 10(108), 7101, https://doi.org/10.21105/joss.07101
+
+<details>
+<summary>Bibtex</summary>
+
 ```bibtex
-TODO: Have a doi to cite. Currently, this work is under review.
+@article{Gervelmeyer2025-fit,
+  title     = "Fundus Image Toolbox: A Python package for fundus image processing",
+  author    = "Gervelmeyer, Julius and M{\"u}ller, Sarah and Huang, Ziwei and Berens, Philipp",
+  journal   = "Journal of Open Source Software",
+  publisher = "The Open Journal",
+  volume    =  10,
+  number    =  108,
+  pages     = "7101",
+  month     =  apr,
+  year      =  2025,
+  doi       = "https://doi.org/10.21105/joss.07101",
+  }
 ```
+
+</details>
+<br>
 
 If you use external parts of the toolbox that this toolbox provides an interface for, please consider citing the respective papers:
 - Fundus registration: [Liu et al., 2022](https://arxiv.org/abs/2207.07932)

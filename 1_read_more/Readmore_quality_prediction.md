@@ -7,6 +7,11 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
 [x] Works on tensor images <br>
 [x] Has batch support
 
+### Notes
+- The model was trained to grade whole fundus images, not e.g. largely zoomed-in cutouts. Keep this in mind when applying to your data.
+- The predicted quality probability may vary with image size. Thanks to Murat for [highlighting this](https://github.com/berenslab/fundus_image_toolbox/issues/20#issuecomment-2895195087). We suggest to compare predicted grades only across images of the same size.
+- The probability threshold for good vs. bad quality needs to be changed depending on the dataset used. Set it to a value that makes sense for your data! E.g., find the 5th percentile of predicted quality scores and take that value as a threshold if you want to drop the 5% worst quality images.
+
 ### Preparation
 - If you want to use the model, no preparation is needed an you can skip this part. Weights will be aquired automatically from zenodo.
 - If you want to train or evaluate a model, you have to download these two datasets, store them somewhere and note down the paths.
@@ -30,7 +35,6 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
 ### Performance
 - The model ensemble achieves an accuracy and ROCAUC of 0.78 and 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.
 - To predict DeepDRiD's binary quality annotation is known to be a difficult task. Hence, the previous sota is 0.75 and 0.75 for accuracy and ROCAUC, respectively, on a DeepDRiD test split ([Tummala et al., 2023](https://doi.org/10.3390/diagnostics13040622)).
-
 
 ### Cite
 

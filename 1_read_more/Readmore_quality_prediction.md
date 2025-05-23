@@ -20,8 +20,8 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
 
 ### How to
 - Refer to [usage_quality.ipynb](../0_example_usage/usage_quality.ipynb) to use the model ensemble to predict the quality of an image.
-- Refer to [training_quality_single-model.ipynb](../0_example_usage/training and evaluation/training_quality_single-model.ipynb) to train a model on the above datasets from a notebook.
-- Refer to [training_quality_cli.py](../0_example_usage/training and evaluation/training_quality_cli.py) to train and/or evaluate a single model on the above datasets from the command line.
+- Refer to [training_quality_single-model.ipynb](../0_example_usage/training%20and%20evaluation/training_quality_single-model.ipynb) to train a model on the above datasets from a notebook.
+- Refer to [training_quality_cli.py](../0_example_usage/training%20and%20evaluation/training_quality_cli.py) to train and/or evaluate a single model on the above datasets from the command line.
     You can pass a config file
     ```bash
     python train_cli.py --config /path/to/config.yaml

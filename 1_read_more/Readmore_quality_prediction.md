@@ -30,7 +30,7 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
     ```bash
     python train_cli.py --help
     ```
-- Refer to [training_quality_eval_ensemble.ipynb](../0_example_usage/training and evaluation/training_quality_eval_ensemble.ipynb) to evaluate the pre-trained model ensemble on the above datasets.
+- Refer to [training_quality_eval_ensemble.ipynb](../0_example_usage/training%20and%20evaluation/training_quality_eval_ensemble.ipynb) to evaluate the pre-trained model ensemble on the above datasets.
 
 ### Performance
 - The model ensemble achieves an accuracy and ROCAUC of 0.78 and 0.84 on a DeepDRiD test split and 1.0 and 1.0 on a DrimDB test split.

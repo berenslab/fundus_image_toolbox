@@ -16,12 +16,12 @@ A model to predict the center coordinates of the fovea and the optic disc in fun
     - [REFUGE dataset](https://doi.org/10.48550/arXiv.1910.03667) from [baidu](https://ai.baidu.com/broad/download) (paper: [link](https://doi.org/10.1016/j.media.2019.101570))
     - [IDRID dataset](https://doi.org/10.1016/j.media.2019.101561) from [ieee](https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid) (paper: [link](https://doi.org/10.1016/j.media.2019.101561))
 
-- As the ADAM and REFUGE datasets provide optic disc masks instead of center coordinates, we have to extract the center coordinates from the masks. This is done in the [misc_masks_to_coordinates_ADAM.ipynb](../0_example_usage/fovea_od data preparation/misc_fovea-od_masks_to_coordinates_ADAM.ipynb) and [misc_masks_to_coordinates_REFUGE.ipynb](../0_example_usage/fovea_od data preparation/misc_masks_to_coordinates_REFUGE.ipynb) scripts. Finally, combine all datasets using the [misc_combine_IDRID_ADAM_REFUGE.ipynb](../0_example_usage/fovea_od data preparation/misc_combine_IDRID_ADAM_REFUGE.ipynb) script.
+- As the ADAM and REFUGE datasets provide optic disc masks instead of center coordinates, we have to extract the center coordinates from the masks. This is done in the [misc_masks_to_coordinates_ADAM.ipynb](../0_example_usage/fovea_od%20data%20preparation/misc_fovea-od_masks_to_coordinates_ADAM.ipynb) and [misc_masks_to_coordinates_REFUGE.ipynb](../0_example_usage/fovea_od%20data%20preparation/misc_masks_to_coordinates_REFUGE.ipynb) scripts. Finally, combine all datasets using the [misc_combine_IDRID_ADAM_REFUGE.ipynb](../0_example_usage/fovea_od%20data%20preparation/misc_combine_IDRID_ADAM_REFUGE.ipynb) script.
 
 ### How to
 - See [usage_fovea-od_inference.ipynb](../0_example_usage/usage_fovea-od_inference.ipynb) on how to use the model.
-- See [training_fovea-od.ipynb](../0_example_usage/training and evaluation/training_fovea-od.ipynb) for training a model from scratch.
-- See [training_fovea-cli.ipynb](../0_example_usage/training and evaluation/training_fovea-od_cli.py) for training a model from the command line:
+- See [training_fovea-od.ipynb](../0_example_usage/training%20and%20evaluation/training_fovea-od.ipynb) for training a model from scratch.
+- See [training_fovea-cli.ipynb](../0_example_usage/training%20and%20evaluation/training_fovea-od_cli.py) for training a model from the command line:
     You can pass a config file
     ```bash
     python training_fovea-od_cli.py --config /path/to/config.yaml

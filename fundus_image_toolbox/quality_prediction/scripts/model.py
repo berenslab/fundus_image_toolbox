@@ -3,6 +3,7 @@ from typing import Union
 import yaml
 from pathlib import Path
 import requests
+import tarfile
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -49,7 +50,7 @@ def wget(link, target):
 def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.gz"):
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     print("Downloading weights...")
-    target = (MODELS_DIR / "weights.tar.gz").__str__()
+    target = (MODELS_DIR / "weights.tar.gz").resolve()
 
     # Stream the download with requests and display a progress bar
     with requests.get(url, stream=True) as response:
@@ -67,9 +68,22 @@ def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.
                 progress_bar.update(len(chunk))
 
     print("Extracting weights...")
-    os.system(f'tar -xzf {target} -C {MODELS_DIR}')
+    # Use tarfile module for cross-platform compatibility
+    with tarfile.open(target, "r:gz") as tar:
+        tar.extractall(path=str(MODELS_DIR))
+    
+    # Fix Windows incompatible folder names (colons in timestamps)
+    # Replace colons with dashes to match ENSEMBLE_MODELS format
+    extracted_folders = sorted(MODELS_DIR.iterdir())
+    for folder in extracted_folders:
+        if folder.is_dir() and folder.name != "weights.tar.gz":
+            # Replace colons with dashes to match expected format
+            if ":" in folder.name:
+                new_folder_name = folder.name.replace(":", "-")
+                folder.rename(folder.parent / new_folder_name)
+    
     print("Removing tar file...")
-    os.remove(target)
+    os.remove(str(target))
     print("Done")
 
 

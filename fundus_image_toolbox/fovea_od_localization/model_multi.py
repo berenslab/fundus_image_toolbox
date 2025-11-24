@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from typing import List, Union
 from pathlib import Path
 import requests
+import tarfile
 
 import yaml
 import numpy as np
@@ -303,17 +304,22 @@ class ODFoveaModel:
         self, url="https://zenodo.org/records/11174642/files/weights.tar.gz"
     ):
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
-        weights_path = (MODELS_DIR / "weights.tar.gz").__str__()
-        wget(url, weights_path)
+        weights_path = (MODELS_DIR / "weights.tar.gz").resolve()
+        wget(url, str(weights_path))
         print("Extracting weights...")
-        os.system(f"tar -xzf {weights_path} -C {MODELS_DIR}")
+        
+        # Use tarfile module for cross-platform compatibility
+        with tarfile.open(weights_path, "r:gz") as tar:
+            tar.extractall(path=MODELS_DIR)
 
         # Get Windows compatible folder names
         extracted_folders = sorted(MODELS_DIR.iterdir())
         for folder in extracted_folders:
-            if folder.is_dir():
-                new_folder_name = folder.name.replace(":", "_")
-                folder.rename(folder.parent / new_folder_name)
+            if folder.is_dir() and folder.name != "weights.tar.gz":
+                # Replace colons with underscores for Windows compatibility
+                if ":" in folder.name:
+                    new_folder_name = folder.name.replace(":", "_")
+                    folder.rename(folder.parent / new_folder_name)
 
         print("Removing tar file...")
         os.remove(weights_path)

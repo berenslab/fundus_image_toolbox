@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+import subprocess
 
 
 def remove_folder(target_dir):
@@ -16,21 +18,44 @@ def clone_repo(
     branch="main",
     target_dir=f"./segmentation",
 ):
-    os.makedirs(target_dir, exist_ok=True)
-    if not os.listdir(target_dir):
-        print(
-            f"Module missing, downloading it from {link}..."
+    target_path = Path(target_dir).resolve()
+    target_path.mkdir(parents=True, exist_ok=True)
+
+    if not any(target_path.iterdir()):
+        print(f"Module missing, downloading it from {link}...")
+        
+        # Clone the repository
+        subprocess.run(
+            ["git", "clone", link, str(target_path)],
+            check=True,
+            capture_output=True,
+            text=True
         )
-        pwd = os.getcwd()
-        os.system(f"git clone {link} {target_dir}")
-        os.system(
-            f"cd {target_dir} && git checkout {branch} && git reset --hard {commit}"
+        
+        # Checkout specific branch and commit
+        subprocess.run(
+            ["git", "checkout", branch],
+            cwd=str(target_path),
+            check=True,
+            capture_output=True,
+            text=True
         )
-        try:
-            remove_folder(os.path.join(target_dir, ".git"))
-        except:
-            pass
-        os.chdir(pwd)
+        
+        subprocess.run(
+            ["git", "reset", "--hard", commit],
+            cwd=str(target_path),
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        
+        # Remove .git folder
+        git_folder = target_path / ".git"
+        if git_folder.exists():
+            try:
+                remove_folder(str(git_folder))
+            except Exception:
+                pass
 
 def adjust_imports(target_dir):
     # Make imports of segmentation module relative

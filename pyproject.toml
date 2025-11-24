@@ -7,7 +7,7 @@ write_to = "fundus_image_toolbox/_version.py"
 
 [project]
 name = "fundus_image_toolbox"
-version = "0.1.0"
+version = "0.1.1"
 description = "A toolbox for fundus image analysis"
 readme = {file = "Readme.md", content-type = "text/markdown"}
 authors = [

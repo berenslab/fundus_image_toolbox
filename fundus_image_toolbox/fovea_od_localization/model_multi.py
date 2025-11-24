@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from typing import List, Union
 from pathlib import Path
 import requests
+import tarfile
 
 import yaml
 import numpy as np
@@ -299,6 +300,14 @@ class ODFoveaModel:
 
         return model
 
+    def _remove_file(self, weights_path):
+        print("Removing tar file...")
+        try:
+            os.remove(weights_path)
+        except Exception:
+            pass
+        print("Done")
+
     def _download_weights(
         self, url="https://zenodo.org/records/11174642/files/weights.tar.gz"
     ):
@@ -306,18 +315,60 @@ class ODFoveaModel:
         weights_path = (MODELS_DIR / "weights.tar.gz").__str__()
         wget(url, weights_path)
         print("Extracting weights...")
-        os.system(f"tar -xzf {weights_path} -C {MODELS_DIR}")
 
-        # Get Windows compatible folder names
-        extracted_folders = sorted(MODELS_DIR.iterdir())
-        for folder in extracted_folders:
-            if folder.is_dir():
-                new_folder_name = folder.name.replace(":", "_")
-                folder.rename(folder.parent / new_folder_name)
+        # Extract with sanitization to avoid Windows-invalid filenames (e.g. ':')
+        # and prevent path traversal.
+        try:
+            with tarfile.open(weights_path, "r:gz") as tar:
+                for member in tar.getmembers():
+                    # Normalize and sanitize path components
+                    name = member.name.lstrip("/\\")
+                    parts = [p for p in name.split("/") if p not in ("", ".")]
+                    safe_parts = []
+                    for p in parts:
+                        # Replace colon and other potentially problematic chars with _
+                        p = p.replace(":", "_")
+                        # Strip trailing spaces/dots which are invalid on Windows
+                        p = p.rstrip(" .")
+                        if p == "..":
+                            p = "_dotdot_"
+                        safe_parts.append(p)
 
-        print("Removing tar file...")
-        os.remove(weights_path)
-        print("Done")
+                    if not safe_parts:
+                        continue
+
+                    safe_name = "/".join(safe_parts)
+                    member.name = safe_name
+
+                    target_path = MODELS_DIR / safe_name
+                    try:
+                        # Prevent extraction outside MODELS_DIR
+                        if not str(target_path.resolve()).startswith(str(MODELS_DIR.resolve())):
+                            continue
+                    except Exception:
+                        continue
+
+                    if member.isdir():
+                        target_path.mkdir(parents=True, exist_ok=True)
+                        continue
+
+                    # Ensure parent dirs exist
+                    target_path.parent.mkdir(parents=True, exist_ok=True)
+                    f = tar.extractfile(member)
+                    if f is None:
+                        continue
+                    try:
+                        with open(target_path, "wb") as out_f:
+                            out_f.write(f.read())
+                    finally:
+                        f.close()
+        except Exception as e:
+            # Fallback: if tarfile fails for unexpected reasons, raise with context
+            self._remove_file(weights_path)
+            raise RuntimeError(f"Failed to extract weights safely: {e}")
+
+        self._remove_file(weights_path)
+        
 
     def _train_val_step(self, dataloader, model, loss_func, optimizer=None, pbar=None):
         if optimizer is not None:

@@ -55,7 +55,10 @@ def show(img: Union[np.ndarray, List[np.ndarray]]):
     if isinstance(img, list):
         for i, f in enumerate(img):
             plt.subplot(1, len(img), i+1)
-            plt.imshow(f)
+            if len(f.shape) == 2:
+                plt.imshow(f, cmap='gray')
+            else:
+                plt.imshow(f)
             plt.axis('off')
     else:
         plt.imshow(img)

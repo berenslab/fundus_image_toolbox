@@ -145,7 +145,7 @@ source .venv/bin/activate
 ```
 
 ### Contribute
-You are very welcome to contribute to the toolbox. Please raise an issue or create a pull request to do so. Please feel free to contact us if you have any questions or need help via julius.gervelmeyer [at] uni-tuebingen.de.
+You are very welcome to contribute to the toolbox. Please raise an [Issue](https://github.com/berenslab/fundus_image_toolbox/issues) for bugs, or create a [Pull request](https://github.com/berenslab/fundus_image_toolbox/pulls) for fixes and added features. For everything else, the [Contribution Discussion](https://github.com/berenslab/fundus_image_toolbox/discussions/26) is the right place. Please feel free to contact us there if you have any proposals, questions or need help.
 
 <!-- <br>
 <p style="font-size:1.5em;"><b>Cite</b></p> -->

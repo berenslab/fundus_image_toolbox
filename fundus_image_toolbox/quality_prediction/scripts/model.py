@@ -1,9 +1,7 @@
 from types import SimpleNamespace
-from typing import Union
+from typing import Optional, Union
 import yaml
 from pathlib import Path
-import requests
-import tarfile
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -15,7 +13,6 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 from tqdm import tqdm
 from datetime import datetime
-import os
 from PIL import ImageDraw, Image
 import numpy as np
 from sklearn.metrics import (
@@ -29,62 +26,92 @@ from sklearn.metrics import (
 )
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
 from fundus_image_toolbox.utils import seed_everything
+from fundus_image_toolbox.utils.model_cache import (
+    cleanup_extraction_artifacts,
+    component_cache_dir,
+    download,
+    extract_tar_safely_with_manifest,
+    _remove_file_if_exists,
+)
 
 from .transforms import get_unnormalization, get_transforms
 from .default import ENSEMBLE_MODELS, MODELS_DIR
 
 
-def wget(link, target):
-    # platform independent wget alternative
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
-    }
-    r = requests.get(link, headers=headers, stream=True)
-    downloaded_file = open(target, "wb")
-
-    for chunk in r.iter_content(chunk_size=8192):
-        if chunk:
-            downloaded_file.write(chunk)
+QUALITY_COMPONENT_NAME = "quality_prediction"
+QUALITY_WEIGHTS_URL = "https://zenodo.org/records/11174749/files/weights.tar.gz"
+QUALITY_ARCHIVE_NAME = "weights.tar.gz"
 
 
-def download_weights(url="https://zenodo.org/records/11174749/files/weights.tar.gz"):
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    print("Downloading weights...")
-    target = (MODELS_DIR / "weights.tar.gz").resolve()
+def _has_expected_ensemble_dirs(models_dir: Path) -> bool:
+    existing = {p.name for p in models_dir.iterdir() if p.is_dir()}
+    return set(ENSEMBLE_MODELS).issubset(existing)
 
-    # Stream the download with requests and display a progress bar
-    with requests.get(url, stream=True) as response:
-        response.raise_for_status()
-        total_size = int(response.headers.get('content-length', 0))
-        with open(target, 'wb') as file, tqdm(
-            desc="Downloading",
-            total=total_size,
-            unit='B',
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as progress_bar:
-            for chunk in response.iter_content(chunk_size=1024):
-                file.write(chunk)
-                progress_bar.update(len(chunk))
+
+def _resolve_pretrained_models_dir(
+    cache_dir: Optional[Union[str, Path]] = None
+) -> Path:
+    """Resolve model directory with cache priority and legacy fallback."""
+    cache_models_dir = component_cache_dir(QUALITY_COMPONENT_NAME, cache_dir=cache_dir)
+    cache_models_dir.mkdir(parents=True, exist_ok=True)
+    if _has_expected_ensemble_dirs(cache_models_dir):
+        return cache_models_dir
+
+    if cache_dir is None:
+        MODELS_DIR.mkdir(parents=True, exist_ok=True)
+        if _has_expected_ensemble_dirs(MODELS_DIR):
+            return MODELS_DIR
+
+    return cache_models_dir
+
+
+def download_weights(
+    url: str = QUALITY_WEIGHTS_URL, cache_dir: Optional[Union[str, Path]] = None
+) -> Path:
+    models_dir = _resolve_pretrained_models_dir(cache_dir=cache_dir)
+    archive_path = models_dir / QUALITY_ARCHIVE_NAME
+
+    if _has_expected_ensemble_dirs(models_dir):
+        return models_dir
+
+    downloaded_now = False
+    if not archive_path.exists():
+        print("Downloading weights...")
+        archive_path = download(
+            url=url,
+            target_path=archive_path,
+            component_name="quality_prediction",
+            manual_file_name=QUALITY_ARCHIVE_NAME,
+            manual_target_dir=models_dir,
+        )
+        downloaded_now = True
 
     print("Extracting weights...")
-    # Use tarfile module for cross-platform compatibility
-    with tarfile.open(target, "r:gz") as tar:
-        tar.extractall(path=str(MODELS_DIR))
-    
-    # Fix Windows incompatible folder names (colons in timestamps)
-    # Replace colons with dashes to match ENSEMBLE_MODELS format
-    extracted_folders = sorted(MODELS_DIR.iterdir())
-    for folder in extracted_folders:
-        if folder.is_dir() and folder.name != "weights.tar.gz":
-            # Replace colons with dashes to match expected format
-            if ":" in folder.name:
-                new_folder_name = folder.name.replace(":", "-")
-                folder.rename(folder.parent / new_folder_name)
-    
-    print("Removing tar file...")
-    os.remove(str(target))
-    print("Done")
+    manifest = {"files": [], "dirs": []}
+    try:
+        manifest = extract_tar_safely_with_manifest(
+            archive_path=archive_path,
+            destination_dir=models_dir,
+            replace_colon_with="-",
+        )
+    except Exception as exc:
+        cleanup_extraction_artifacts(manifest)
+        _remove_file_if_exists(archive_path)
+        raise RuntimeError(
+            f"Failed to extract weights archive at {archive_path}. "
+            "Broken archive and partial extracted files were cleaned up."
+        ) from exc
+    finally:
+        if downloaded_now and archive_path.exists():
+            print("Removing downloaded archive...")
+            _remove_file_if_exists(archive_path)
+
+    if not _has_expected_ensemble_dirs(models_dir):
+        raise FileNotFoundError(
+            f"Expected ensemble directories were not found after extraction in {models_dir}"
+        )
+
+    return models_dir
 
 
 def plot_quality(fundus, conf: float, label: int, threshold: float = 0.5):
@@ -179,14 +206,15 @@ class FundusQualityModel:
             weight_decay=self.config.weight_decay,
         )
 
-    def load_checkpoint(self, dir: str):
+    def load_checkpoint(self, dir: str, cache_dir: Optional[Union[str, Path]] = None):
         dir = Path(dir)
         if dir.suffix == ".pt":
             dir = dir.parent
         if dir.name.endswith("/"):
             dir = dir.parent
-        if str(dir) in ENSEMBLE_MODELS and not dir.is_dir():
-            download_weights()
+        if dir.name in ENSEMBLE_MODELS and not dir.is_dir():
+            models_dir = download_weights(cache_dir=cache_dir)
+            dir = models_dir / dir.name
         self.timestamp = dir.name
         self.checkpoint_path = dir / f"{self.config.model_type}_best.pt"
 

@@ -144,6 +144,13 @@ uv venv
 source .venv/bin/activate
 ```
 
+### Caching
+Pretrained weights for `registration`, `fundus_od_localization` and `quality_prediction` are stored in this priority order:
+1) optional `cache_dir` argument,
+2) environment variable `FIT_CACHE_DIR`,
+3) platform cache default (`~/.cache/fundus_image_toolbox` on Linux, analogous locations on macOS/Windows).
+
+If no `cache_dir` is passed and nothing is found in the default cache location, FIT also checks the legacy package-internal model paths for backward compatibility with versions <= 0.1.1.
 ### Contribute
 You are very welcome to contribute to the toolbox. Please raise an [Issue](https://github.com/berenslab/fundus_image_toolbox/issues) for bugs, or create a [Pull request](https://github.com/berenslab/fundus_image_toolbox/pulls) for fixes and added features. For everything else, the [Contribution Discussion](https://github.com/berenslab/fundus_image_toolbox/discussions/26) is the right place. Please feel free to contact us there if you have any proposals, questions or need help.
 

@@ -2,7 +2,7 @@ import numpy as np
 import os
 import yaml
 from types import SimpleNamespace
-from typing import List
+from typing import List, Optional, Union
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -24,6 +24,7 @@ def get_ensemble(
     models_dir: str = MODELS_DIR,
     device: str = "cuda:0",
     return_test_dataloader: bool = False,
+    cache_dir: Optional[Union[str, Path]] = None,
 ):
     ens = ["2024-05-07 11_13.05", "2024-05-07 11_13.13"]
     models = []
@@ -31,7 +32,7 @@ def get_ensemble(
     # for model_dir in [os.path.join(models_dir, x) for x in ens]:
     for model_dir in [Path(models_dir) / x for x in ens]:
         model, ckpt, test_dataloader = load_model(
-            model_dir, device, return_test_dataloader=True
+            model_dir, device, return_test_dataloader=True, cache_dir=cache_dir
         )
         models.append(model)
         checkpoints.append(ckpt)
@@ -88,6 +89,7 @@ def load_model(
     checkpoint_dir: str = "default",
     device: str = None,
     return_test_dataloader: bool = False,
+    cache_dir: Optional[Union[str, Path]] = None,
 ):
     if checkpoint_dir == "default":
         checkpoint_dir = DEFAULT_MODEL
@@ -114,31 +116,29 @@ def load_model(
     model = ODFoveaModel(config)
     # model.checkpoint_path = os.path.join(checkpoint_dir, f"multi_{m_type}_best.pt")
     model.checkpoint_path = checkpoint_dir / f"multi_{m_type}_best.pt"
-    model.load_checkpoint()
+    model.load_checkpoint(cache_dir=cache_dir)
+    checkpoint_dir = model.checkpoint_path.parent
 
     # Load metric tracking data
     model.loss_tracking = {"train": [], "val": []}
     model.iou_tracking = {"train": [], "val": []}
     model.dist_tracking = {"train": [], "val": []}
 
-    with open(checkpoint_dir / f"multi_{m_type}_train_loss.txt", "r") as f:
-        for line in f:
-            model.loss_tracking["train"].append(float(line.strip()))
-    with open(checkpoint_dir / f"multi_{m_type}_val_loss.txt", "r") as f:
-        for line in f:
-            model.loss_tracking["val"].append(float(line.strip()))
-    with open(checkpoint_dir / f"multi_{m_type}_train_iou.txt", "r") as f:
-        for line in f:
-            model.iou_tracking["train"].append(float(line.strip()))
-    with open(checkpoint_dir / f"multi_{m_type}_val_iou.txt", "r") as f:
-        for line in f:
-            model.iou_tracking["val"].append(float(line.strip()))
-    with open(checkpoint_dir / f"multi_{m_type}_train_dist.txt", "r") as f:
-        for line in f:
-            model.dist_tracking["train"].append(float(line.strip()))
-    with open(checkpoint_dir / f"multi_{m_type}_val_dist.txt", "r") as f:
-        for line in f:
-            model.dist_tracking["val"].append(float(line.strip()))
+    tracking_files = [
+        ("loss_tracking", "train", f"multi_{m_type}_train_loss.txt"),
+        ("loss_tracking", "val", f"multi_{m_type}_val_loss.txt"),
+        ("iou_tracking", "train", f"multi_{m_type}_train_iou.txt"),
+        ("iou_tracking", "val", f"multi_{m_type}_val_iou.txt"),
+        ("dist_tracking", "train", f"multi_{m_type}_train_dist.txt"),
+        ("dist_tracking", "val", f"multi_{m_type}_val_dist.txt"),
+    ]
+    for tracker_name, split, filename in tracking_files:
+        file_path = checkpoint_dir / filename
+        if not file_path.exists():
+            continue
+        with open(file_path, "r") as f:
+            for line in f:
+                getattr(model, tracker_name)[split].append(float(line.strip()))
 
     if return_test_dataloader:
         return model, model.checkpoint_path, get_test_dataloader(config)

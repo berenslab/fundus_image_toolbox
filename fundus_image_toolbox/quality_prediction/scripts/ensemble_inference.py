@@ -4,12 +4,13 @@ import yaml
 import datetime
 import numpy as np
 from typing import List, Union
+from typing import Optional
 import torch
 from torch.utils.data import DataLoader
 import PIL
 from torchvision.transforms.functional import to_tensor
 
-from .model import FundusQualityModel, download_weights
+from .model import FundusQualityModel, download_weights, _resolve_pretrained_models_dir
 from .default import MODELS_DIR, ENSEMBLE_MODELS
 from pathlib import Path
 
@@ -49,7 +50,11 @@ def any_to_tensor(image):
     return image
 
 
-def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
+def get_ensemble(
+    models_dir: str = MODELS_DIR,
+    device: str = "cpu",
+    cache_dir: Optional[Union[str, Path]] = None,
+):
     """Load the 10-model ensemble from the specified models or project directory.
 
     Args:
@@ -61,14 +66,19 @@ def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
         ensemble: List of FundusQualityModel objects
     """
     models_dir = Path(models_dir)
-    if "models" not in models_dir.parts:
-        models_dir = models_dir / "models"
-    models_dir.mkdir(parents=True, exist_ok=True)
+    if cache_dir is not None:
+        models_dir = _resolve_pretrained_models_dir(cache_dir=cache_dir)
+    else:
+        if "models" not in models_dir.parts:
+            models_dir = models_dir / "models"
+        if str(models_dir.resolve()) == str(MODELS_DIR.resolve()):
+            models_dir = _resolve_pretrained_models_dir(cache_dir=None)
+        models_dir.mkdir(parents=True, exist_ok=True)
 
     for e in ENSEMBLE_MODELS:
         if e not in [p.name for p in models_dir.iterdir() if p.is_dir()]:
             print("At least one model was not found.")
-            download_weights()
+            models_dir = download_weights(cache_dir=cache_dir)
 
     model_dirs = [
         p for p in models_dir.iterdir() if p.is_dir() and is_datetime_format(p.name)
@@ -87,7 +97,7 @@ def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
     ensemble = []
     for ckpt, conf in zip(model_dirs, configs):
         model = FundusQualityModel(conf)
-        model.load_checkpoint(str(ckpt))
+        model.load_checkpoint(str(ckpt), cache_dir=cache_dir)
         ensemble.append(model)
 
     return ensemble

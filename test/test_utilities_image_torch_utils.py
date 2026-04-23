@@ -5,7 +5,9 @@ import numpy as np
 from PIL import Image
 import cv2
 import torch
+from unittest.mock import patch
 from torchvision.transforms.functional import to_tensor
+import fundus_image_toolbox.utils as fit_utils
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
 
 DIR = os.path.join(os.path.dirname(__file__))
@@ -157,6 +159,51 @@ class TestImageTorchUtils(unittest.TestCase):
         # Single path to batch
         out = Img(fundus1_path).to_batch().img
         assert len(out.shape) == 4 and isinstance(out, torch.Tensor)
+
+    def test_show_empty_ndarray_raises(self):
+        empty_img = np.array([])
+        with self.assertRaises(ValueError) as exc_info:
+            fit_utils.show(empty_img)
+        assert "empty" in str(exc_info.exception).lower()
+
+    def test_show_list_filters_empty_images(self):
+        empty_img = np.array([])
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show([fundus1_plt, empty_img])
+
+        assert mock_imshow.call_count == 1
+        mock_show.assert_called_once()
+
+    def test_show_single_grayscale_image_uses_gray_cmap(self):
+        fundus1_gs = fundus1_plt[:, :, 0]
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show(fundus1_gs)
+
+        mock_show.assert_called_once()
+        shown_img = mock_imshow.call_args.args[0]
+        shown_kwargs = mock_imshow.call_args.kwargs
+        assert shown_img.ndim == 2
+        assert np.array_equal(shown_img, fundus1_gs)
+        assert shown_kwargs.get("cmap") == "gray"
+
+    def test_show_list_mixed_grayscale_and_rgb(self):
+        fundus1_gs = fundus1_plt[:, :, 0]
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show([fundus1_gs, fundus1_plt])
+
+        mock_show.assert_called_once()
+        assert mock_imshow.call_count == 2
+
+        gs_kwargs = mock_imshow.call_args_list[0].kwargs
+        rgb_kwargs = mock_imshow.call_args_list[1].kwargs
+        assert gs_kwargs.get("cmap") == "gray"
+        assert "cmap" not in rgb_kwargs
 
     def test_combi(self):
         # Test the to_cspace and set_channel_dim function

@@ -1,12 +1,89 @@
 import numpy as np
 import torch
-import os
 import cv2
+import warnings
+from pathlib import Path
 from typing import Union
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
 from PIL import Image
 
 # Adapted from https://github.com/HzFu/EyeQ/blob/master/EyeQ_preprocess/fundus_prep.py
+
+
+def _warn_user(function_name, message, exc=None):
+    """Emit a concise warning for non-fatal preprocessing failures."""
+    if exc is None:
+        warnings.warn(f"{function_name}: {message}", UserWarning, stacklevel=2)
+        return
+
+    warnings.warn(
+        f"{function_name}: {message}. Root cause: {exc}",
+        UserWarning,
+        stacklevel=2,
+    )
+
+
+def _normalize_square_size(size):
+    """Normalize size to one integer for square outputs."""
+    if size is None:
+        return None
+
+    if isinstance(size, int):
+        if size <= 0:
+            raise ValueError(f"size must be a positive int, got {size}")
+        return size
+
+    if isinstance(size, (tuple, list)):
+        if len(size) == 0:
+            raise ValueError("size tuple/list must contain at least one element")
+        first_size = int(size[0])
+        if first_size <= 0:
+            raise ValueError(f"size must be a positive int, got {first_size}")
+        if len(size) > 1 and int(size[1]) != first_size:
+            _warn_user(
+                "crop",
+                f"size={size} is not square. Using first value {first_size} for square output",
+            )
+        return first_size
+
+    raise TypeError(
+        f"size must be an int, tuple/list, or None, got {type(size).__name__}"
+    )
+
+
+def _infer_output_hw(img, size=None):
+    """Infer expected output height/width for successful and failed outputs."""
+    if size is not None:
+        side = _normalize_square_size(size)
+        return side, side
+
+    if isinstance(img, np.ndarray) and img.ndim >= 2:
+        return int(img.shape[0]), int(img.shape[1])
+
+    return 1, 1
+
+
+def _failure_outputs(img, size=None):
+    """Return shape-preserving failure sentinels for failure cases. Radii are set to -1 as failure marker."""
+    out_h, out_w = _infer_output_hw(img, size=size)
+    channels = 3
+    image_dtype = np.uint8
+    if isinstance(img, np.ndarray):
+        if img.ndim == 3:
+            channels = int(img.shape[2])
+        elif img.ndim == 2:
+            channels = None
+        if np.issubdtype(img.dtype, np.integer):
+            image_dtype = img.dtype
+
+    if channels is None:
+        failed_img = np.zeros((out_h, out_w), dtype=image_dtype)
+    else:
+        failed_img = np.zeros((out_h, out_w, channels), dtype=image_dtype)
+    failed_mask = np.zeros((out_h, out_w), dtype=np.uint8)
+    center = np.array([0.0, 0.0], dtype=np.float32)
+    radius = np.float32(-1.0)
+    return failed_img, failed_mask, center, radius
 
 
 def imread(file_path, c=None):
@@ -16,7 +93,8 @@ def imread(file_path, c=None):
         im = cv2.imread(file_path, c)
 
     if im is None:
-        raise "Can not read image"
+        _warn_user("imread", f"Could not read image at '{file_path}'")
+        return None
 
     if im.ndim == 3 and im.shape[2] == 3:
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -27,12 +105,6 @@ def imwrite(file_path, image):
     if image.ndim == 3 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     cv2.imwrite(file_path, image)
-
-
-def fold_dir(folder):
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-    return folder
 
 
 def get_mask_BZ(img):
@@ -117,7 +189,8 @@ def get_mask(img):
     elif img.ndim == 2:
         g_img = img.copy()
     else:
-        raise "image dim is not 1 or 3"
+        _warn_user("get_mask", f"Expected image with 2 or 3 dims, got {img.ndim} dims. Returning tuple of Nones.")
+        return None, None, None, None
     h, w = g_img.shape
     shape = g_img.shape[0:2]
     g_img = cv2.resize(g_img, (0, 0), fx=0.5, fy=0.5)
@@ -223,6 +296,9 @@ def supplemental_black_area(img, border=None):
 def process_without_gb(img):
     borders = []
     mask, bbox, center, radius = get_mask(img)
+    if mask is None:
+        # Raise error; will be caught by process_img which will return failure warnings
+        raise ValueError("Mask extraction failed")
     r_img = mask_image(img, mask)
     r_img, r_border = remove_back_area(r_img, bbox=bbox)
     mask, _ = remove_back_area(mask, border=r_border)
@@ -234,55 +310,84 @@ def process_without_gb(img):
 
 
 def process_path(image_path, save_path=None, size=None, suffix=".png"):
-    """load img from path and circle crop"""
-    dst_image = os.path.splitext(image_path.split("/")[-1])[0] + suffix
-    dst_path = os.path.join(save_path, dst_image)
+    """Load image from path and apply circle crop with warning-based failures."""
+    dst_path = None
+    if save_path is not None:
+        dst_image = f"{Path(image_path).stem}{suffix}"
+        dst_path = Path(save_path) / dst_image
 
     img = imread(image_path)
-
     img, mask, center, radius = process_img(img, size=size)
 
-    if save_path:
-        imwrite(dst_path, img)
+    if save_path and dst_path is not None:
+        if float(radius) < 0:
+            _warn_user(
+                "process_path",
+                f"Skipping write for '{image_path}' because preprocessing failed",
+            )
+        else:
+            imwrite(str(dst_path), img)
 
     return img, mask, center, radius
 
 
 def process_img(img, size=None):
     try:
+        if img is None:
+            raise ValueError("Input image is None")
+
+        side = _normalize_square_size(size)
         img, borders, mask, center, radius = process_without_gb(img)
-
-        if size:
-            img = cv2.resize(img, size)
-            mask = cv2.resize(mask, size)
-
-    except:
-        print("failed")
-
-    img, mask = center_image(img, mask)
-    center, radius = get_center_radius(mask)
-
-    return img, mask, center, radius
+        if side is not None:
+            img = cv2.resize(img, (side, side))
+            mask = cv2.resize(mask, (side, side))
+        img, mask = center_image(img, mask)
+        center, radius = get_center_radius(mask)
+        center = np.asarray(center, dtype=np.float32)
+        radius = np.float32(radius)
+        return img, mask, center, radius
+    except Exception as exc:
+        _warn_user(
+            "process_img",
+            "Using zero outputs and radius=-1 because preprocessing failed",
+            exc=exc,
+        )
+        return _failure_outputs(img, size=size)
 
 
 def crop(
     img: Union[str, Image.Image, np.ndarray, torch.Tensor, list],
-    size=(512, 512),
+    size=512,
     return_all=False,
     to_numpy=True,
 ):
-    """Fit a circle to the image (or images in a batch), center it and crop off the background.
+    """Fit a circle and center it for one image or a batch, and crop off the background. On failure, 
+    emits UserWarning and the output is the img filled with zeros. Use return_all=True to get clear failure marker
+    as the radius with value -1.
 
     Args:
         img: Image path(s), RGB numpy array(s) or RGB torch tensor(s).
-        size: Size of the output images. Default is (512, 512).
+        size: Output side length for square crops. Default is 512.
+            Legacy tuple/list values are accepted for compatibility, but only
+            the first value is used.
         return_all: If True, return the cropped images, masks, centers, and radii. Default is False.
         to_numpy: If True, return numpy arrays, else torch tensors. Default is True.
 
     Returns:
-        Cropped images as numpy arrays or torch tensors or all the outputs if return_all is True.
+        If return_all is False:
+            - Cropped image or batch of images as nd.array ([B], H, W, C) or torch tensor ([B], C, H, W)
+        If return_all is True:
+            - imgs as above
+            - masks ([B], H, W) if to_numpy is True or ([B], 1, H, W) if to_numpy is False (=tensor)
+            - centers ([B], 2) (nd.array or tensor)
+            - radii ([B]) (nd.array or tensor)
+        On failure:
+        - Returns shape-preserving nan-outputs (if to_numpy is True) or zero output tensor (if to_numpy if False)
+        - Sets radius to -1 as failure marker
+        - Emits UserWarning
     """
     input_is_a_batch = Img(img).is_batch_like()
+    normalized_size = _normalize_square_size(size)
 
     # Process images, batches of images, and paths to numpy batch
     img_batch = (
@@ -292,26 +397,24 @@ def crop(
     # Process
     imgs, masks, centers, radii = [], [], [], []
     for img in img_batch:
-        img, mask, center, radius = process_img(img, size=size)
+        img, mask, center, radius = process_img(img, size=normalized_size)
         img = Img(img).to_numpy().img
         imgs.append(img)
         masks.append(mask)
         centers.append(center)
         radii.append(radius)
+    imgs = np.asarray(imgs)
+    masks = np.asarray(masks)
 
-    imgs, masks, centers, radii = (
-        np.array(imgs),
-        np.array(masks),
-        np.array(centers),
-        np.array(radii),
-    )
+    centers = np.asarray(centers, dtype=np.float32)
+    radii = np.asarray(radii, dtype=np.float32)
 
     # Convert to torch tensors
     if not to_numpy:
         imgs = Img(imgs).to_batch().img
-        masks = Img(masks).to_batch().img
-        centers = torch.tensor(centers)
-        radii = torch.tensor(radii)
+        masks = Img(masks).to_batch(img_ndims=2).img
+        centers = torch.tensor(centers, dtype=torch.float32)
+        radii = torch.tensor(radii, dtype=torch.float32)
 
     # Return single element if input was single element
     if not input_is_a_batch:

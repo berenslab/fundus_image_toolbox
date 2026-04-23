@@ -49,6 +49,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "tox>=4.24.1",
+    "tox-uv>=1.25.0",
 ]
 
 [tool.setuptools]

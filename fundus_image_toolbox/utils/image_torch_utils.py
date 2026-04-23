@@ -348,4 +348,4 @@ class ImageTorchUtils:
             bool: True if the image is a list or array of images, False otherwise.
         """
         
-        return self.is_batch() or isinstance(self.img, (list, tuple)) or len(np.array(self.img).shape) == 4
+        return self.is_batch() or isinstance(self.img, (list, tuple)) or len(np.asarray(self.img).shape) == 4

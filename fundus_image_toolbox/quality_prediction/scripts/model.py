@@ -365,6 +365,7 @@ class FundusQualityModel:
         device: str = None,
         load_best: bool = True,
         numpy_cpu: bool = True,
+        img_size: int = 512,
     ):
         """Predicts from a single image and returns the prediction (logit or class) as a numpy array.
 
@@ -375,15 +376,25 @@ class FundusQualityModel:
             device (str, optional): Device to use. Defaults to None.
             load_best (bool, optional): Load best checkpoint. Defaults to True.
             numpy_cpu (bool, optional): Return numpy array in cpu. Defaults to True.
+            img_size (int, optional): Resize used for inference.
+                Defaults to 512 for backward compatibility with <= v0.1.1.
 
         Returns:
             numpy.ndarray: Prediction
         """
         image = Img(image).to_tensor().img
-        image = get_transforms(split="test")(to_pil_image(image)).unsqueeze(0)
+        image = get_transforms(split="test", img_size=img_size)(
+            to_pil_image(image)
+        ).unsqueeze(0)
 
         return self.predict_from_batch(
-            image, threshold, device, load_best, numpy_cpu, transform=False
+            image,
+            threshold,
+            device,
+            load_best,
+            numpy_cpu,
+            transform=False,
+            img_size=img_size,
         )
 
     def predict_from_batch(
@@ -394,6 +405,7 @@ class FundusQualityModel:
         load_best: bool = True,
         numpy_cpu: bool = True,
         transform=True,
+        img_size: int = 512,
     ):
         """Predicts from a batch of images and returns the predictions (logits or classes) as a numpy array.
 
@@ -404,6 +416,8 @@ class FundusQualityModel:
             device (str, optional): Device to use. If None, model's device is used. Defaults to None.
             load_best (bool, optional): Load best checkpoint. Defaults to True.
             numpy_cpu (bool, optional): Return numpy array in cpu. Defaults to True.
+            img_size (int, optional): Resize used for inference.
+                Defaults to 512 for backward compatibility with <= v0.1.1
 
         Returns:
             numpy.ndarray: Predictions
@@ -411,7 +425,7 @@ class FundusQualityModel:
         image_batch = Img(image_batch).to_batch().img
         if transform:
             image_batch = [
-                get_transforms(split="test")(to_pil_image(image))
+                get_transforms(split="test", img_size=img_size)(to_pil_image(image))
                 for image in image_batch
             ]
             image_batch = torch.stack(image_batch)

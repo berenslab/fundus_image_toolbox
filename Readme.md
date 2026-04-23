@@ -83,10 +83,15 @@ fit.plot_coordinates([fundus1, fundus2], coordinates)
 ```python
 import fundus_image_toolbox as fit
 ensemble = fit.load_quality_ensemble(device="cuda:0")
-confs, labels = fit.ensemble_predict_quality(ensemble, [fundus1, fundus2], threshold=0.5) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
+confs, labels = fit.ensemble_predict_quality(
+    ensemble, [fundus1, fundus2], threshold=0.5 #, img_size=512
+) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
 for img, conf, label in zip([fundus1, fundus2], confs, labels):
     fit.plot_quality(img, conf, label, threshold=0.5)
 ```
+`img_size` defaults to `512` for backward compatibility with v0.1.1. You can pass a
+custom value, e.g. to avoid forced upsampling when your inputs are smaller, but note that
+the model was trained at `img_size=512`. Prediction scores can shift with image size, so it is advised to keep it constant within a project.
 
 ```python
 import fundus_image_toolbox as fit

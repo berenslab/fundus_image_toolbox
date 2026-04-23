@@ -10,6 +10,7 @@ Based on a 10-model ensemble (ResNets and EfficientNets) trained on DeepDRiD and
 ### Notes
 - The model was trained to grade whole fundus images, not e.g. largely zoomed-in cutouts. Keep this in mind when applying to your data.
 - The predicted quality probability may vary with image size. Thanks to Murat for [highlighting this](https://github.com/berenslab/fundus_image_toolbox/issues/20#issuecomment-2895195087). We suggest to compare predicted grades only across images of the same size.
+- In inference, `img_size` defaults to `512` for backward compatibility with v0.1.1. Pass a custom `img_size` to avoid forced resizing to 512, especially to avoid upsampling smaller images. The model was originally trained with `img_size=512`; changing the source image dimensions (if < `img_size`) or the inference `img_size` (if > input size) can change the predicted quality score.
 - The probability threshold for good vs. bad quality needs to be changed depending on the dataset used. Set it to a value that makes sense for your data! E.g., find the 5th percentile of predicted quality scores and take that value as a threshold if you want to drop the 5% worst quality images.
 
 ### Preparation

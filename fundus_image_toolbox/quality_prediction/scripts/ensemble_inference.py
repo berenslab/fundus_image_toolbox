@@ -108,6 +108,7 @@ def ensemble_predict(
     image: Union[list, str, torch.Tensor, np.ndarray],
     threshold: float = 0.5,
     print_result: bool = False,
+    img_size: int = 512,
 ):
     """Predicts the quality of an image or image batch (0: ungradable, 1: gradable)
         using an ensemble of models.
@@ -117,6 +118,8 @@ def ensemble_predict(
         image (list, str, np.ndarray, torch.tensor): Image path(s) as a List[str] or an image as
             tensor or np.ndarray or a batch of images as a tensor.
         threshold (float, optional): Threshold for binary classification. Defaults to 0.5.
+        img_size (int, optional): Resize used for inference.
+            Defaults to 512 for backward compatibility with <= v0.1.1
 
     Returns:
         ensemble_pred: Ensemble prediction(s) (confidence score between 0 and 1)
@@ -137,7 +140,9 @@ def ensemble_predict(
         n = len(image)
         preds = {i: [] for i in range(n)}
         for model in ensemble:
-            pred = model.predict_from_batch(image, threshold=None, load_best=False)
+            pred = model.predict_from_batch(
+                image, threshold=None, load_best=False, img_size=img_size
+            )
             for i in range(n):
                 preds[i].append(pred[i])
         for i in range(n):
@@ -152,7 +157,9 @@ def ensemble_predict(
         preds = []
         for model in ensemble:
             preds.append(
-                model.predict_from_image(image, threshold=None, load_best=False)
+                model.predict_from_image(
+                    image, threshold=None, load_best=False, img_size=img_size
+                )
             )
         preds = np.array(preds)
 

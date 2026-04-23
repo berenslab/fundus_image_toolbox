@@ -13,10 +13,15 @@ DEVICE = "cpu"
 
 class TestFoveaODModel(unittest.TestCase):
     def setUp(self):
-        self.image = Image.open(fundus1_path)
+        with Image.open(fundus1_path) as image:
+            self.image = image.copy()
         transform = Compose([Resize(350, antialias=True), CenterCrop(350), ToTensor()])
         self.image_batch = torch.stack([transform(self.image) for _ in range(2)])
         self.device = DEVICE
+
+    def tearDown(self):
+        if hasattr(self, "image") and self.image is not None:
+            self.image.close()
 
     def test_load_fovea_od_model(self):
         model, checkpoint_path = load_fovea_od_model(

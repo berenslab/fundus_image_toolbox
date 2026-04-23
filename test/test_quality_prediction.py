@@ -21,7 +21,8 @@ class TestQualityPrediction(unittest.TestCase):
         # Initialize test variables here
         self.image_path = fundus1_path
         self.transforms = Compose([ToTensor(), Resize((350, 350))])
-        self.image = self.transforms(Image.open(self.image_path)).unsqueeze(0)
+        with Image.open(self.image_path) as image:
+            self.image = self.transforms(image).unsqueeze(0)
         self.model = load_quality_ensemble(device="cpu")
 
     def test_load_quality_ensemble(self):

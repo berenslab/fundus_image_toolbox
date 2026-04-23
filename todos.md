@@ -22,3 +22,9 @@
 [ ] Circle cropping. Ifeoma Nwabufo found out that it can be improved by adding a Gaussion filter to the input before fitting the circle. 
 
 [ ] Circle cropping. Ifeoma Nwabufo reported that some landscape images cannot be circle cropped -- only if square cropping them first. This is odd, should look into it!
+
+[ ] Bump to 0.1.2 once implemented and tested caching in new FIT_CACHE_DIR instead of in venv for the following:
+    - [ ] fundus_image_toolbox/fovea_od_localization/model_multi.py
+    - [ ] fundus_image_toolbox/quality_prediction/scripts/model.py
+    - [ ] fundus_image_toolbox/registration/inference.py
+

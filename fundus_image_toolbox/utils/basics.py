@@ -51,18 +51,30 @@ def on_slurm_job():
     else:
         return False
     
-def show(img: Union[np.ndarray, List[np.ndarray]]):
-    if isinstance(img, list):
-        for i, f in enumerate(img):
-            plt.subplot(1, len(img), i+1)
-            if len(f.shape) == 2:
-                plt.imshow(f, cmap='gray')
-            else:
-                plt.imshow(f)
-            plt.axis('off')
+def _show_single(img: np.ndarray):
+    img2d = np.squeeze(img)
+    if img2d.ndim == 2:
+        plt.imshow(img2d, cmap="gray")
     else:
         plt.imshow(img)
-        plt.axis('off')
+    plt.axis("off")
+
+def show(img: Union[np.ndarray, List[np.ndarray]]):
+    plt.figure()
+    if isinstance(img, list):
+        valid_imgs = [
+            f for f in img
+            if isinstance(f, np.ndarray) and f.size > 0
+        ]
+        if not valid_imgs:
+            raise ValueError("show() received no valid images to display.")
+        for i, f in enumerate(valid_imgs):
+            plt.subplot(1, len(valid_imgs), i + 1)
+            _show_single(f)
+    else:
+        if not isinstance(img, np.ndarray) or img.size == 0:
+            raise ValueError("show() received an invalid or empty image.")
+        _show_single(img)
     plt.show()
 
 def print_type(img: Union[np.ndarray, List[np.ndarray]]):

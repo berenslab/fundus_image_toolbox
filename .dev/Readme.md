@@ -1,6 +1,9 @@
 ## Install dev venv
 `uv sync --extra dev`
 
+## Bumping version
+Edit the `fundus_image_toolbox/_version.py``
+
 ## Running Tests
 
 This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.

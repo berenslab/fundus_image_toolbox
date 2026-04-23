@@ -1,3 +1,4 @@
+from ._version import __version__
 from .circle_crop import crop
 from .fovea_od_localization import load_fovea_od_model, plot_coordinates
 from .quality_prediction import load_quality_ensemble, ensemble_predict_quality, ensemble_predict_quality_from_dataloader, plot_quality

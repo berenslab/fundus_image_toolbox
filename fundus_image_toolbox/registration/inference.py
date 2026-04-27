@@ -1,7 +1,7 @@
 # %%
-from typing import List, Union
+from typing import List, Optional, Union
 import os
-import requests
+from pathlib import Path
 import torch
 import cv2
 import numpy as np
@@ -12,6 +12,7 @@ import yaml
 import pandas as pd
 import pickle
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
+from fundus_image_toolbox.utils.model_cache import component_cache_dir, download
 
 from .SuperRetina import (
     pre_processing,
@@ -24,6 +25,10 @@ from .SuperRetina import (
 WEIGHT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "SuperRetina/save/SuperRetina.pth"
 )
+DEFAULT_MODEL_SAVE_PATH = "default"
+REGISTRATION_COMPONENT_NAME = "registration"
+REGISTRATION_WEIGHTS_URL = "https://zenodo.org/records/11241985/files/SuperRetina.pth"
+REGISTRATION_WEIGHTS_NAME = "SuperRetina.pth"
 IMG_SIZE = 512
 DEFAULT_CONFIG = {
     "device": "cuda:0",
@@ -31,27 +36,53 @@ DEFAULT_CONFIG = {
     "nms_size": 1,
     "nms_thresh": 0.0005,
     "knn_thresh": 0.85,
+    "model_save_path": DEFAULT_MODEL_SAVE_PATH,
 }
 
 
-def wget(link, target):
-    # platform independent wget alternative
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
-    }
-    r = requests.get(link, headers=headers, stream=True)
-    downloaded_file = open(target, "wb")
+def _resolve_weight_path(
+    model_save_path: Optional[Union[str, Path]],
+    cache_dir: Optional[Union[str, Path]] = None,
+) -> Path:
+    """Resolve SuperRetina weight path from placeholder/cache/legacy settings."""
+    path_is_placeholder = model_save_path is None or str(model_save_path) == "default"
+    if not path_is_placeholder:
+        return Path(model_save_path).expanduser().resolve()
 
-    for chunk in r.iter_content(chunk_size=8192):
-        if chunk:
-            downloaded_file.write(chunk)
+    cache_weight_path = (
+        component_cache_dir(REGISTRATION_COMPONENT_NAME, cache_dir=cache_dir)
+        / REGISTRATION_WEIGHTS_NAME
+    )
+    if cache_weight_path.exists():
+        return cache_weight_path
+
+    legacy_weight_path = Path(WEIGHT_PATH).resolve()
+    if cache_dir is None and legacy_weight_path.exists():
+        return legacy_weight_path
+
+    return cache_weight_path
 
 
-def download_weights(url="https://zenodo.org/records/11241985/files/SuperRetina.pth"):
-    os.makedirs(os.path.dirname(WEIGHT_PATH), exist_ok=True)
-    print("Downloading weights...")
-    wget(url, WEIGHT_PATH)
-    print("Done")
+def download_weights(
+    url: str = REGISTRATION_WEIGHTS_URL,
+    target_path: Optional[Union[str, Path]] = None,
+    cache_dir: Optional[Union[str, Path]] = None,
+):
+    target = (
+        _resolve_weight_path(model_save_path="default", cache_dir=cache_dir)
+        if target_path is None
+        else Path(target_path).expanduser().resolve()
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    print("[FIT:registration] Downloading weights...")
+    download(
+        url=url,
+        target_path=target,
+        component_name="registration",
+        manual_file_name=REGISTRATION_WEIGHTS_NAME,
+        manual_target_dir=target.parent,
+    )
+    return target
 
 
 def get_mask(filename, masks: pd.DataFrame = None, show=True, binarize=True):
@@ -140,7 +171,10 @@ def transform(image: Image, model_image_height, model_image_width):
 
 
 # %%
-def get_config(config:Union[dict, str, None]=None):
+def get_config(
+    config: Union[dict, str, None] = None,
+    cache_dir: Optional[Union[str, Path]] = None,
+):
     """Get the configuration for inference. If config is None, use the default config. Adds the
     path to the model weights, if needed, as well as the image size for the model
     (Default: 512x512). The latter is independent of the image output size, so you can leave it at
@@ -156,7 +190,7 @@ def get_config(config:Union[dict, str, None]=None):
         dict: The configuration dictionary
     """
     if config is None:
-        config = DEFAULT_CONFIG
+        config = DEFAULT_CONFIG.copy()
     elif isinstance(config, str):
         if os.path.exists(config):
             with open(config) as f:
@@ -171,11 +205,14 @@ def get_config(config:Union[dict, str, None]=None):
     if "PREDICT" in config:
         config = config["PREDICT"]
 
-    if not hasattr(config, "model_save_path"):
-        config["model_save_path"] = WEIGHT_PATH
-    if not hasattr(config, "model_image_height"):
+    if "model_save_path" not in config:
+        config["model_save_path"] = DEFAULT_MODEL_SAVE_PATH
+    config["model_save_path"] = str(
+        _resolve_weight_path(config["model_save_path"], cache_dir=cache_dir)
+    )
+    if "model_image_height" not in config:
         config["model_image_height"] = IMG_SIZE
-    if not hasattr(config, "model_image_width"):
+    if "model_image_width" not in config:
         config["model_image_width"] = IMG_SIZE
 
     return config
@@ -192,7 +229,7 @@ def get_device(config: dict):
 
 
 # %%
-def load_model(config: dict = None):
+def load_model(config: dict = None, cache_dir: Optional[Union[str, Path]] = None):
     """Load the SuperRetina model and the knn matcher for matching keypoints. Returns the model and the matcher.
 
     Args:
@@ -201,16 +238,21 @@ def load_model(config: dict = None):
     if config is None:
         config = DEFAULT_CONFIG
 
-    config = get_config(config)
+    config = get_config(config, cache_dir=cache_dir)
 
     device = get_device(config)
 
-    if not os.path.isfile(config["model_save_path"]):
-        download_weights()
+    if not Path(config["model_save_path"]).is_file():
+        config["model_save_path"] = str(
+            download_weights(
+                target_path=config["model_save_path"],
+                cache_dir=cache_dir,
+            )
+        )
 
     model = SuperRetina().to(device)
     model.load_state_dict(
-        torch.load(config["model_save_path"], map_location=device, weights_only = False)["net"]
+        torch.load(config["model_save_path"], map_location=device, weights_only=False)["net"]
     )
     model.eval()
 
@@ -320,7 +362,7 @@ def check_collapse(
     ratio_fixed = unique_fixed / len(fixed_keypoints)
     if ratio_moving < threshold or ratio_fixed < threshold:
         raise Exception(
-            "Failed to align the two images: Too many points are projected to one!"
+            "[FIT:registration] Failed to align the two images: Too many points are projected to one!"
         )
 
 
@@ -407,7 +449,7 @@ def find_homography_and_align(
         merged[:, :, 1] = fixed_gray
 
     else:
-        raise Exception("Failed to align the two images!")
+        raise Exception("[FIT:registration] Failed to align the two images!")
 
     def fig_grid():
         # Create 1x4 grid and return the axes
@@ -447,6 +489,7 @@ def register_one(
     config: dict = DEFAULT_CONFIG,
     model=None,
     matcher=None,
+    cache_dir: Optional[Union[str, Path]] = None,
 ):
     """Register two images using SuperRetina and homography transformation.
 
@@ -483,7 +526,7 @@ def register_one(
     fixed_image = enhance(fixed_image)
     moving_image = enhance(moving_image)
 
-    config = get_config(config)
+    config = get_config(config, cache_dir=cache_dir)
 
     fixed_tensor = transform(
         Image.fromarray(fixed_image),
@@ -499,7 +542,7 @@ def register_one(
     image_height, image_width = fixed_image.shape
 
     if model is None or matcher is None:
-        model, matcher = load_model(config)
+        model, matcher = load_model(config, cache_dir=cache_dir)
 
     keypoints, descriptors = predict_points(fixed_tensor, moving_tensor, config, model)
 
@@ -573,6 +616,7 @@ def register(
     config: dict = DEFAULT_CONFIG,
     model=None,
     matcher=None,
+    cache_dir: Optional[Union[str, Path]] = None,
 ) -> Union[np.ndarray, List[np.ndarray]]:
     """Register a pair or pairs of images from batches using SuperRetina and homography transformation.
 
@@ -601,7 +645,15 @@ def register(
     for fixed, moving in zip(fixed_image, moving_image):
         moving_aligned.append(
             register_one(
-                fixed, moving, show, show_mapping, save_to, config, model, matcher
+                fixed,
+                moving,
+                show,
+                show_mapping,
+                save_to,
+                config,
+                model,
+                matcher,
+                cache_dir=cache_dir,
             )
         )
 

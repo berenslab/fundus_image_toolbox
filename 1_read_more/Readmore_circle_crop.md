@@ -13,6 +13,12 @@ See the [usage.ipynb](../0_example_usage/usage_circle-crop.ipynb).
 ### Ref
 This is a wrapper for a part of the EyeQ preprocessing from <i>Huazhu Fu et al., "Evaluation of Retinal Image Quality Assessment Networks in Different Color-spaces" (2020)</i>. The original code is available [here](https://github.com/HzFu/EyeQ/blob/master/EyeQ_preprocess/fundus_prep.py).
 
+### Differences from original EyeQ preprocessing
+- Adds a centering/alignment step after base mask/crop preprocessing, so the fitted circle is centered in the output image.
+- Wraps the original logic in a toolbox API that supports single and multi-image inputs (paths, PIL images, numpy arrays, torch tensors).
+- Uses warning-based failure handling for per-image failures: instead of non-informative silent failing or stopping batch loops with hard errors, the function emits `UserWarning` and returns shape-preserving zero outputs with `radius=-1` for failed samples.
+- Standardizes returned `center` and `radius` metadata to `float32`.
+
 ### Cite
 ```bibtex
 @inbook{Fu_2019,

@@ -19,11 +19,19 @@ fundus2_path = os.path.join(DIR, "..", "0_example_usage", "imgs", "fundus2.jpg")
 class TestRegistration(unittest.TestCase):
     def setUp(self):
         # Initialize test variables here
-        self.image1 = Image.open(fundus1_path)
-        self.image2 = Image.open(fundus2_path)
+        with Image.open(fundus1_path) as image1:
+            self.image1 = image1.copy()
+        with Image.open(fundus2_path) as image2:
+            self.image2 = image2.copy()
         self.config = DEFAULT_CONFIG
         self.config["device"] = "cpu"
         self.model, self.matcher = load_registration_model(self.config)
+
+    def tearDown(self):
+        if hasattr(self, "image1") and self.image1 is not None:
+            self.image1.close()
+        if hasattr(self, "image2") and self.image2 is not None:
+            self.image2.close()
 
     def test_load_registration_model(self):
         # Test the load_registration_model function

@@ -135,7 +135,11 @@ def sample_keypoint_desc(keypoints, descriptors, s: int = 8):
     keypoints /= torch.tensor([(w * s - 1), (h * s - 1)]).to(keypoints)[None]
     keypoints = keypoints * 2 - 1  # normalize to (-1, 1)
 
-    args = {'align_corners': True} if int(torch.__version__[2]) > 2 else {}
+    # FIT change: Original check assumed major version 1; adapted to any major version
+    _torch_version_major = int(torch.__version__[0])
+    _torch_version_minor = int(torch.__version__[2])
+    _torch_version_at_least_1_3 = _torch_version_major > 1 or (_torch_version_major == 1 and _torch_version_minor >= 3)
+    args = {'align_corners': True} if _torch_version_at_least_1_3 else {}
     descriptors = torch.nn.functional.grid_sample(
         descriptors, keypoints.view(b, 1, -1, 2), mode='bilinear', **args)
 

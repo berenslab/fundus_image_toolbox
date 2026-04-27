@@ -1,5 +1,5 @@
 ## Fundus Image Toolbox
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.07101/status.svg)](https://doi.org/10.21105/joss.07101)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07101/status.svg)](https://doi.org/10.21105/joss.07101)  <sup>&nbsp;  A Python package for fundus image processing `pytorch` `cuda`</sup>
 <img src="icon.svg" alt="Logo" align="right">
 
 <!-- <p style="font-size:3em;">Fundus Image Toolbox</p> -->
@@ -70,7 +70,7 @@ fundus1, fundus2 = "path/to/fundus1.jpg", "path/to/fundus2.jpg"
 
 ```python
 import fundus_image_toolbox as fit
-fundus1_cropped = fit.crop(fundus1, size=(512,512)) # > np.ndarray (512, 512, 3) uint8
+fundus1_cropped = fit.crop(fundus1, size=512) # > np.ndarray (512, 512, 3) uint8
 ```
 
 ```python
@@ -83,10 +83,15 @@ fit.plot_coordinates([fundus1, fundus2], coordinates)
 ```python
 import fundus_image_toolbox as fit
 ensemble = fit.load_quality_ensemble(device="cuda:0")
-confs, labels = fit.ensemble_predict_quality(ensemble, [fundus1, fundus2], threshold=0.5) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
+confs, labels = fit.ensemble_predict_quality(
+    ensemble, [fundus1, fundus2], threshold=0.5 #, img_size=512
+) # > np.ndarray[conf1, conf2], np.ndarray[label1, label2]
 for img, conf, label in zip([fundus1, fundus2], confs, labels):
     fit.plot_quality(img, conf, label, threshold=0.5)
 ```
+`img_size` defaults to `512` for backward compatibility with v0.1.1. You can pass a
+custom value, e.g. to avoid forced upsampling when your inputs are smaller, but note that
+the model was trained at `img_size=512`. Prediction scores can shift with image size, so it is advised to keep it constant within a project.
 
 ```python
 import fundus_image_toolbox as fit
@@ -119,30 +124,38 @@ fit.plot_masks([fundus1, fundus2], vessel_masks)
 
 #### Install the toolbox <br>
 
-You can install the latest tagged version of the toolbox by running:
+You can install the [latest tagged version](https://github.com/berenslab/fundus_image_toolbox/releases) of the toolbox by running:
 
 ```bash
 pip install fundus_image_toolbox
 ```
 
-or the development version by running:
+or the latest version development version on github by running:
 
 ```bash
 pip install git+https://github.com/berenslab/fundus_image_toolbox
 ```
 
 #### Create a virtual environment <br>
-Alternatively, you can create a new conda environment and install the toolbox there:
-```bash
-conda create --name fundus_image_toolbox python=3.9.19 pip
-conda activate fundus_image_toolbox
-```
-And then `pip install fundus_image_toolbox` or `pip install .` within the new environment.<br>
-Or create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
+Alternatively, create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
 ```bash
 uv venv
 source .venv/bin/activate
 ```
+or add it to your current `uv` project with `uv add fundus_image_toolbox`.<br>
+
+Or, use `conda` (less recommended): Create a new conda environment and install the toolbox there:
+```bash
+conda create --name fundus_image_toolbox python=3.12 pip
+conda activate fundus_image_toolbox
+```
+And then `pip install fundus_image_toolbox` or `pip install .` from inside the new environment.<br>
+
+
+### Caching
+- Weights for `registration`, `fundus_od_localization` and `quality_prediction` models are stored into the OS default cache dir. Set the environment variable `FIT_CACHE_DIR` to configure it, or pass the `cache_dir` argument to the respective model loading functions.
+- If no `cache_dir` is passed and nothing is found in the default cache location, FIT also checks the legacy package-internal model paths for backward compatibility with versions <= 0.1.1.
+- FIT models were trained on Imagenet-initialized weights. Those torch / torchvision weights will be stored in the [default pytorch cache dir](https://docs.pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved), configurable by setting the `TORCH_HOME` environment variable. 
 
 ### Contribute
 You are very welcome to contribute to the toolbox. Please raise an [Issue](https://github.com/berenslab/fundus_image_toolbox/issues) for bugs, or create a [Pull request](https://github.com/berenslab/fundus_image_toolbox/pulls) for fixes and added features. For everything else, the [Contribution Discussion](https://github.com/berenslab/fundus_image_toolbox/discussions/26) is the right place. Please feel free to contact us there if you have any proposals, questions or need help.
@@ -183,8 +196,95 @@ If you use external parts of the toolbox that this toolbox provides an interface
     <!-- - [Müller et al., 2023](https://zenodo.org/records/10630386) -->
     <!-- -  -->
 
-<!-- <br>
-<p style="font-size:1.5em;"><b>License</b></p> -->
+### OS Compatibility
+<details>
+<summary>v0.1.2</summary>
+
+<table>
+  <thead>
+    <tr>
+      <th>Python Version</th>
+      <th>Linux <br><sup>Rocky 8.8, Kernel 4.18</sup></th>
+      <th>macOS <br><sup>Sequoia 15.7</sup></th>
+      <th>Windows <br><sup>11 Pro</sup></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">3.9</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.10</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.11</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.12</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+    </tr>
+  </tbody>
+</table>
+
+<sub>✅ Supported & all tests successful &nbsp; 🔸 Partly supported: [sample notebooks]((./0_example_usage/)) succeed but automatic tests fail partly &nbsp; ❓ Untested/unknown &nbsp; ❌ Not supported</sub>
+</details>
+
+<details>
+<summary>v0.1.1</summary>
+
+<table>
+  <thead>
+    <tr>
+      <th>Python Version</th>
+      <th>Linux <br><sup>Rocky 8.8, Kernel 4.18</sup></th>
+      <th>macOS <br><sup>Sequoia 15.7</sup></th>
+      <th>Windows <br><sup>11 Pro</sup></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">3.9</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+      <td align="center">✅</td>
+    </tr>
+    <tr>
+      <td align="center">3.10</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.11</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.12</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+      <td align="center">❓</td>
+    </tr>
+  </tbody>
+</table>
+
+<sub>✅ Supported & all tests successful &nbsp; 🔸 Partly supported: [sample notebooks]((./0_example_usage/)) succeed but automatic tests fail partly &nbsp; ❓ Untested/unknown &nbsp; ❌ Not supported</sub>
+</details>
+
+
+
 ### License
 
 The toolbox is licensed under the MIT License. See the [license file](./LICENSE) for more information. <!-- As external packages are used, please check the respective licenses. That includes [fundus_vessel_segmentation](fundus_vessel_segmentation).-->

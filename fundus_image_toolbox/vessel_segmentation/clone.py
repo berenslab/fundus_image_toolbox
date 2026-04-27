@@ -22,7 +22,7 @@ def clone_repo(
     target_path.mkdir(parents=True, exist_ok=True)
 
     if not any(target_path.iterdir()):
-        print(f"Module missing, downloading it from {link}...")
+        print(f"[FIT:vessel_segmentation] Module missing, downloading it from {link}...")
         
         # Clone the repository
         subprocess.run(
@@ -60,10 +60,10 @@ def clone_repo(
 def adjust_imports(target_dir):
     # Make imports of segmentation module relative
     if os.path.exists(target_dir):
-        print("Adjusting imports...")
+        print("[FIT:vessel_segmentation] Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
         replace_args(target_dir)
-        print("Done.")
+        print("[FIT:vessel_segmentation] Done.")
 
 # Make imports relative
 def add_dots_to_imports(file_path):
@@ -86,7 +86,6 @@ def add_dots_to_imports(file_path):
                     file.write(line)
                     continue
                 fname = fname.split(".")[0]
-                # print(fname)
 
                 # Check if is a local file in same directory
                 if os.path.exists(os.path.join(this_dir, fname)):
@@ -110,9 +109,6 @@ def add_dots_to_imports(file_path):
                 imports = terms[-1].split(",")
                 imports = [i.replace(" ", "") for i in imports]
 
-                # print("parents: ", parents)
-                # print("imports: ", imports)
-
                 if len(parents) > 0:
                     file.write(
                         f"from {c}{'.'.join(parents)} import {', '.join(imports)}\n"
@@ -128,7 +124,6 @@ def add_dots_to_imports_in_folder(folder_path):
     for root, _, files in os.walk(folder_path):
         for file in files:
             if file.endswith(".py"):
-                # print("########\n", file)
                 add_dots_to_imports(os.path.join(root, file))
 
 def replace_args(folder_path):

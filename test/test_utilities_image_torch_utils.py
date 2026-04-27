@@ -5,7 +5,9 @@ import numpy as np
 from PIL import Image
 import cv2
 import torch
+from unittest.mock import patch
 from torchvision.transforms.functional import to_tensor
+import fundus_image_toolbox.utils as fit_utils
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
 
 DIR = os.path.join(os.path.dirname(__file__))
@@ -157,6 +159,144 @@ class TestImageTorchUtils(unittest.TestCase):
         # Single path to batch
         out = Img(fundus1_path).to_batch().img
         assert len(out.shape) == 4 and isinstance(out, torch.Tensor)
+
+    def test_to_batch_with_grayscale_mask_ndims_hint(self):
+        masks = np.stack([fundus1_plt[:, :, 0], fundus1_plt[:, :, 0]], axis=0)
+        out = Img(masks).to_batch(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert len(out.shape) == 4
+        assert out.shape[0] == 2
+        assert out.shape[1] == 1
+
+    def test_to_tensor_additional_dummy_cases(self):
+        rng = np.random.default_rng(0)
+        h, w = 6, 8
+
+        img_2d_u8 = rng.integers(0, 256, size=(h, w), dtype=np.uint8)
+        img_2d_f32 = rng.random((h, w), dtype=np.float32)
+        img_hwc_u8 = rng.integers(0, 256, size=(h, w, 3), dtype=np.uint8)
+        img_hwc_f32 = rng.random((h, w, 3), dtype=np.float32)
+        img_1hw_u8 = rng.integers(0, 256, size=(1, h, w), dtype=np.uint8)
+        img_chw_u8 = rng.integers(0, 256, size=(3, h, w), dtype=np.uint8)
+        torch_hw = torch.rand(h, w)
+
+        out = Img(img_2d_u8).to_tensor(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (1, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(img_2d_f32).to_tensor(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (1, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(img_hwc_u8).to_tensor(img_ndims=3).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (3, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(img_hwc_f32).to_tensor(img_ndims=3).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (3, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(img_1hw_u8).to_tensor(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (1, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(img_chw_u8).to_tensor(img_ndims=3).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (3, h, w)
+        assert out.dtype == torch.float32
+
+        out = Img(torch_hw).to_tensor(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (1, h, w)
+        assert out.dtype == torch.float32
+
+    def test_to_batch_additional_dummy_cases(self):
+        rng = np.random.default_rng(1)
+        h, w = 6, 8
+
+        img_2d_u8 = rng.integers(0, 256, size=(h, w), dtype=np.uint8)
+        img_hwc_u8 = rng.integers(0, 256, size=(h, w, 3), dtype=np.uint8)
+        img_1hw_u8 = rng.integers(0, 256, size=(1, h, w), dtype=np.uint8)
+
+        batch_list_2d = [img_2d_u8, img_2d_u8.copy()]
+        batch_array_bhw = np.stack(batch_list_2d, axis=0)
+        batch_list_hwc = [img_hwc_u8, img_hwc_u8.copy()]
+        batch_array_bhwc = np.stack(batch_list_hwc, axis=0)
+        batch_list_1hw = [img_1hw_u8, img_1hw_u8.copy()]
+
+        out = Img(batch_list_2d).to_batch(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (2, 1, h, w)
+
+        out = Img(batch_array_bhw).to_batch(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (2, 1, h, w)
+
+        out = Img(batch_list_hwc).to_batch(img_ndims=3).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (2, 3, h, w)
+
+        out = Img(batch_array_bhwc).to_batch(img_ndims=3).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (2, 3, h, w)
+
+        out = Img(batch_list_1hw).to_batch(img_ndims=2).img
+        assert isinstance(out, torch.Tensor)
+        assert out.shape == (2, 1, h, w)
+
+        # Intentional mismatch from notebook: BHW treated as color batch-like input.
+        with self.assertRaises(TypeError):
+            Img(batch_array_bhw).to_batch(img_ndims=3).img
+
+    def test_show_empty_ndarray_raises(self):
+        empty_img = np.array([])
+        with self.assertRaises(ValueError) as exc_info:
+            fit_utils.show(empty_img)
+        assert "empty" in str(exc_info.exception).lower()
+
+    def test_show_list_filters_empty_images(self):
+        empty_img = np.array([])
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show([fundus1_plt, empty_img])
+
+        assert mock_imshow.call_count == 1
+        mock_show.assert_called_once()
+
+    def test_show_single_grayscale_image_uses_gray_cmap(self):
+        fundus1_gs = fundus1_plt[:, :, 0]
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show(fundus1_gs)
+
+        mock_show.assert_called_once()
+        shown_img = mock_imshow.call_args.args[0]
+        shown_kwargs = mock_imshow.call_args.kwargs
+        assert shown_img.ndim == 2
+        assert np.array_equal(shown_img, fundus1_gs)
+        assert shown_kwargs.get("cmap") == "gray"
+
+    def test_show_list_mixed_grayscale_and_rgb(self):
+        fundus1_gs = fundus1_plt[:, :, 0]
+        with patch("matplotlib.pyplot.imshow") as mock_imshow, patch(
+            "matplotlib.pyplot.show"
+        ) as mock_show:
+            fit_utils.show([fundus1_gs, fundus1_plt])
+
+        mock_show.assert_called_once()
+        assert mock_imshow.call_count == 2
+
+        gs_kwargs = mock_imshow.call_args_list[0].kwargs
+        rgb_kwargs = mock_imshow.call_args_list[1].kwargs
+        assert gs_kwargs.get("cmap") == "gray"
+        assert "cmap" not in rgb_kwargs
 
     def test_combi(self):
         # Test the to_cspace and set_channel_dim function

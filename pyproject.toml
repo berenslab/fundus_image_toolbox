@@ -7,7 +7,7 @@ write_to = "fundus_image_toolbox/_version.py"
 
 [project]
 name = "fundus_image_toolbox"
-version = "0.1.1"
+dynamic = ["version"]
 description = "A toolbox for fundus image analysis"
 readme = {file = "Readme.md", content-type = "text/markdown"}
 authors = [
@@ -49,6 +49,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "tox>=4.24.1",
+    "tox-uv>=1.25.0",
 ]
 
 [tool.setuptools]
@@ -56,6 +57,9 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.dynamic]
+version = {attr = "fundus_image_toolbox._version.__version__"}
 
 [tool.uv.workspace]
 members = ["."]

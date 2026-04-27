@@ -1,10 +1,7 @@
 from datetime import datetime
-import os
 from types import SimpleNamespace
-from typing import List, Union
+from typing import List, Optional, Union
 from pathlib import Path
-import requests
-import tarfile
 
 import yaml
 import numpy as np
@@ -18,22 +15,21 @@ from torchvision.ops import box_iou
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor
 from torchvision.transforms.functional import to_pil_image
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
+from fundus_image_toolbox.utils.model_cache import (
+    cleanup_extraction_artifacts,
+    component_cache_dir,
+    download,
+    extract_tar_safely_with_manifest,
+    has_all_paths,
+    _remove_file_if_exists,
+)
 
 from .transforms_multi import ToPILImage
 from .default import DEFAULT_MODEL, MODELS_DIR
 
-
-def wget(link, target):
-    # platform independent wget alternative
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
-    }
-    r = requests.get(link, headers=headers, stream=True)
-    downloaded_file = open(target, "wb")
-
-    for chunk in r.iter_content(chunk_size=8192):
-        if chunk:
-            downloaded_file.write(chunk)
+FOVEA_COMPONENT_NAME = "fovea_od_localization"
+FOVEA_WEIGHTS_URL = "https://zenodo.org/records/11174642/files/weights.tar.gz"
+FOVEA_ARCHIVE_NAME = "weights.tar.gz"
 
 
 class ODFoveaModel:
@@ -46,7 +42,7 @@ class ODFoveaModel:
             MODELS_DIR / self.timestamp / f"multi_{self.config.model_type}_best.pt"
         )
 
-        print(f"Initializing {self.config.model_type} on {self.device}")
+        print(f"[FIT:fovea_od_localization] Initializing {self.config.model_type} on {self.device}")
 
         self.loss_func = nn.SmoothL1Loss(reduction="sum")
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
@@ -97,9 +93,9 @@ class ODFoveaModel:
         pbar.close()
 
         print(
-            f'Best model at epoch {best_epoch} with loss {self.best_loss:.4} and IoU {self.iou_tracking["val"][best_epoch]:.2} and distance {self.dist_tracking["val"][best_epoch]:.4}'
+            f'[FIT:fovea_od_localization] Best model at epoch {best_epoch} with loss {self.best_loss:.4} and IoU {self.iou_tracking["val"][best_epoch]:.2} and distance {self.dist_tracking["val"][best_epoch]:.4}'
         )
-        print(f"Model saved at {self.checkpoint_path}")
+        print(f"[FIT:fovea_od_localization] Model saved at {self.checkpoint_path}")
 
         # Save summary to file
         p = self.checkpoint_path.parent
@@ -147,7 +143,6 @@ class ODFoveaModel:
                 checkpoint_path = (
                     checkpoint_path / f"multi_{self.config.model_type}_best.pt"
                 )
-            # if not os.path.exists(checkpoint_path):
             if not checkpoint_path.exists():
                 raise FileNotFoundError(f"Checkpoint {checkpoint_path} not found")
             else:
@@ -164,7 +159,7 @@ class ODFoveaModel:
             standardized_test_dist = test_dist * self.config.img_size
 
             print(
-                f"Test loss: {test_loss:.4}, IoU: {test_iou:.2}, Dist: {test_dist:.4}, Standardized dist: {standardized_test_dist:.4}"
+                f"[FIT:fovea_od_localization] Test loss: {test_loss:.4}, IoU: {test_iou:.2}, Dist: {test_dist:.4}, Standardized dist: {standardized_test_dist:.4}"
             )
 
         if save_summary:
@@ -238,15 +233,16 @@ class ODFoveaModel:
 
         return outs
 
-    def load_checkpoint(self):
-        print(f"Loading model from {self.checkpoint_path}")
+    def load_checkpoint(self, cache_dir: Optional[Union[str, Path]] = None):
+        print(f"[FIT:fovea_od_localization] Loading model from {self.checkpoint_path}")
         if not self.checkpoint_path.exists():
             if DEFAULT_MODEL in self.checkpoint_path.__str__():
-                print(f"Default model {DEFAULT_MODEL} not found, downloading...")
-                if not (MODELS_DIR / DEFAULT_MODEL).exists():
-                    self._download_weights()
+                print(f"[FIT:fovea_od_localization] Default model {DEFAULT_MODEL} not found, downloading...")
+                self.checkpoint_path = self._ensure_default_checkpoint_path(
+                    cache_dir=cache_dir
+                )
             else:
-                raise FileNotFoundError(f"Checkpoint {self.checkpoint_path} not found")
+                raise FileNotFoundError(f"[FIT:fovea_od_localization] Checkpoint {self.checkpoint_path} not found")
 
         self.model.load_state_dict(
             torch.load(
@@ -296,78 +292,82 @@ class ODFoveaModel:
             model.classifier = torch.nn.Linear(2560, 4)
 
         else:
-            raise ValueError("Model type not supported")
+            raise ValueError("[FIT:fovea_od_localization] Model type not supported")
 
         return model
 
-    def _remove_file(self, weights_path):
-        print("Removing tar file...")
+    def _ensure_default_checkpoint_path(
+        self, cache_dir: Optional[Union[str, Path]] = None
+    ) -> Path:
+        """Ensure default weights are available and return checkpoint path."""
+        model_name = f"multi_{self.config.model_type}_best.pt"
+        expected_rel = Path(DEFAULT_MODEL) / model_name
+        cache_models_dir = component_cache_dir(FOVEA_COMPONENT_NAME, cache_dir=cache_dir)
+        cache_checkpoint = cache_models_dir / expected_rel
+
+        # Priority 1+2: explicit cache_dir first, otherwise FIT_CACHE_DIR/default.
+        if has_all_paths(cache_models_dir, [expected_rel]):
+            return cache_checkpoint
+
+        archive_path = cache_models_dir / FOVEA_ARCHIVE_NAME
+        if archive_path.exists():
+            print(f"[FIT:fovea_od_localization] Extracting weights from archive at {archive_path}...")
+            manifest = {"files": [], "dirs": []}
+            try:
+                manifest = extract_tar_safely_with_manifest(
+                    archive_path=archive_path,
+                    destination_dir=cache_models_dir,
+                    replace_colon_with="_",
+                )
+                print("[FIT:fovea_od_localization] Done.")
+            except Exception as exc:
+                cleanup_extraction_artifacts(manifest)
+                _remove_file_if_exists(archive_path)
+                raise RuntimeError(
+                    f"[FIT:fovea_od_localization] Failed to extract weights archive at {archive_path}. "
+                    "The broken archive was removed. Please re-download or place a valid archive manually."
+                ) from exc
+            if cache_checkpoint.exists():
+                return cache_checkpoint
+
+        # Priority 3: only fall back to legacy package location when no explicit
+        # cache_dir argument was provided.
+        legacy_checkpoint = MODELS_DIR / expected_rel
+        if cache_dir is None and legacy_checkpoint.exists():
+            return legacy_checkpoint
+
+        downloaded_archive = download(
+            url=FOVEA_WEIGHTS_URL,
+            target_path=archive_path,
+            component_name="fovea_od_localization",
+            manual_file_name=FOVEA_ARCHIVE_NAME,
+            manual_target_dir=cache_models_dir,
+        )
+        print("[FIT:fovea_od_localization] Extracting downloaded weights...")
+        manifest = {"files": [], "dirs": []}
         try:
-            os.remove(weights_path)
-        except Exception:
-            pass
-        print("Done")
+            manifest = extract_tar_safely_with_manifest(
+                archive_path=downloaded_archive,
+                destination_dir=cache_models_dir,
+                replace_colon_with="_",
+            )
+            print("[FIT:fovea_od_localization] Done.")
+        except Exception as exc:
+            cleanup_extraction_artifacts(manifest)
+            raise RuntimeError(
+                f"[FIT:fovea_od_localization] Failed to extract downloaded weights archive at {downloaded_archive}. "
+                "Archive and partial extracted files were cleaned up."
+            ) from exc
+        finally:
+            if downloaded_archive.exists():
+                _remove_file_if_exists(downloaded_archive)
 
-    def _download_weights(
-        self, url="https://zenodo.org/records/11174642/files/weights.tar.gz"
-    ):
-        MODELS_DIR.mkdir(parents=True, exist_ok=True)
-        weights_path = (MODELS_DIR / "weights.tar.gz").__str__()
-        wget(url, weights_path)
-        print("Extracting weights...")
+        if cache_checkpoint.exists():
+            return cache_checkpoint
 
-        # Extract with sanitization to avoid Windows-invalid filenames (e.g. ':')
-        # and prevent path traversal.
-        try:
-            with tarfile.open(weights_path, "r:gz") as tar:
-                for member in tar.getmembers():
-                    # Normalize and sanitize path components
-                    name = member.name.lstrip("/\\")
-                    parts = [p for p in name.split("/") if p not in ("", ".")]
-                    safe_parts = []
-                    for p in parts:
-                        # Replace colon and other potentially problematic chars with _
-                        p = p.replace(":", "_")
-                        # Strip trailing spaces/dots which are invalid on Windows
-                        p = p.rstrip(" .")
-                        if p == "..":
-                            p = "_dotdot_"
-                        safe_parts.append(p)
-
-                    if not safe_parts:
-                        continue
-
-                    safe_name = "/".join(safe_parts)
-                    member.name = safe_name
-
-                    target_path = MODELS_DIR / safe_name
-                    try:
-                        # Prevent extraction outside MODELS_DIR
-                        if not str(target_path.resolve()).startswith(str(MODELS_DIR.resolve())):
-                            continue
-                    except Exception:
-                        continue
-
-                    if member.isdir():
-                        target_path.mkdir(parents=True, exist_ok=True)
-                        continue
-
-                    # Ensure parent dirs exist
-                    target_path.parent.mkdir(parents=True, exist_ok=True)
-                    f = tar.extractfile(member)
-                    if f is None:
-                        continue
-                    try:
-                        with open(target_path, "wb") as out_f:
-                            out_f.write(f.read())
-                    finally:
-                        f.close()
-        except Exception as e:
-            # Fallback: if tarfile fails for unexpected reasons, raise with context
-            self._remove_file(weights_path)
-            raise RuntimeError(f"Failed to extract weights safely: {e}")
-
-        self._remove_file(weights_path)
+        raise FileNotFoundError(
+            f"[FIT:fovea_od_localization] Default checkpoint was not found after extraction at {cache_checkpoint}"
+        )
         
 
     def _train_val_step(self, dataloader, model, loss_func, optimizer=None, pbar=None):

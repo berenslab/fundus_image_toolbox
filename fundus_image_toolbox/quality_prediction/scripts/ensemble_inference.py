@@ -4,12 +4,13 @@ import yaml
 import datetime
 import numpy as np
 from typing import List, Union
+from typing import Optional
 import torch
 from torch.utils.data import DataLoader
 import PIL
 from torchvision.transforms.functional import to_tensor
 
-from .model import FundusQualityModel, download_weights
+from .model import FundusQualityModel, download_weights, _resolve_pretrained_models_dir
 from .default import MODELS_DIR, ENSEMBLE_MODELS
 from pathlib import Path
 
@@ -49,7 +50,11 @@ def any_to_tensor(image):
     return image
 
 
-def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
+def get_ensemble(
+    models_dir: str = MODELS_DIR,
+    device: str = "cpu",
+    cache_dir: Optional[Union[str, Path]] = None,
+):
     """Load the 10-model ensemble from the specified models or project directory.
 
     Args:
@@ -61,21 +66,26 @@ def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
         ensemble: List of FundusQualityModel objects
     """
     models_dir = Path(models_dir)
-    if "models" not in models_dir.parts:
-        models_dir = models_dir / "models"
-    models_dir.mkdir(parents=True, exist_ok=True)
+    if cache_dir is not None:
+        models_dir = _resolve_pretrained_models_dir(cache_dir=cache_dir)
+    else:
+        if "models" not in models_dir.parts:
+            models_dir = models_dir / "models"
+        if str(models_dir.resolve()) == str(MODELS_DIR.resolve()):
+            models_dir = _resolve_pretrained_models_dir(cache_dir=None)
+        models_dir.mkdir(parents=True, exist_ok=True)
 
     for e in ENSEMBLE_MODELS:
         if e not in [p.name for p in models_dir.iterdir() if p.is_dir()]:
-            print("At least one model was not found.")
-            download_weights()
+            print("[FIT:quality_prediction] At least one model was not found.")
+            models_dir = download_weights(cache_dir=cache_dir)
 
     model_dirs = [
         p for p in models_dir.iterdir() if p.is_dir() and is_datetime_format(p.name)
     ]
     assert len(model_dirs) == len(
         ENSEMBLE_MODELS
-    ), f"Expected 10 models, got {len(model_dirs)}. Did you download the models and place them into {models_dir}?"
+    ), f"[FIT:quality_prediction] Expected 10 models, got {len(model_dirs)}. Did you download the models and place them into {models_dir}?"
 
     # Get configs and load models
     configs = []
@@ -87,7 +97,7 @@ def get_ensemble(models_dir: str = MODELS_DIR, device: str = "cpu"):
     ensemble = []
     for ckpt, conf in zip(model_dirs, configs):
         model = FundusQualityModel(conf)
-        model.load_checkpoint(str(ckpt))
+        model.load_checkpoint(str(ckpt), cache_dir=cache_dir)
         ensemble.append(model)
 
     return ensemble
@@ -98,6 +108,7 @@ def ensemble_predict(
     image: Union[list, str, torch.Tensor, np.ndarray],
     threshold: float = 0.5,
     print_result: bool = False,
+    img_size: int = 512,
 ):
     """Predicts the quality of an image or image batch (0: ungradable, 1: gradable)
         using an ensemble of models.
@@ -107,6 +118,8 @@ def ensemble_predict(
         image (list, str, np.ndarray, torch.tensor): Image path(s) as a List[str] or an image as
             tensor or np.ndarray or a batch of images as a tensor.
         threshold (float, optional): Threshold for binary classification. Defaults to 0.5.
+        img_size (int, optional): Resize used for inference.
+            Defaults to 512 for backward compatibility with <= v0.1.1
 
     Returns:
         ensemble_pred: Ensemble prediction(s) (confidence score between 0 and 1)
@@ -127,7 +140,9 @@ def ensemble_predict(
         n = len(image)
         preds = {i: [] for i in range(n)}
         for model in ensemble:
-            pred = model.predict_from_batch(image, threshold=None, load_best=False)
+            pred = model.predict_from_batch(
+                image, threshold=None, load_best=False, img_size=img_size
+            )
             for i in range(n):
                 preds[i].append(pred[i])
         for i in range(n):
@@ -142,7 +157,9 @@ def ensemble_predict(
         preds = []
         for model in ensemble:
             preds.append(
-                model.predict_from_image(image, threshold=None, load_best=False)
+                model.predict_from_image(
+                    image, threshold=None, load_best=False, img_size=img_size
+                )
             )
         preds = np.array(preds)
 
@@ -151,12 +168,12 @@ def ensemble_predict(
 
         if print_result:
             print(
-                f"Ensemble confidence score: {ensemble_pred:.4f} \nEnsemble predicted class: {binary_ensemble_pred}, where 1 is good quality)"
+                f"[FIT:quality_prediction] Ensemble confidence score: {ensemble_pred:.4f} \nEnsemble predicted class: {binary_ensemble_pred}, where 1 is good quality)"
             )
 
     else:
         raise ValueError(
-            "Image(s) must be a list of paths, a path, or a tensor of the image or of a batch of images."
+            "[FIT:quality_prediction] Image(s) must be a list of paths, a path, or a tensor of the image or of a batch of images."
         )
 
     # Squeeze
@@ -203,11 +220,11 @@ def ensemble_predict_from_dataloader(
 
     assert (
         len(binary_ensemble_preds) == len(labels) == len(ensemble_preds)
-    ), "Prediction and label lengths do not match."
+    ), "[FIT:quality_prediction] Prediction and label lengths do not match."
 
     if print_result:
         print(
-            f"Ensemble predicted logits: {ensemble_preds} \nEnsemble predicted classes: {binary_ensemble_preds}, where 1 is good quality)"
+            f"[FIT:quality_prediction] Ensemble predicted logits: {ensemble_preds} \nEnsemble predicted classes: {binary_ensemble_preds}, where 1 is good quality)"
         )
 
     return ensemble_preds, binary_ensemble_preds, labels

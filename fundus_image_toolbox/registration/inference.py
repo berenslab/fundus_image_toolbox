@@ -74,7 +74,7 @@ def download_weights(
         else Path(target_path).expanduser().resolve()
     )
     target.parent.mkdir(parents=True, exist_ok=True)
-    print("Downloading weights...")
+    print("[fit::registration] Downloading weights...")
     download(
         url=url,
         target_path=target,
@@ -82,7 +82,7 @@ def download_weights(
         manual_file_name=REGISTRATION_WEIGHTS_NAME,
         manual_target_dir=target.parent,
     )
-    print("Done")
+    print("[fit::registration] Done")
     return target
 
 
@@ -363,7 +363,7 @@ def check_collapse(
     ratio_fixed = unique_fixed / len(fixed_keypoints)
     if ratio_moving < threshold or ratio_fixed < threshold:
         raise Exception(
-            "Failed to align the two images: Too many points are projected to one!"
+            "[fit::registration] Failed to align the two images: Too many points are projected to one!"
         )
 
 
@@ -450,7 +450,7 @@ def find_homography_and_align(
         merged[:, :, 1] = fixed_gray
 
     else:
-        raise Exception("Failed to align the two images!")
+        raise Exception("[fit::registration] Failed to align the two images!")
 
     def fig_grid():
         # Create 1x4 grid and return the axes

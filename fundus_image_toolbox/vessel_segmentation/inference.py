@@ -186,7 +186,7 @@ def predict(
         with torch.no_grad():
             pred_logit = model(processed_images)
             pred = torch.sigmoid(pred_logit)  # (n, 1, h, w)
-            pred_mask = np.array(pred.cpu() > threshold, dtype=int)
+            pred_mask = np.asarray(pred.cpu() > threshold).astype(int)
             pred_mask = pred_mask.squeeze()  # (n, h, w) or (h, w)
             if len(pred_mask.shape) == 2:
                 pred_mask = np.expand_dims(pred_mask, axis=0)  # (n=1, h, w)

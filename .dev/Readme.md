@@ -54,6 +54,8 @@ This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.
     - added greyscale support in `show()`, thanks to @Page0526
 - registration
   - Fixed original code to handle modern torch versions: `align_corners` argument was wrong if torch version was >= 2.
+- vessel segmentation:
+  - Fixed `dtype` argument deprecation in newer numpy versions.
 - circle_crop
   - Failure handling is now informative and non-fatal, e.g. when applying inside dataset loops: failures now emit UserWarning, return shape-preserving zero outputs, and mark failure with radius=-1.
   - Fixed the `process_img` uninitialized-variable bug by ensuring deterministic fallback failure outputs after exceptions. This fixes https://github.com/berenslab/fundus_image_toolbox/issues/28

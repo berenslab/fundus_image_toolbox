@@ -319,6 +319,7 @@ class ODFoveaModel:
                     destination_dir=cache_models_dir,
                     replace_colon_with="_",
                 )
+                print("[fit::fovea_od_localization] Done.")
             except Exception as exc:
                 cleanup_extraction_artifacts(manifest)
                 _remove_file_if_exists(archive_path)
@@ -335,7 +336,7 @@ class ODFoveaModel:
         if cache_dir is None and legacy_checkpoint.exists():
             return legacy_checkpoint
 
-        print("[fit::fovea_od_localization] Downloading weights...")
+        # print("[fit::fovea_od_localization] Downloading weights...")
         downloaded_archive = download(
             url=FOVEA_WEIGHTS_URL,
             target_path=archive_path,
@@ -351,6 +352,7 @@ class ODFoveaModel:
                 destination_dir=cache_models_dir,
                 replace_colon_with="_",
             )
+            print("[fit::fovea_od_localization] Done.")
         except Exception as exc:
             cleanup_extraction_artifacts(manifest)
             raise RuntimeError(

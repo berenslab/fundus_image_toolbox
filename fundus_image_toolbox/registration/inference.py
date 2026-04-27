@@ -82,7 +82,6 @@ def download_weights(
         manual_file_name=REGISTRATION_WEIGHTS_NAME,
         manual_target_dir=target.parent,
     )
-    print("[fit::registration] Done")
     return target
 
 

@@ -76,7 +76,7 @@ def download_weights(
 
     downloaded_now = False
     if not archive_path.exists():
-        print("[fit::quality_prediction] Downloading weights...")
+        # print("[fit::quality_prediction] Downloading weights...")
         archive_path = download(
             url=url,
             target_path=archive_path,
@@ -94,6 +94,7 @@ def download_weights(
             destination_dir=models_dir,
             replace_colon_with="-",
         )
+        print("[fit::quality_prediction] Done.")
     except Exception as exc:
         cleanup_extraction_artifacts(manifest)
         _remove_file_if_exists(archive_path)
@@ -105,6 +106,7 @@ def download_weights(
         if downloaded_now and archive_path.exists():
             print("[fit::quality_prediction] Removing downloaded archive...")
             _remove_file_if_exists(archive_path)
+            print("[fit::quality_prediction] Done.")
 
     if not _has_expected_ensemble_dirs(models_dir):
         raise FileNotFoundError(

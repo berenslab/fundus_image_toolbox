@@ -77,7 +77,7 @@ def get_ensemble(
 
     for e in ENSEMBLE_MODELS:
         if e not in [p.name for p in models_dir.iterdir() if p.is_dir()]:
-            print("At least one model was not found.")
+            print("[fit::quality_prediction] At least one model was not found.")
             models_dir = download_weights(cache_dir=cache_dir)
 
     model_dirs = [
@@ -85,7 +85,7 @@ def get_ensemble(
     ]
     assert len(model_dirs) == len(
         ENSEMBLE_MODELS
-    ), f"Expected 10 models, got {len(model_dirs)}. Did you download the models and place them into {models_dir}?"
+    ), f"[fit::quality_prediction] Expected 10 models, got {len(model_dirs)}. Did you download the models and place them into {models_dir}?"
 
     # Get configs and load models
     configs = []
@@ -168,12 +168,12 @@ def ensemble_predict(
 
         if print_result:
             print(
-                f"Ensemble confidence score: {ensemble_pred:.4f} \nEnsemble predicted class: {binary_ensemble_pred}, where 1 is good quality)"
+                f"[fit::quality_prediction] Ensemble confidence score: {ensemble_pred:.4f} \nEnsemble predicted class: {binary_ensemble_pred}, where 1 is good quality)"
             )
 
     else:
         raise ValueError(
-            "Image(s) must be a list of paths, a path, or a tensor of the image or of a batch of images."
+            "[fit::quality_prediction] Image(s) must be a list of paths, a path, or a tensor of the image or of a batch of images."
         )
 
     # Squeeze
@@ -220,11 +220,11 @@ def ensemble_predict_from_dataloader(
 
     assert (
         len(binary_ensemble_preds) == len(labels) == len(ensemble_preds)
-    ), "Prediction and label lengths do not match."
+    ), "[fit::quality_prediction] Prediction and label lengths do not match."
 
     if print_result:
         print(
-            f"Ensemble predicted logits: {ensemble_preds} \nEnsemble predicted classes: {binary_ensemble_preds}, where 1 is good quality)"
+            f"[fit::quality_prediction] Ensemble predicted logits: {ensemble_preds} \nEnsemble predicted classes: {binary_ensemble_preds}, where 1 is good quality)"
         )
 
     return ensemble_preds, binary_ensemble_preds, labels

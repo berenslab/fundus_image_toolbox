@@ -45,13 +45,6 @@ This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.
   - From now on, pass `cache_dir` argument or set FIT_CACHE_DIR to use a non-default directory to store pretrained weights at. Backward-compatibility was ensured.
 - quality_prediction
   - make the image size, that the images are resized to internally, configurable. Kept backward-compatible behavior by setting default to 512 (as in `<= v0.1.1`).
-- utils
-  - ImageTorchUtils:
-    - Added robust greyscale image support (in `to_tensor`, `to_batch`, `squeeze`)
-    - Added handling for more dtype and shape combinations
-    - Fixed numpy 2 deprecated `np.array()` calls
-  - basics: 
-    - added greyscale support in `show()`, thanks to @Page0526
 - registration
   - Fixed original code to handle modern torch versions: `align_corners` argument was wrong if torch version was >= 2.
 - vessel segmentation:
@@ -60,6 +53,15 @@ This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.
   - Failure handling is now informative and non-fatal, e.g. when applying inside dataset loops: failures now emit UserWarning, return shape-preserving zero outputs, and mark failure with radius=-1.
   - Fixed the `process_img` uninitialized-variable bug by ensuring deterministic fallback failure outputs after exceptions. This fixes https://github.com/berenslab/fundus_image_toolbox/issues/28
   - Changed crop sizing behavior to square-only (size int), with backward-compatible tuple/list support using the first value.
-- Bump to version 0.1.2
+- utils
+  - ImageTorchUtils:
+    - Added robust greyscale image support (in `to_tensor`, `to_batch`, `squeeze`)
+    - Added handling for more dtype and shape combinations
+    - Fixed numpy 2 deprecated `np.array()` calls
+  - basics: 
+    - added greyscale support in `show()`, thanks to @Page0526
+- Improved printed messages, e.g. when downloading weights.
 - dev: added tox-uv for unittests
+- Bumped to version 0.1.2
+
 

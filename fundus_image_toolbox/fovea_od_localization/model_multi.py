@@ -42,7 +42,7 @@ class ODFoveaModel:
             MODELS_DIR / self.timestamp / f"multi_{self.config.model_type}_best.pt"
         )
 
-        print(f"Initializing {self.config.model_type} on {self.device}")
+        print(f"[FIT:fovea_od_localization] Initializing {self.config.model_type} on {self.device}")
 
         self.loss_func = nn.SmoothL1Loss(reduction="sum")
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
@@ -93,9 +93,9 @@ class ODFoveaModel:
         pbar.close()
 
         print(
-            f'Best model at epoch {best_epoch} with loss {self.best_loss:.4} and IoU {self.iou_tracking["val"][best_epoch]:.2} and distance {self.dist_tracking["val"][best_epoch]:.4}'
+            f'[FIT:fovea_od_localization] Best model at epoch {best_epoch} with loss {self.best_loss:.4} and IoU {self.iou_tracking["val"][best_epoch]:.2} and distance {self.dist_tracking["val"][best_epoch]:.4}'
         )
-        print(f"Model saved at {self.checkpoint_path}")
+        print(f"[FIT:fovea_od_localization] Model saved at {self.checkpoint_path}")
 
         # Save summary to file
         p = self.checkpoint_path.parent
@@ -159,7 +159,7 @@ class ODFoveaModel:
             standardized_test_dist = test_dist * self.config.img_size
 
             print(
-                f"Test loss: {test_loss:.4}, IoU: {test_iou:.2}, Dist: {test_dist:.4}, Standardized dist: {standardized_test_dist:.4}"
+                f"[FIT:fovea_od_localization] Test loss: {test_loss:.4}, IoU: {test_iou:.2}, Dist: {test_dist:.4}, Standardized dist: {standardized_test_dist:.4}"
             )
 
         if save_summary:
@@ -234,15 +234,15 @@ class ODFoveaModel:
         return outs
 
     def load_checkpoint(self, cache_dir: Optional[Union[str, Path]] = None):
-        print(f"[fit::fovea_od_localization] Loading model from {self.checkpoint_path}")
+        print(f"[FIT:fovea_od_localization] Loading model from {self.checkpoint_path}")
         if not self.checkpoint_path.exists():
             if DEFAULT_MODEL in self.checkpoint_path.__str__():
-                print(f"[fit::fovea_od_localization] Default model {DEFAULT_MODEL} not found, downloading...")
+                print(f"[FIT:fovea_od_localization] Default model {DEFAULT_MODEL} not found, downloading...")
                 self.checkpoint_path = self._ensure_default_checkpoint_path(
                     cache_dir=cache_dir
                 )
             else:
-                raise FileNotFoundError(f"[fit::fovea_od_localization] Checkpoint {self.checkpoint_path} not found")
+                raise FileNotFoundError(f"[FIT:fovea_od_localization] Checkpoint {self.checkpoint_path} not found")
 
         self.model.load_state_dict(
             torch.load(
@@ -292,7 +292,7 @@ class ODFoveaModel:
             model.classifier = torch.nn.Linear(2560, 4)
 
         else:
-            raise ValueError("[fit::fovea_od_localization] Model type not supported")
+            raise ValueError("[FIT:fovea_od_localization] Model type not supported")
 
         return model
 
@@ -311,7 +311,7 @@ class ODFoveaModel:
 
         archive_path = cache_models_dir / FOVEA_ARCHIVE_NAME
         if archive_path.exists():
-            print(f"[fit::fovea_od_localization] Extracting weights from archive at {archive_path}...")
+            print(f"[FIT:fovea_od_localization] Extracting weights from archive at {archive_path}...")
             manifest = {"files": [], "dirs": []}
             try:
                 manifest = extract_tar_safely_with_manifest(
@@ -319,12 +319,12 @@ class ODFoveaModel:
                     destination_dir=cache_models_dir,
                     replace_colon_with="_",
                 )
-                print("[fit::fovea_od_localization] Done.")
+                print("[FIT:fovea_od_localization] Done.")
             except Exception as exc:
                 cleanup_extraction_artifacts(manifest)
                 _remove_file_if_exists(archive_path)
                 raise RuntimeError(
-                    f"[fit::fovea_od_localization] Failed to extract weights archive at {archive_path}. "
+                    f"[FIT:fovea_od_localization] Failed to extract weights archive at {archive_path}. "
                     "The broken archive was removed. Please re-download or place a valid archive manually."
                 ) from exc
             if cache_checkpoint.exists():
@@ -336,7 +336,6 @@ class ODFoveaModel:
         if cache_dir is None and legacy_checkpoint.exists():
             return legacy_checkpoint
 
-        # print("[fit::fovea_od_localization] Downloading weights...")
         downloaded_archive = download(
             url=FOVEA_WEIGHTS_URL,
             target_path=archive_path,
@@ -344,7 +343,7 @@ class ODFoveaModel:
             manual_file_name=FOVEA_ARCHIVE_NAME,
             manual_target_dir=cache_models_dir,
         )
-        print("[fit::fovea_od_localization] Extracting downloaded weights...")
+        print("[FIT:fovea_od_localization] Extracting downloaded weights...")
         manifest = {"files": [], "dirs": []}
         try:
             manifest = extract_tar_safely_with_manifest(
@@ -352,11 +351,11 @@ class ODFoveaModel:
                 destination_dir=cache_models_dir,
                 replace_colon_with="_",
             )
-            print("[fit::fovea_od_localization] Done.")
+            print("[FIT:fovea_od_localization] Done.")
         except Exception as exc:
             cleanup_extraction_artifacts(manifest)
             raise RuntimeError(
-                f"[fit::fovea_od_localization] Failed to extract downloaded weights archive at {downloaded_archive}. "
+                f"[FIT:fovea_od_localization] Failed to extract downloaded weights archive at {downloaded_archive}. "
                 "Archive and partial extracted files were cleaned up."
             ) from exc
         finally:
@@ -367,7 +366,7 @@ class ODFoveaModel:
             return cache_checkpoint
 
         raise FileNotFoundError(
-            f"[fit::fovea_od_localization] Default checkpoint was not found after extraction at {cache_checkpoint}"
+            f"[FIT:fovea_od_localization] Default checkpoint was not found after extraction at {cache_checkpoint}"
         )
         
 

@@ -81,12 +81,12 @@ def download(
             with requests.get(url, stream=True, timeout=120) as response:
                 if not response.ok:
                     raise requests.HTTPError(
-                        f"[fit::{component_name}] HTTP {response.status_code} while downloading from {url}"
+                        f"[FIT:{component_name}] HTTP {response.status_code} while downloading from {url}"
                     )
 
                 total_size = int(response.headers.get("content-length", 0))
                 with target.open("wb") as out_file, tqdm(
-                    desc=f"[fit::{component_name}] Downloading {target.name}",
+                    desc=f"[FIT:{component_name}] Downloading {target.name}",
                     total=total_size,
                     unit="B",
                     unit_scale=True,
@@ -105,7 +105,7 @@ def download(
                 continue
 
     raise RuntimeError(
-        f"[fit::{component_name}] Failed to download weights from {url} after {total_attempts} attempts.\n"
+        f"[FIT:{component_name}] Failed to download weights from {url} after {total_attempts} attempts.\n"
         f"Last error: {last_error}\n"
         "This is unexpected. If reproducible, please open an issue.\n\n"
         f"{manual_hint}"

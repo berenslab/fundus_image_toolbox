@@ -76,7 +76,6 @@ def download_weights(
 
     downloaded_now = False
     if not archive_path.exists():
-        # print("[fit::quality_prediction] Downloading weights...")
         archive_path = download(
             url=url,
             target_path=archive_path,
@@ -86,7 +85,7 @@ def download_weights(
         )
         downloaded_now = True
 
-    print("[fit::quality_prediction] Extracting weights...")
+    print("[FIT:quality_prediction] Extracting weights...")
     manifest = {"files": [], "dirs": []}
     try:
         manifest = extract_tar_safely_with_manifest(
@@ -94,23 +93,23 @@ def download_weights(
             destination_dir=models_dir,
             replace_colon_with="-",
         )
-        print("[fit::quality_prediction] Done.")
+        print("[FIT:quality_prediction] Done.")
     except Exception as exc:
         cleanup_extraction_artifacts(manifest)
         _remove_file_if_exists(archive_path)
         raise RuntimeError(
-            f"[fit::quality_prediction] Failed to extract weights archive at {archive_path}. "
+            f"[FIT:quality_prediction] Failed to extract weights archive at {archive_path}. "
             "Broken archive and partial extracted files were cleaned up."
         ) from exc
     finally:
         if downloaded_now and archive_path.exists():
-            print("[fit::quality_prediction] Removing downloaded archive...")
+            print("[FIT:quality_prediction] Removing downloaded archive...")
             _remove_file_if_exists(archive_path)
-            print("[fit::quality_prediction] Done.")
+            print("[FIT:quality_prediction] Done.")
 
     if not _has_expected_ensemble_dirs(models_dir):
         raise FileNotFoundError(
-            f"[fit::quality_prediction] Expected ensemble directories were not found after extraction in {models_dir}"
+            f"[FIT:quality_prediction] Expected ensemble directories were not found after extraction in {models_dir}"
         )
 
     return models_dir
@@ -132,7 +131,7 @@ def plot_quality(fundus, conf: float, label: int, threshold: float = 0.5):
     fundus = Img(fundus).to_tensor().squeeze().to_numpy().set_channel_dim(-1).img
 
     if Img(fundus).is_batch_like():
-        raise ValueError("[fit::quality_prediction] Pass a single image, not a batch.")
+        raise ValueError("[FIT:quality_prediction] Pass a single image, not a batch.")
 
     fig = plt.figure(figsize=(4.3, 4))
     gs = gridspec.GridSpec(1, 2, width_ratios=[25, 1])
@@ -227,7 +226,7 @@ class FundusQualityModel:
         )
         self.model.to(self.config.device)
 
-        print(f"[fit::quality_prediction] Model loaded from {self.checkpoint_path.parent.name}")
+        print(f"[FIT:quality_prediction] Model loaded from {self.checkpoint_path.parent.name}")
 
     def train(self, train_dataloader, val_dataloader):
         self.checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
@@ -275,7 +274,7 @@ class FundusQualityModel:
         self.was_trained = True
 
         print(
-            f"[fit::quality_prediction] Best epoch: {self.best_epoch}, Best loss: {self.best_loss}, Best acc: {self.best_acc}\n"
+            f"[FIT:quality_prediction] Best epoch: {self.best_epoch}, Best loss: {self.best_loss}, Best acc: {self.best_acc}\n"
         )
         # Save summary file and loss plot
         self._plot_loss(save=True)
@@ -474,7 +473,7 @@ class FundusQualityModel:
             )
             != 1
         ):
-            raise ValueError("[fit::quality_prediction] You should pass exactly one dataloader.")
+            raise ValueError("[FIT:quality_prediction] You should pass exactly one dataloader.")
 
         if val_dataloader:
             loader = "val"
@@ -530,7 +529,7 @@ class FundusQualityModel:
                     for key, value in log.items():
                         f.write(f"{key}: {value}\n")
                 else:
-                    print("[fit::quality_prediction] Cannot log what was passed of type", type(log))
+                    print("[FIT:quality_prediction] Cannot log what was passed of type", type(log))
 
             if self.was_trained:
                 for key, value in vars(self.config).items():
@@ -651,6 +650,6 @@ class FundusQualityModel:
             model.classifier = torch.nn.Linear(2560, n_outs)
 
         else:
-            raise ValueError("[fit::quality_prediction] Model type not supported")
+            raise ValueError("[FIT:quality_prediction] Model type not supported")
 
         return model

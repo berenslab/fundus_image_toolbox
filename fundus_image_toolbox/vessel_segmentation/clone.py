@@ -22,7 +22,7 @@ def clone_repo(
     target_path.mkdir(parents=True, exist_ok=True)
 
     if not any(target_path.iterdir()):
-        print(f"[fit::vessel_segmentation] Module missing, downloading it from {link}...")
+        print(f"[FIT:vessel_segmentation] Module missing, downloading it from {link}...")
         
         # Clone the repository
         subprocess.run(
@@ -60,10 +60,10 @@ def clone_repo(
 def adjust_imports(target_dir):
     # Make imports of segmentation module relative
     if os.path.exists(target_dir):
-        print("[fit::vessel_segmentation] Adjusting imports...")
+        print("[FIT:vessel_segmentation] Adjusting imports...")
         add_dots_to_imports_in_folder(target_dir)
         replace_args(target_dir)
-        print("[fit::vessel_segmentation] Done.")
+        print("[FIT:vessel_segmentation] Done.")
 
 # Make imports relative
 def add_dots_to_imports(file_path):

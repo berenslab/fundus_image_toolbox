@@ -37,6 +37,11 @@ from fundus_image_toolbox.utils.model_cache import (
 from .transforms import get_unnormalization, get_transforms
 from .default import ENSEMBLE_MODELS, MODELS_DIR
 
+_MIXED_SIZE_BATCH_WARNING = (
+    "[FIT:quality_prediction] Batch contains images with different spatial sizes! "
+    "Feed in same-sized images. Aligning all images to the smallest short edge in the batch... "
+)
+
 
 QUALITY_COMPONENT_NAME = "quality_prediction"
 QUALITY_WEIGHTS_URL = "https://zenodo.org/records/11174749/files/weights.tar.gz"
@@ -423,7 +428,10 @@ class FundusQualityModel:
         Returns:
             numpy.ndarray: Predictions
         """
-        image_batch = Img(image_batch).to_batch().img
+        image_batch = Img(image_batch).to_batch(
+            on_mismatch="align_short_edge_crop",
+            mismatch_warning=_MIXED_SIZE_BATCH_WARNING,
+        ).img
         if transform:
             image_batch = [
                 get_transforms(split="test", img_size=img_size)(to_pil_image(image))

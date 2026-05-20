@@ -27,7 +27,8 @@ def any_to_tensor(image):
     """Converts an image to a torch tensor of shape (C, H, W)
 
     Args:
-        image (str, np.ndarray, torch.Tensor): Image path, numpy array or torch tensor.
+        image (str, PIL.Image.Image, np.ndarray, torch.Tensor): Image path, PIL
+            image, numpy array or torch tensor.
 
     Returns:
         torch.Tensor: Image as a torch tensor.
@@ -36,6 +37,8 @@ def any_to_tensor(image):
         image = to_tensor(
             PIL.Image.open(image)
         )  # PIL Image with shape (H, W, C) -> (C, H, W)
+    elif isinstance(image, PIL.Image.Image):
+        image = to_tensor(image)  # PIL Image with shape (H, W, C) -> (C, H, W)
     elif isinstance(image, np.ndarray):
         image = to_tensor(
             PIL.Image.fromarray(image)
@@ -44,7 +47,7 @@ def any_to_tensor(image):
         image = image
     else:
         raise ValueError(
-            "Image should be a string, numpy array or torch tensor but is of type",
+            "Image should be a string, PIL image, numpy array or torch tensor but is of type",
             type(image),
         )
     return image
@@ -105,7 +108,7 @@ def get_ensemble(
 
 def ensemble_predict(
     ensemble: List[FundusQualityModel],
-    image: Union[list, str, torch.Tensor, np.ndarray],
+    image: Union[list, str, torch.Tensor, np.ndarray, PIL.Image.Image],
     threshold: float = 0.5,
     print_result: bool = False,
     img_size: int = 512,
@@ -115,8 +118,9 @@ def ensemble_predict(
 
     Args:
         ensemble (list): List of FundusQualityModel objects.
-        image (list, str, np.ndarray, torch.tensor): Image path(s) as a List[str] or an image as
-            tensor or np.ndarray or a batch of images as a tensor.
+        image (list, str, PIL.Image.Image, np.ndarray, torch.tensor): Image path(s) as a
+            List[str] or an image as PIL image, tensor or np.ndarray or a batch of images
+            as a tensor.
         threshold (float, optional): Threshold for binary classification. Defaults to 0.5.
         img_size (int, optional): Resize used for inference.
             Defaults to 512 for backward compatibility with <= v0.1.1
@@ -126,16 +130,14 @@ def ensemble_predict(
         binary_ensemble_pred: Ensemble predicted class(es), where 1 is good quality"""
     preds = []
 
-    if isinstance(image, list) and isinstance(image[0], str):
+    if isinstance(image, list) and not isinstance(image[0], torch.Tensor):
         image = [any_to_tensor(i) for i in image]
 
     if (
-        isinstance(image, (torch.Tensor, np.ndarray, list))
-        and isinstance(image[0], (torch.Tensor, np.ndarray, PIL.Image.Image))
+        isinstance(image, (torch.Tensor, list))
+        and isinstance(image[0], torch.Tensor)
         and len(image[0].shape) == 3
     ):
-        if not isinstance(image[0], torch.Tensor):
-            image = [any_to_tensor(i) for i in image]
         # Do batch prediction
         n = len(image)
         preds = {i: [] for i in range(n)}
@@ -151,7 +153,7 @@ def ensemble_predict(
         binary_ensemble_pred = np.where(ensemble_pred >= threshold, 1, 0)
 
     elif isinstance(image, (list, str)) or isinstance(
-        image, (torch.Tensor, np.ndarray)
+        image, (torch.Tensor, np.ndarray, PIL.Image.Image)
     ):
         # Do single image prediction
         preds = []

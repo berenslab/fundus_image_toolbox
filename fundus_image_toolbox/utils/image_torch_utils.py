@@ -1,9 +1,72 @@
+import warnings
 
 import torch
 from PIL import Image
-from torchvision.transforms.functional import to_tensor, to_pil_image
+from torchvision.transforms.functional import center_crop, resize, to_pil_image, to_tensor
 import numpy as np
-from typing import Union
+from typing import Optional, Union
+
+
+def _align_short_edge_center_crop(tensor: torch.Tensor, target_short_edge: int) -> torch.Tensor:
+    """Resize a CHW tensor so its short edge equals target, then center-crop a square."""
+    _, height, width = tensor.shape
+    if min(height, width) != target_short_edge:
+        if height <= width:
+            new_height = target_short_edge
+            new_width = max(1, int(round(width * target_short_edge / height)))
+        else:
+            new_width = target_short_edge
+            new_height = max(1, int(round(height * target_short_edge / width)))
+        tensor = resize(tensor, [new_height, new_width], antialias=True)
+    return center_crop(tensor, [target_short_edge, target_short_edge])
+
+
+def _stack_batch_tensors(
+    tensors: list[torch.Tensor],
+    on_mismatch: str = "raise",
+    mismatch_warning: Optional[str] = None,
+) -> torch.Tensor:
+    """Stack CHW tensors into a BCHW batch, handling spatial size mismatches."""
+    valid_modes = {"raise", "align_short_edge_crop", "crop_tl"}
+    if on_mismatch not in valid_modes:
+        raise ValueError(
+            f"on_mismatch should be one of {sorted(valid_modes)} but is {on_mismatch!r}"
+        )
+
+    shapes = {(tensor.shape[-2], tensor.shape[-1]) for tensor in tensors}
+    if len(shapes) > 1:
+        if on_mismatch == "raise":
+            raise ValueError(
+                "Cannot stack batch: mixed spatial sizes "
+                f"{sorted(shapes)}. Resize each image to the same size first, "
+                "or pass on_mismatch='align_short_edge_crop'."
+            )
+        if on_mismatch == "align_short_edge_crop":
+            target_short_edge = min(min(h, w) for h, w in shapes)
+            message = mismatch_warning or (
+                "Mixed spatial sizes detected while batching images: "
+                f"{sorted(shapes)}. Aligning each image to short edge "
+                f"{target_short_edge} with center crop before stacking."
+            )
+            warnings.warn(message, UserWarning, stacklevel=3)
+            tensors = [
+                _align_short_edge_center_crop(tensor, target_short_edge)
+                for tensor in tensors
+            ]
+        elif on_mismatch == "crop_tl":
+            warnings.warn(
+                "on_mismatch='crop_tl' is deprecated and crops to the top-left of the "
+                "smallest height and width. Use 'align_short_edge_crop' instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+            min_height = min(tensor.shape[-2] for tensor in tensors)
+            min_width = min(tensor.shape[-1] for tensor in tensors)
+            tensors = [
+                tensor[:, :min_height, :min_width] for tensor in tensors
+            ]
+
+    return torch.stack(tensors)
 
 class ImageTorchUtils:
     """Class for image manipulation based on Pytorch. Represents an image as a torch tensor of 
@@ -344,7 +407,12 @@ class ImageTorchUtils:
             self.img = self.img.astype(np.float32) / 255
         return self
     
-    def to_batch(self, img_ndims: int = 3):
+    def to_batch(
+        self,
+        img_ndims: int = 3,
+        on_mismatch: str = "raise",
+        mismatch_warning: Optional[str] = None,
+    ):
         """Converts the instance's img object to a tensor batch of images (shape (B, C, H, W)).
         The instance's img object can be a list, string, numpy array, PIL Image or torch tensor corresponding to
         a single image or a list of the same or a path or list of paths to images.
@@ -353,6 +421,11 @@ class ImageTorchUtils:
             img_ndims (int, optional): Expected dimensions of one image (3 for
                 color images (default) and 2 for grayscale/mask images). Is used to un-ambiguously 
                 differentiate between a single image and a batch of images.
+            on_mismatch (str, optional): How to handle differing spatial sizes across batch
+                elements. One of ``"raise"`` (default), ``"align_short_edge_crop"``, or
+                deprecated ``"crop_tl"``.
+            mismatch_warning (str, optional): Custom warning message when
+                ``on_mismatch="align_short_edge_crop"`` is applied.
 
         Returns:
             torch.Tensor: Batch of images.
@@ -384,14 +457,11 @@ class ImageTorchUtils:
         else:
             raise ValueError("Image should be a list of paths, numpy arrays, PIL Images or torch tensors but is of type", type(self.img[0]))
         
-        # Find the smallest image size
-        min_height = min(img.shape[1] for img in self.img)
-        min_width = min(img.shape[2] for img in self.img)
-        
-        # Crop images to the smallest size to prevent error in torch.stack
-        self.img = [img[:, :min_height, :min_width] for img in self.img]
-        
-        self.img = torch.stack(self.img)
+        self.img = _stack_batch_tensors(
+            self.img,
+            on_mismatch=on_mismatch,
+            mismatch_warning=mismatch_warning,
+        )
         return self
 
     def is_batch(self) -> bool:

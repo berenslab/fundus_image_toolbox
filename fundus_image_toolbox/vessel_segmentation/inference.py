@@ -2,43 +2,22 @@ from argparse import ArgumentParser
 import sys
 import pickle
 from pathlib import Path
+from typing import List, Optional, Tuple, Union
+
+import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
-import cv2
-import matplotlib.pyplot as plt
-from typing import Union, Tuple, List
 from PIL import Image
-from .default import MODELS_DIR
+from segmentation_quality_control.utils.model_definition import FR_UNet
+from segmentation_quality_control.utils.notebook_utils import clahe_equalized, get_ensemble
+
 from fundus_image_toolbox.utils import ImageTorchUtils as Img
 from fundus_image_toolbox.utils import seed_everything
 
-# Clone the repository if not present
-try:
-    from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
-    from .segmentation.utils.model_definition import FR_UNet
-except ImportError:
-    from .clone import clone_repo, adjust_imports
-
-    this_dir = Path(__file__).resolve().parent
-    target_dir = (this_dir / "segmentation").__str__()
-    clone_repo(target_dir=target_dir)
-    adjust_imports(target_dir)
-    from .segmentation.utils.notebook_utils import clahe_equalized, get_ensemble
-    from .segmentation.utils.model_definition import FR_UNet
-
-try:
-    # The pickled model is a bunch object but PyPI's bunch is too old.
-    import bunch
-except ImportError:
-    from .clone import clone_repo
-    
-    this_dir = Path(__file__).resolve().parent
-    clone_repo(target_dir=(this_dir / "bunch").__str__(), link="https://github.com/dsc/bunch", branch="master", commit="85ed6841bf5754867703e67324a4c82b66f1cd4b")
-    sys.path.append((this_dir / "bunch").__str__())
-    import bunch
-
-
+from .default import ENSEMBLE_WEIGHT_FILES
+from .weights import ensure_models_dir
 class Parser(ArgumentParser):
     def error(self, message):
         sys.stderr.write("error: %s\n" % message)
@@ -105,12 +84,14 @@ def save_masks(x_paths, masks, path):
     pickle.dump(df, p.open("wb"))
 
 
-def load_ensemble(device: str = "cuda:0"):
-    models_paths = [
-        (Path(MODELS_DIR) / f).__str__()
-        for f in Path(MODELS_DIR).iterdir()
-        if f.suffix == ".pth"
-    ]
+def load_ensemble(
+    device: str = "cuda:0",
+    cache_dir: Optional[Union[str, Path]] = None,
+    models_dir: Optional[Union[str, Path]] = None,
+):
+    """Load the FR-UNet deep ensemble from cache or an explicit models directory."""
+    weights_dir = ensure_models_dir(cache_dir=cache_dir, models_dir=models_dir)
+    models_paths = [(weights_dir / name).__str__() for name in ENSEMBLE_WEIGHT_FILES]
     ensemble_models = get_ensemble(models_paths, dropout=False, device=device)
     return ensemble_models
 

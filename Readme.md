@@ -120,40 +120,46 @@ fit.plot_masks([fundus1, fundus2], vessel_masks)
 
 <!-- <br>
 <p style="font-size:1.5em;"><b>Installation</b></p> -->
-### Installation
+## Installation
+<sup>Requires Python >= 3.9</sup> <br>
 
-#### Install the toolbox <br>
-
-You can install the [latest tagged version](https://github.com/berenslab/fundus_image_toolbox/releases) of the toolbox by running:
+### From PyPI (recommended)
+Install the [latest released version](https://github.com/berenslab/fundus_image_toolbox/releases) :
 
 ```bash
 pip install fundus_image_toolbox
+# or with Jupyter: pip install fundus_image_toolbox[notebook]
 ```
 
-or the latest version development version on github by running:
+### From GitHub (development version)
+Install the latest development version:
 
 ```bash
 pip install git+https://github.com/berenslab/fundus_image_toolbox
+# or with Jupyter: pip install 'git+https://github.com/berenslab/fundus_image_toolbox#egg=fundus_image_toolbox[notebook]'
 ```
 
-#### Create a virtual environment <br>
-Alternatively, create a new virtual environment including the toolbox with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):<br>
+### Development setup with `uv` (recommended)
+Clone and set up a virtual environment with [`uv`](https://docs.astral.sh/uv/getting-started/installation/):
+
 ```bash
-uv venv
-source .venv/bin/activate
+git clone https://github.com/berenslab/fundus_image_toolbox.git && cd fundus_image_toolbox
+uv sync  # or `uv sync --extra notebook` with Jupyter
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 ```
-or add it to your current `uv` project with `uv add fundus_image_toolbox`.<br>
 
-Or, use `conda` (less recommended): Create a new conda environment and install the toolbox there:
+### Development setup without `uv`
+Alternatively, use Python's built-in venv:
+
 ```bash
-conda create --name fundus_image_toolbox python=3.12 pip
-conda activate fundus_image_toolbox
+git clone https://github.com/berenslab/fundus_image_toolbox.git && cd fundus_image_toolbox
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -e .  # or -e ".[notebook]" with Jupyter
 ```
-And then `pip install fundus_image_toolbox` or `pip install .` from inside the new environment.<br>
-
 
 ### Caching
-- Weights for `registration`, `fundus_od_localization` and `quality_prediction` models are stored into the OS default cache dir. Set the environment variable `FIT_CACHE_DIR` to configure it, or pass the `cache_dir` argument to the respective model loading functions.
+- Weights for `registration`, `fundus_od_localization`, `quality_prediction` and `vessel_segmentation` models are stored into the OS default cache dir. Set the environment variable `FIT_CACHE_DIR` to configure it, or pass the `cache_dir` argument to the respective model loading functions.
 - If no `cache_dir` is passed and nothing is found in the default cache location, FIT also checks the legacy package-internal model paths for backward compatibility with versions <= 0.1.1.
 - FIT models were trained on Imagenet-initialized weights. Those torch / torchvision weights will be stored in the [default pytorch cache dir](https://docs.pytorch.org/docs/stable/hub.html#where-are-my-downloaded-models-saved), configurable by setting the `TORCH_HOME` environment variable. 
 
@@ -197,6 +203,49 @@ If you use external parts of the toolbox that this toolbox provides an interface
     <!-- -  -->
 
 ### OS Compatibility
+<details>
+<summary>v0.1.3</summary>
+
+<table>
+  <thead>
+    <tr>
+      <th>Python Version</th>
+      <th>Linux <br><sup>Rocky 8.8, Kernel 4.18</sup></th>
+      <th>macOS <br><sup>Sequoia 15.7</sup></th>
+      <th>Windows <br><sup>11 Pro</sup></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">3.9</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.10</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.11</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">❓</td>
+    </tr>
+    <tr>
+      <td align="center">3.12</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+      <td align="center">✅</td>
+    </tr>
+  </tbody>
+</table>
+
+<sub>✅ Supported & all tests successful &nbsp; 🔸 Partly supported: [sample notebooks]((./0_example_usage/)) succeed but automatic tests fail partly &nbsp; ❓ Untested/unknown &nbsp; ❌ Not supported</sub>
+</details>
+
 <details>
 <summary>v0.1.2</summary>
 

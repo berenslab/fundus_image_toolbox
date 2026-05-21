@@ -13,7 +13,12 @@
 
     [x] circle_crop
 
-[ ] Vessel Segmentation: Ask Patrick Köhler & Jeremiah Fadugba if they could get rid of the "bunch" dependency: "bunch" prevents the use of python >= 3.10. The model weights are stored in a bunch object. 31.1.2025: PyPI does not accept bunch as a git dependency as there's an older version on PyPI. Hence now we clone it for the segmentation code on the fly.
+[x] Vessel Segmentation: Ask Patrick Köhler & Jeremiah Fadugba if they could get rid of the "bunch" dependency: "bunch" prevents the use of python >= 3.10. The model weights are stored in a bunch object. 31.1.2025: PyPI does not accept bunch as a git dependency as there's an older version on PyPI. Hence now we clone it for the segmentation code on the fly.
+
+[ ] Vessel Segmentation: Currently uses juliusge's fork. Once org's upstream repo included the PRs:
+    [ ] Note upstream merge commit SHA (after both PRs are on main (or package branch)).
+    [ ] Update pyproject.toml git URL + ref.
+    [ ] Update default.py git URL + same ref.
 
 [ ] Once Sarah has refactored her image cropping code to yield an image as output, add it to circle_crop, s.t. one can choose between the two algorithms
 
@@ -23,5 +28,5 @@
 
 [x] Circle cropping. Ifeoma Nwabufo reported that some landscape images cannot be circle cropped -- only if square cropping them first. This is odd, should look into it! -> always do square cropping
 
-[x] Bump to 0.1.2 once implemented and tested caching in new FIT_CACHE_DIR instead of in venv.
+[ ] Tag release 0.1.3 once tested new segmentation source and the updated install steps from the readme.
 

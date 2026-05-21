@@ -1,5 +1,5 @@
 ## Install dev venv
-`uv sync --extra dev`
+`uv sync --extra dev --extra notebook`
 
 ## Bumping version
 Edit the `fundus_image_toolbox/_version.py``

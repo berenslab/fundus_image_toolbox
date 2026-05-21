@@ -10,7 +10,7 @@ See the [usage_vessel-segmentation.ipynb](../0_example_usage/usage_vessel-segmen
 [(x)] Has batch support: Yes, you can pass batches, but internally, certain image preprocessing steps are performed sequentially.
 
 ### Ref
-This is a wrapper for code from [<i>Köhler et al., "Efficiently correcting patch-based segmentation errors to control image-level performance in retinal images" (2024)</i>](https://openreview.net/forum?id=DDHRGHfwji&noteId=DDHRGHfwji). This package clones the [official repository](https://github.com/berenslab/MIDL24-segmentation_quality_control) and provides an interface to the segmentation task.
+This is a wrapper for code from [<i>Köhler et al., "Efficiently correcting patch-based segmentation errors to control image-level performance in retinal images" (2024)</i>](https://openreview.net/forum?id=DDHRGHfwji&noteId=DDHRGHfwji). This package depends on the [official repository](https://github.com/berenslab/MIDL24-segmentation_quality_control) and provides an interface to the segmentation task. Weights are fetched from the git repo on-demand.
 
 ### Cite
 ```bibtex

@@ -220,7 +220,7 @@ If you use external parts of the toolbox that this toolbox provides an interface
       <td align="center">3.9</td>
       <td align="center">✅</td>
       <td align="center">✅</td>
-      <td align="center">❓</td>
+      <td align="center">✅</td>
     </tr>
     <tr>
       <td align="center">3.10</td>

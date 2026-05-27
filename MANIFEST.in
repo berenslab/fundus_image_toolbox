@@ -1,5 +1,4 @@
 include Readme.md
-include requirements.txt
 include fundus_image_toolbox/fovea_od_localization/data/ADAM+IDRID+REFUGE_df.csv
 include 0_example_usage/*
 include 1_read_more/*

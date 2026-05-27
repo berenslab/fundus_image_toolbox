@@ -1,5 +1,6 @@
 import unittest
 import os
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -308,6 +309,48 @@ class TestImageTorchUtils(unittest.TestCase):
             .img
         )
         assert out.shape[-1] == 1
+
+    def test_to_batch_raises_on_mixed_spatial_sizes(self):
+        large = torch.rand(3, 10, 12)
+        small = torch.rand(3, 6, 8)
+        with self.assertRaises(ValueError):
+            Img([large, small]).to_batch()
+
+    def test_to_batch_align_short_edge_crop(self):
+        large = torch.rand(3, 12, 16)
+        small = torch.rand(3, 8, 10)
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            out = Img([large, small]).to_batch(
+                on_mismatch="align_short_edge_crop"
+            ).img
+        self.assertEqual(out.shape, (2, 3, 8, 8))
+        self.assertEqual(len(caught), 1)
+        self.assertTrue(issubclass(caught[0].category, UserWarning))
+
+    def test_to_batch_custom_mismatch_warning(self):
+        large = torch.rand(3, 12, 16)
+        small = torch.rand(3, 8, 10)
+        custom_message = "custom mixed-size batch warning"
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            Img([large, small]).to_batch(
+                on_mismatch="align_short_edge_crop",
+                mismatch_warning=custom_message,
+            )
+        self.assertEqual(len(caught), 1)
+        self.assertEqual(str(caught[0].message), custom_message)
+
+    def test_to_batch_crop_tl_is_deprecated(self):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            out = Img([torch.rand(3, 10, 12), torch.rand(3, 6, 8)]).to_batch(
+                on_mismatch="crop_tl"
+            ).img
+        self.assertEqual(out.shape, (2, 3, 6, 8))
+        self.assertTrue(
+            any(issubclass(w.category, DeprecationWarning) for w in caught)
+        )
 
 
 if __name__ == "__main__":

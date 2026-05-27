@@ -1,5 +1,5 @@
 ## Fundus Image Toolbox
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.07101/status.svg)](https://doi.org/10.21105/joss.07101)  <sup>&nbsp;  A Python package for fundus image processing `pytorch` `cuda`</sup>
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07101/status.svg)](https://doi.org/10.21105/joss.07101)  <sup>&nbsp;  A Python package for fundus image processing `pytorch` `cuda` `medical imaging` `retina`</sup>
 <img src="icon.svg" alt="Logo" align="right">
 
 <!-- <p style="font-size:3em;">Fundus Image Toolbox</p> -->
@@ -170,7 +170,7 @@ You are very welcome to contribute to the toolbox. Please raise an [Issue](https
 <p style="font-size:1.5em;"><b>Cite</b></p> -->
 ### Cite
 
-If you use this toolbox in your research, please consider citing it:
+If you use this toolbox in your research, consider citing it:
 
 Gervelmeyer et al., (2025). Fundus Image Toolbox: A Python package for fundus image processing. Journal of Open Source Software, 10(108), 7101, https://doi.org/10.21105/joss.07101
 
@@ -336,6 +336,6 @@ If you use external parts of the toolbox that this toolbox provides an interface
 
 ### License
 
-The toolbox is licensed under the MIT License. See the [license file](./LICENSE) for more information. <!-- As external packages are used, please check the respective licenses. That includes [fundus_vessel_segmentation](fundus_vessel_segmentation).-->
+The toolbox is licensed under the MIT License. See the [license file](./LICENSE) for more information.
 
 

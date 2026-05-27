@@ -29,5 +29,5 @@
 
 [x] Circle cropping. Ifeoma Nwabufo reported that some landscape images cannot be circle cropped -- only if square cropping them first. This is odd, should look into it! -> always do square cropping
 
-[ ] Tag release 0.1.3 once tested new segmentation source and the updated install steps from the readme.
+[x] Tag release 0.1.3 once tested new segmentation source and the updated install steps from the readme.
 

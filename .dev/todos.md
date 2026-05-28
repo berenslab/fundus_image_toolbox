@@ -19,7 +19,8 @@
     [x] Note upstream merge commit SHA (after both PRs are on or package branch). 6ec927161c4db9f727d6213395227c6beaf778af
     [x] Update pyproject.toml git URL + ref.
     [x] Update default.py git URL + same ref.
-    [ ] Repeat above procedure once upstream repo merged the package branch into main.
+    [ ] Create PRs in segmentation repo and in FIT; merge them.
+    [x] Then adjust FIT's toml to point at pypi dependency of segmentation repo.
 
 [ ] Once Sarah has refactored her image cropping code to yield an image as output, add it to circle_crop, s.t. one can choose between the two algorithms
 

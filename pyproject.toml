@@ -37,7 +37,7 @@ dependencies = [
     "torchinfo>=1.8.0",
     "torchvision>=0.15.2",
     "tqdm>=4.66.2",
-    "segmentation_quality_control>=0.1.0",
+    "segmentation_quality_control>=0.1.1",
 ]
 
 [project.optional-dependencies]

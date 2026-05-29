@@ -882,7 +882,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.1.2" },
     { name = "scipy", specifier = ">=1.10.0" },
     { name = "seaborn", specifier = ">=0.13.2" },
-    { name = "segmentation-quality-control", git = "https://github.com/juliusge/MIDL24-segmentation_quality_control.git?rev=weights-download" },
+    { name = "segmentation-quality-control", specifier = ">=0.1.1" },
     { name = "timm", specifier = ">=0.9.16" },
     { name = "torch", specifier = ">=2.2.0" },
     { name = "torchinfo", specifier = ">=1.8.0" },
@@ -3468,8 +3468,8 @@ wheels = [
 
 [[package]]
 name = "segmentation-quality-control"
-version = "0.1.0"
-source = { git = "https://github.com/juliusge/MIDL24-segmentation_quality_control.git?rev=weights-download#fc82ce39bdff473dda38912e2931f41a11a30cd3" }
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -3485,6 +3485,10 @@ dependencies = [
     { name = "scipy", version = "1.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "timm" },
     { name = "torch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/29/8f/7da16391d15daa304684bc8058572b324cfb786ce17383e786364a06a26a/segmentation_quality_control-0.1.1.tar.gz", hash = "sha256:ff4fe167ed0e5c6788fadfbc60975718e0dcac19bb15707549adeda320bd30dd", size = 22275 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/5c/461df476c6276f78ea64934b0e5c6b90292da566707432fee80a08d67e37/segmentation_quality_control-0.1.1-py3-none-any.whl", hash = "sha256:3613705cae087b71fc6d454d705336d88e966b4a5393fcfc8a680a29337a6867", size = 26704 },
 ]
 
 [[package]]

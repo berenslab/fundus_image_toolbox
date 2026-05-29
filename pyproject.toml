@@ -37,7 +37,7 @@ dependencies = [
     "torchinfo>=1.8.0",
     "torchvision>=0.15.2",
     "tqdm>=4.66.2",
-    "segmentation-quality-control @ git+https://github.com/berenslab/MIDL24-segmentation_quality_control.git@6ec927161c4db9f727d6213395227c6beaf778af",
+    "segmentation_quality_control>=0.1.1",
 ]
 
 [project.optional-dependencies]

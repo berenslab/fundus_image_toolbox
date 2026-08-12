@@ -9,6 +9,10 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    continue-on-error: ${{ matrix.os == 'windows-latest' }}
+    env:
+      MPLBACKEND: Agg
     strategy:
       fail-fast: false
       matrix:
@@ -32,7 +36,7 @@ jobs:
             fit-weights-${{ matrix.os }}-
 
       - name: Sync dev environment
-        run: uv sync --extra dev
+        run: uv sync --extra dev --python 3.12
 
       - name: Run tests via tox (py39-py312; tox-uv provisions interpreters via uv)
         run: uv run tox

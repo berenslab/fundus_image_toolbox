@@ -1,5 +1,5 @@
 ## Auto-testing
-As of August 2026, dependabot runs monthly and tox tests are applied to its PRs.
+As of August 2026, dependabot runs monthly and tox tests are applied to PRs.
 
 ## Before PRs into main
 - On `dev` branch, install venv: `uv sync --extra dev --extra notebook`

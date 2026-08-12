@@ -1,13 +1,15 @@
-## Install dev venv
-`uv sync --extra dev --extra notebook`
+## Auto-testing
+As of August 2026, dependabot runs monthly and tox tests are applied to its PRs.
 
-## Bumping version
-Edit the `fundus_image_toolbox/_version.py``
+## Before PRs into main
+- On `dev` branch, install venv: `uv sync --extra dev --extra notebook`
+- Run `uv lock --upgrade` to use latest compatible package versions.
+- Bump FIT version: Edit the `fundus_image_toolbox/_version.py`
+- Run tests on multiple OS: This repository uses `unittest` for tests and `tox` for venv-sandboxed testing. See below how to run.
+- Update compatibility table in `README.md`.
+- Merge into `main`.
 
-## Running Tests
-
-This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.
-
+## Testing
 ### Tox
 - Run default unittests via tox in isolated Python venvs:
   - `uv run tox`
@@ -37,3 +39,5 @@ This repository uses `unittest` for tests and `tox` for venv-sandboxed testing.
 ## Syntax check:
 `uv run python -m compileall fundus_image_toolbox`
 
+## New optional dependencies?
+If we add deps to extra groups, `.github/dependabot.yml` should be updated accordingly to handle them as what they are: optional extras.

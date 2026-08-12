@@ -1,0 +1,45 @@
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "juliusge"
+    groups:
+      # Mirrors the repo's Dependabot auto-triage rules (scope:development,
+      # package:ipykernel/ipython/jupyter/jupyter-black/notebook-shim):
+      # bundle the same low-priority extras into one PR instead of one each.
+      dev-and-notebook-tooling:
+        patterns:
+          - "pip"
+          - "tox"
+          - "tox-uv"
+          - "mypy"
+          - "ipykernel"
+          - "ipython"
+          - "jupyter"
+          - "jupyter-black"
+          - "notebook-shim"
+      runtime-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "pip"
+          - "tox"
+          - "tox-uv"
+          - "mypy"
+          - "ipykernel"
+          - "ipython"
+          - "jupyter"
+          - "jupyter-black"
+          - "notebook-shim"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "juliusge"

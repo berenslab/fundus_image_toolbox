@@ -1,5 +1,5 @@
 ## Auto-testing
-As of August 2026, dependabot runs monthly and tox tests are applied to PRs.
+As of August 2026, Dependabot opens monthly PRs against `dev`, considering dependencies of uv and github-actions. GitHub Actions tox tests run on PRs into `dev` and `main`.
 
 ## Before PRs into main
 - On `dev` branch, install venv: `uv sync --extra dev --extra notebook`
@@ -7,7 +7,7 @@ As of August 2026, dependabot runs monthly and tox tests are applied to PRs.
 - Bump FIT version: Edit the `fundus_image_toolbox/_version.py`
 - Run tests on multiple OS: This repository uses `unittest` for tests and `tox` for venv-sandboxed testing. See below how to run.
 - Update compatibility table in `README.md`.
-- Merge into `main`.
+- Merge into `main` with a merge commit (not squash or rebase), so `dev` and `main` stay related.
 
 ## Testing
 ### Tox

@@ -26,7 +26,7 @@ jobs:
         run: echo "FIT_CACHE_DIR=${{ runner.temp }}/fit-weights-cache" >> "$GITHUB_ENV"
 
       - name: Cache downloaded model weights
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.FIT_CACHE_DIR }}
           key: fit-weights-${{ matrix.os }}-${{ hashFiles('uv.lock') }}

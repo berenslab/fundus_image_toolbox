@@ -1,0 +1,40 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    continue-on-error: ${{ matrix.os == 'windows-latest' }}
+    env:
+      MPLBACKEND: Agg
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v10.0.0
+
+      - name: Set weights cache directory
+        shell: bash
+        run: echo "FIT_CACHE_DIR=${{ runner.temp }}/fit-weights-cache" >> "$GITHUB_ENV"
+
+      - name: Cache downloaded model weights
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.FIT_CACHE_DIR }}
+          key: fit-weights-${{ matrix.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            fit-weights-${{ matrix.os }}-
+
+      - name: Sync dev environment
+        run: uv sync --extra dev --python 3.12
+
+      - name: Run tests via tox (py39-py312; tox-uv provisions interpreters via uv)
+        run: uv run tox
